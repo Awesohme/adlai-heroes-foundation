@@ -207,11 +207,33 @@ Set the following in Vercel dashboard:
 
 ## 🐛 Known Issues & Solutions
 
+### Git Repository Safety ⚠️ CRITICAL
+**Date**: August 1, 2025
+**Issue**: All project files were lost during git rebase operation
+**Cause**: Used `git pull --rebase` and `git reset --hard` without proper backup
+**Resolution**: Recovered files from `git reflog` at commit `0c228e9`
+
+#### Prevention Measures (MANDATORY)
+1. **NEVER use destructive git commands** without backup
+2. **ALWAYS stash changes** before pull/rebase: `git stash push -m "backup"`
+3. **ALWAYS verify files exist** after git operations using file explorer
+4. **ALWAYS check git log** before destructive operations: `git log --oneline -5`
+5. **Use git reflog for recovery**: `git reflog` to find lost commits
+
+#### Quick Recovery Commands
+```bash
+git reflog                    # Find lost commits
+git checkout <lost-commit>    # Recover files
+git checkout main            # Return to main branch  
+git cherry-pick <commit>     # Apply recovered changes
+```
+
 ### Common Issues
 1. **Build Errors**: Check TypeScript and ESLint
 2. **CMS Connection**: Verify API URL and token
 3. **Image Loading**: Check Cloudinary configuration
 4. **Performance**: Monitor Core Web Vitals
+5. **Lost Files**: Follow Git Recovery Commands above
 
 ## 🤝 Contributing
 

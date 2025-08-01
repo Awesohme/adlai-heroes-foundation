@@ -98,6 +98,23 @@ Before making any changes, read README.md to understand current project state. A
 - Implement proper caching to reduce API calls
 - Use Cloudinary free tier for image optimization
 
+#### Git Repository Safety (CRITICAL - Files Lost on 2025-08-01)
+**INCIDENT**: All project files were lost during git rebase operation with remote repository
+**ROOT CAUSE**: Used `git pull --rebase` and `git reset --hard` without backup, lost commit 0c228e9
+**PREVENTION RULES**:
+- **NEVER** execute git operations that modify history without backup
+- **ALWAYS** use `git stash push -m "description"` before pulls/rebases
+- **ALWAYS** verify file presence with `LS` tool after git operations
+- **ALWAYS** check `git log --oneline -5` before destructive operations
+- **ALWAYS** use `git reflog` to recover lost commits if files disappear
+**RECOVERY COMMANDS**:
+```bash
+git reflog                    # Find lost commits
+git checkout <lost-commit>    # Recover files
+git checkout main            # Return to main branch
+git cherry-pick <commit>     # Apply recovered changes
+```
+
 ### Required Workflow
 1. ALWAYS read .clauderules before starting work
 2. ALWAYS read README.md to understand current project state and features
@@ -109,6 +126,16 @@ Before making any changes, read README.md to understand current project state. A
 8. ALWAYS test responsive design on mobile, tablet, and desktop
 9. ALWAYS update README.md after major changes or new features
 10. ALWAYS implement proper caching strategies to minimize API calls
+
+### CRITICAL Git Safety Rules - NEVER LOSE FILES AGAIN
+11. **BEFORE any git pull/rebase/merge operations**: ALWAYS create a backup commit first
+12. **BEFORE any git reset operations**: ALWAYS check `git status` and `git log --oneline -5`
+13. **NEVER use `git reset --hard`** without first checking what files will be lost
+14. **ALWAYS use `git stash push -m "backup before operation"`** before complex git operations
+15. **AFTER any git operation**: IMMEDIATELY verify all project files are present with `LS` tool
+16. **IF files go missing**: IMMEDIATELY check `git reflog` and `git stash list` for recovery
+17. **BEFORE force push**: ALWAYS verify the target repository and branch are correct
+18. **NEVER use destructive git commands** without explicit user confirmation first
 
 ### Pre-Deployment Checklist for Nonprofit Website
 1. ✅ Run `npm run build` and fix all TypeScript/build errors
