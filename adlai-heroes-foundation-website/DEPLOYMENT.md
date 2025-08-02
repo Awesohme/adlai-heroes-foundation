@@ -5,21 +5,139 @@
 ### Step 1: Deploy Strapi CMS (Free)
 
 **Option A: Supabase Backend (Recommended - Truly Free Forever)**
-1. Go to [Supabase.com](https://supabase.com) and create account (no card required)
-2. Create new project → PostgreSQL database (500MB free forever)
-3. **Use Supabase as Backend**:
-   - Built-in database with REST API
-   - Real-time subscriptions
-   - Authentication system
-   - File storage
-   - No need for separate Strapi!
-4. **Next.js Integration**:
-   - Install `@supabase/supabase-js`
-   - Connect directly to Supabase API
-   - Use their TypeScript auto-generation
-5. **Content Management**:
-   - Use Supabase Dashboard for content editing
-   - Or build custom admin interface
+
+1. **Create Supabase Project**
+   - Go to [Supabase.com](https://supabase.com) and create account (no card required)
+   - Click "New Project"
+   - Organization: Personal (free)
+   - Project Name: `adlai-heroes-foundation`
+   - Database Password: Create secure password
+   - Region: Select closest to your users
+   - Click "Create new project"
+
+2. **Get API Keys**
+   - Go to Settings → API
+   - Copy `Project URL` and `anon public` key
+   - Copy `service_role` key (for admin operations)
+
+3. **Create Database Tables**
+   - Go to Database → Tables
+   - Create tables for your content:
+     ```sql
+     -- Programs table
+     CREATE TABLE programs (
+       id BIGSERIAL PRIMARY KEY,
+       title TEXT NOT NULL,
+       slug TEXT UNIQUE NOT NULL,
+       description TEXT,
+       content TEXT,
+       featured_image TEXT,
+       category TEXT CHECK (category IN ('education', 'health', 'empowerment', 'community')),
+       published BOOLEAN DEFAULT false,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+       updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+     );
+
+     -- Blog posts table
+     CREATE TABLE blog_posts (
+       id BIGSERIAL PRIMARY KEY,
+       title TEXT NOT NULL,
+       slug TEXT UNIQUE NOT NULL,
+       excerpt TEXT,
+       content TEXT,
+       featured_image TEXT,
+       author TEXT,
+       published BOOLEAN DEFAULT false,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+       updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+     );
+
+     -- Board members table
+     CREATE TABLE board_members (
+       id BIGSERIAL PRIMARY KEY,
+       name TEXT NOT NULL,
+       position TEXT,
+       bio TEXT,
+       image TEXT,
+       order_index INTEGER DEFAULT 0,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+     );
+
+     -- Testimonials table
+     CREATE TABLE testimonials (
+       id BIGSERIAL PRIMARY KEY,
+       name TEXT NOT NULL,
+       content TEXT NOT NULL,
+       image TEXT,
+       location TEXT,
+       featured BOOLEAN DEFAULT false,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+     );
+
+     -- Impact stats table
+     CREATE TABLE impact_stats (
+       id BIGSERIAL PRIMARY KEY,
+       title TEXT NOT NULL,
+       value TEXT NOT NULL,
+       description TEXT,
+       icon TEXT,
+       order_index INTEGER DEFAULT 0,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+     );
+     ```
+
+4. **Set Row Level Security (RLS)**
+   - Go to Authentication → Policies
+   - For each table, create policies:
+     ```sql
+     -- Allow public read access
+     CREATE POLICY "Allow public read" ON programs FOR SELECT USING (published = true);
+     CREATE POLICY "Allow public read" ON blog_posts FOR SELECT USING (published = true);
+     CREATE POLICY "Allow public read" ON board_members FOR SELECT USING (true);
+     CREATE POLICY "Allow public read" ON testimonials FOR SELECT USING (true);
+     CREATE POLICY "Allow public read" ON impact_stats FOR SELECT USING (true);
+     ```
+
+5. **Enable Storage (for images)**
+   - Go to Storage → Create bucket
+   - Bucket name: `adlai-images`
+   - Public bucket: Yes (for website images)
+   - Create storage policies for public access
+
+6. **Install Supabase in Next.js**
+   ```bash
+   npm install @supabase/supabase-js
+   npm install @supabase/ssr  # For server-side rendering
+   ```
+
+7. **Configure Environment Variables**
+   Create `.env.local`:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your-project-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   ```
+
+8. **Create Supabase Client**
+   Create `lib/supabase.ts`:
+   ```typescript
+   import { createClient } from '@supabase/supabase-js'
+
+   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+   export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+   ```
+
+9. **Create Content Admin Interface**
+   - Build simple admin pages in Next.js
+   - Or use Supabase Dashboard for content management
+   - Example admin route: `/admin/programs`
+
+10. **Deploy to Vercel**
+    - Connect GitHub repository to Vercel
+    - Add environment variables in Vercel dashboard
+    - Deploy automatically on git push
 
 **Option B: Static Site + Decap CMS (Formerly Netlify CMS)**
 1. **Deploy to Vercel/Netlify**: Static Next.js site (free forever)
@@ -198,6 +316,21 @@ npm start
 ## 🔐 Environment Variables Reference
 
 ### Next.js (.env.local)
+
+**For Supabase Backend (Recommended):**
+```env
+# Required
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+
+# Optional
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+```
+
+**For Strapi Backend (Legacy):**
 ```env
 # Required
 STRAPI_API_URL=https://your-strapi-url.com
