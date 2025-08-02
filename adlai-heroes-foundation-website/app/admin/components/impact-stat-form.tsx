@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { supabaseApi, type ImpactStat } from "@/lib/supabase"
+import { adminApi } from "@/lib/admin-api"
 import { TrendingUpIcon, UsersIcon, HeartIcon, BookOpenIcon, HomeIcon, StarIcon, TargetIcon, AwardIcon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -47,13 +48,13 @@ export default function ImpactStatForm({ stat, onSave, onCancel }: ImpactStatFor
       toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} impact statistic...`)
       
       if (stat) {
-        await supabaseApi.updateImpactStat(stat.id, formData)
+        await adminApi.updateImpactStat(stat.id, formData)
         toast.success('Impact Statistic Updated Successfully!', {
           description: `"${formData.title}" has been updated with value "${formData.value}"`,
           duration: 4000
         })
       } else {
-        await supabaseApi.createImpactStat(formData)
+        await adminApi.createImpactStat(formData)
         toast.success('Impact Statistic Created Successfully!', {
           description: `"${formData.title}" has been added with value "${formData.value}"`,
           duration: 4000

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { PlusIcon, EditIcon, TrashIcon, UsersIcon, BookOpenIcon, MessageSquareIcon, BarChartIcon, SettingsIcon, GlobeIcon } from "lucide-react"
 import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page } from "@/lib/supabase"
+import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ProgramForm from "./components/program-form"
 import TestimonialForm from "./components/testimonial-form"
@@ -143,7 +144,7 @@ export default function AdminDashboard() {
           })
           break
         case 'stat':
-          await supabaseApi.deleteImpactStat(id)
+          await adminApi.deleteImpactStat(id)
           toast.success('Impact Statistic Deleted Successfully!', {
             description: 'The statistic has been permanently removed.',
             duration: 3000
