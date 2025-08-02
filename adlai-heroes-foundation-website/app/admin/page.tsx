@@ -5,8 +5,18 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { PlusIcon, EditIcon, TrashIcon, UsersIcon, BookOpenIcon, MessageSquareIcon, BarChartIcon } from "lucide-react"
-import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember } from "@/lib/supabase"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { PlusIcon, EditIcon, TrashIcon, UsersIcon, BookOpenIcon, MessageSquareIcon, BarChartIcon, SettingsIcon, GlobeIcon } from "lucide-react"
+import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page } from "@/lib/supabase"
+import ProgramForm from "./components/program-form"
+import TestimonialForm from "./components/testimonial-form"
+import ImpactStatForm from "./components/impact-stat-form"
+import BlogPostForm from "./components/blog-post-form"
+import BoardMemberForm from "./components/board-member-form"
+import ContentSectionForm from "./components/content-section-form"
+import PageForm from "./components/page-form"
+import AdminTabs from "./components/admin-tabs"
 
 export default function AdminDashboard() {
   const [programs, setPrograms] = useState<Program[]>([])
@@ -14,7 +24,12 @@ export default function AdminDashboard() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([])
+  const [contentSections, setContentSections] = useState<ContentSection[]>([])
+  const [pages, setPages] = useState<Page[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [editingItem, setEditingItem] = useState<any>(null)
+  const [editingType, setEditingType] = useState<string>('')
+  const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
     loadAllData()
@@ -23,12 +38,14 @@ export default function AdminDashboard() {
   async function loadAllData() {
     try {
       setIsLoading(true)
-      const [programsData, statsData, testimonialsData, blogData, boardData] = await Promise.all([
+      const [programsData, statsData, testimonialsData, blogData, boardData, sectionsData, pagesData] = await Promise.all([
         supabaseApi.getPrograms(false), // Include unpublished
         supabaseApi.getImpactStats(),
         supabaseApi.getTestimonials(),
         supabaseApi.getBlogPosts(false), // Include unpublished
-        supabaseApi.getBoardMembers()
+        supabaseApi.getBoardMembers(),
+        supabaseApi.getContentSections(),
+        supabaseApi.getPages(false)
       ])
 
       setPrograms(programsData)
@@ -36,10 +53,87 @@ export default function AdminDashboard() {
       setTestimonials(testimonialsData)
       setBlogPosts(blogData)
       setBoardMembers(boardData)
+      setContentSections(sectionsData)
+      setPages(pagesData)
     } catch (error) {
       console.error('Error loading data:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleEdit = (item: any, type: string) => {
+    setEditingItem(item)
+    setEditingType(type)
+    setShowForm(true)
+  }
+
+  const handleAdd = (type: string) => {
+    setEditingItem(null)
+    setEditingType(type)
+    setShowForm(true)
+  }
+
+  const handleSave = () => {
+    setShowForm(false)
+    setEditingItem(null)
+    setEditingType('')
+    loadAllData()
+  }
+
+  const handleCancel = () => {
+    setShowForm(false)
+    setEditingItem(null)
+    setEditingType('')
+  }
+
+  const handleDelete = async (id: number, type: string) => {
+    try {
+      switch (type) {
+        case 'program':
+          await supabaseApi.deleteProgram(id)
+          break
+        case 'testimonial':
+          await supabaseApi.deleteTestimonial(id)
+          break
+        case 'stat':
+          await supabaseApi.deleteImpactStat(id)
+          break
+        case 'blog':
+          await supabaseApi.deleteBlogPost(id)
+          break
+        case 'board':
+          await supabaseApi.deleteBoardMember(id)
+          break
+        case 'section':
+          await supabaseApi.deleteContentSection(id)
+          break
+      }
+      loadAllData()
+    } catch (error) {
+      console.error('Error deleting item:', error)
+      alert('Error deleting item. Please try again.')
+    }
+  }
+
+  const renderForm = () => {
+    switch (editingType) {
+      case 'program':
+        return <ProgramForm program={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'testimonial':
+        return <TestimonialForm testimonial={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'stat':
+        return <ImpactStatForm stat={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'blog':
+        return <BlogPostForm post={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'board':
+        return <BoardMemberForm member={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'section':
+        return <ContentSectionForm section={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'page':
+        return <PageForm page={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      default:
+        return null
     }
   }
 
@@ -131,225 +225,61 @@ export default function AdminDashboard() {
         </div>
 
         {/* Content Management Tabs */}
-        <Tabs defaultValue="programs" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="programs">Programs</TabsTrigger>
-            <TabsTrigger value="stats">Impact Stats</TabsTrigger>
-            <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
-            <TabsTrigger value="blog">Blog Posts</TabsTrigger>
-            <TabsTrigger value="board">Board Members</TabsTrigger>
-          </TabsList>
+        <AdminTabs
+          programs={programs}
+          stats={stats}
+          testimonials={testimonials}
+          blogPosts={blogPosts}
+          boardMembers={boardMembers}
+          contentSections={contentSections}
+          pages={pages}
+          onEdit={handleEdit}
+          onAdd={handleAdd}
+          onDelete={handleDelete}
+        />
 
-          {/* Programs Tab */}
-          <TabsContent value="programs">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Programs Management</CardTitle>
-                <Button>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Program
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {programs.map((program) => (
-                    <div key={program.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-lg">{program.title}</h3>
-                          <Badge variant={program.published ? "default" : "secondary"}>
-                            {program.published ? "Published" : "Draft"}
-                          </Badge>
-                          <Badge variant="outline" className="capitalize">
-                            {program.category}
-                          </Badge>
-                        </div>
-                        <p className="text-gray-600 mt-1 line-clamp-2">{program.description}</p>
-                        <p className="text-sm text-gray-500 mt-2">
-                          Created: {new Date(program.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <EditIcon className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Impact Stats Tab */}
-          <TabsContent value="stats">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Impact Statistics</CardTitle>
-                <Button>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Statistic
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {stats.map((stat) => (
-                    <div key={stat.id} className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">{stat.title}</h3>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <EditIcon className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm" className="text-red-600">
-                            <TrashIcon className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <p className="text-3xl font-bold text-primary mb-2">{stat.value}</p>
-                      <p className="text-sm text-gray-600">{stat.description}</p>
-                      <p className="text-xs text-gray-500 mt-2">Order: {stat.order_index}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Testimonials Tab */}
-          <TabsContent value="testimonials">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Testimonials</CardTitle>
-                <Button>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Testimonial
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {testimonials.map((testimonial) => (
-                    <div key={testimonial.id} className="flex items-start justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold">{testimonial.name}</h3>
-                          <Badge variant={testimonial.featured ? "default" : "secondary"}>
-                            {testimonial.featured ? "Featured" : "Regular"}
-                          </Badge>
-                        </div>
-                        <p className="text-gray-600 mb-2 line-clamp-3">"{testimonial.content}"</p>
-                        <p className="text-sm text-gray-500">
-                          {testimonial.location} • {new Date(testimonial.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <EditIcon className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-red-600">
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Blog Posts Tab */}
-          <TabsContent value="blog">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Blog Posts</CardTitle>
-                <Button>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Post
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {blogPosts.map((post) => (
-                    <div key={post.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-lg">{post.title}</h3>
-                          <Badge variant={post.published ? "default" : "secondary"}>
-                            {post.published ? "Published" : "Draft"}
-                          </Badge>
-                        </div>
-                        <p className="text-gray-600 mt-1 line-clamp-2">{post.excerpt}</p>
-                        <p className="text-sm text-gray-500 mt-2">
-                          By {post.author} • {new Date(post.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <EditIcon className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-red-600">
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Board Members Tab */}
-          <TabsContent value="board">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Board Members</CardTitle>
-                <Button>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Member
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {boardMembers.map((member) => (
-                    <div key={member.id} className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">{member.name}</h3>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <EditIcon className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm" className="text-red-600">
-                            <TrashIcon className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <p className="text-sm font-medium text-primary mb-2">{member.position}</p>
-                      <p className="text-sm text-gray-600 line-clamp-3">{member.bio}</p>
-                      <p className="text-xs text-gray-500 mt-2">Order: {member.order_index}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* Edit Form Dialog */}
+        {showForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-full max-h-[90vh] overflow-y-auto">
+              {renderForm()}
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="mt-8 p-6 bg-blue-50 rounded-lg">
           <h3 className="text-lg font-semibold text-blue-900 mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button className="h-auto p-4 flex flex-col items-center gap-2" variant="outline">
-              <BookOpenIcon className="h-6 w-6" />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Button 
+              className="h-auto p-4 flex flex-col items-center gap-2" 
+              variant="outline"
+              onClick={() => window.open('/', '_blank')}
+            >
+              <GlobeIcon className="h-6 w-6" />
               <span>View Website</span>
             </Button>
-            <Button className="h-auto p-4 flex flex-col items-center gap-2" variant="outline">
-              <BarChartIcon className="h-6 w-6" />
-              <span>Analytics</span>
+            <Button 
+              className="h-auto p-4 flex flex-col items-center gap-2" 
+              variant="outline"
+              onClick={() => handleAdd('section')}
+            >
+              <PlusIcon className="h-6 w-6" />
+              <span>Add Content Section</span>
             </Button>
-            <Button className="h-auto p-4 flex flex-col items-center gap-2" variant="outline">
+            <Button 
+              className="h-auto p-4 flex flex-col items-center gap-2" 
+              variant="outline"
+              onClick={() => window.location.reload()}
+            >
+              <SettingsIcon className="h-6 w-6" />
+              <span>Refresh Data</span>
+            </Button>
+            <Button 
+              className="h-auto p-4 flex flex-col items-center gap-2" 
+              variant="outline"
+              onClick={() => alert('Coming soon: User management functionality')}
+            >
               <UsersIcon className="h-6 w-6" />
               <span>User Management</span>
             </Button>

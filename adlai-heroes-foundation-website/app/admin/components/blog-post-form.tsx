@@ -5,33 +5,32 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { supabaseApi, type Program } from "@/lib/supabase"
+import { supabaseApi, type BlogPost } from "@/lib/supabase"
 import ImageUpload from "./image-upload"
 
-interface ProgramFormProps {
-  program?: Program
+interface BlogPostFormProps {
+  post?: BlogPost
   onSave: () => void
   onCancel: () => void
 }
 
-export default function ProgramForm({ program, onSave, onCancel }: ProgramFormProps) {
+export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    title: program?.title || '',
-    slug: program?.slug || '',
-    description: program?.description || '',
-    content: program?.content || '',
-    featured_image: program?.featured_image || '',
-    category: program?.category || 'education' as 'education' | 'health' | 'empowerment' | 'community',
-    published: program?.published || false,
-    meta_title: program?.meta_title || '',
-    meta_description: program?.meta_description || '',
-    meta_keywords: program?.meta_keywords || '',
-    og_image: program?.og_image || ''
+    title: post?.title || '',
+    slug: post?.slug || '',
+    excerpt: post?.excerpt || '',
+    content: post?.content || '',
+    featured_image: post?.featured_image || '',
+    author: post?.author || '',
+    published: post?.published || false,
+    meta_title: post?.meta_title || '',
+    meta_description: post?.meta_description || '',
+    meta_keywords: post?.meta_keywords || '',
+    og_image: post?.og_image || ''
   })
 
   const generateSlug = (title: string) => {
@@ -57,15 +56,15 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
     setLoading(true)
 
     try {
-      if (program) {
-        await supabaseApi.updateProgram(program.id, formData)
+      if (post) {
+        await supabaseApi.updateBlogPost(post.id, formData)
       } else {
-        await supabaseApi.createProgram(formData)
+        await supabaseApi.createBlogPost(formData)
       }
       onSave()
     } catch (error) {
-      console.error('Error saving program:', error)
-      alert('Error saving program. Please try again.')
+      console.error('Error saving blog post:', error)
+      alert('Error saving blog post. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -74,7 +73,7 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>{program ? 'Edit Program' : 'Add New Program'}</CardTitle>
+        <CardTitle>{post ? 'Edit Blog Post' : 'Add New Blog Post'}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -85,72 +84,67 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
             </TabsList>
 
             <TabsContent value="content" className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="title">Program Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Enter program title"
-              required
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="title">Post Title *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  placeholder="Enter blog post title"
+                  required
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="slug">URL Slug</Label>
-            <Input
-              id="slug"
-              value={formData.slug}
-              onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-              placeholder="program-url-slug"
-              required
-            />
-            <p className="text-sm text-gray-500">This will be used in the URL: /programs/{formData.slug}</p>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="slug">URL Slug</Label>
+                <Input
+                  id="slug"
+                  value={formData.slug}
+                  onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                  placeholder="blog-post-url-slug"
+                  required
+                />
+                <p className="text-sm text-gray-500">This will be used in the URL: /blog/{formData.slug}</p>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="category">Category *</Label>
-            <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="education">Education</SelectItem>
-                <SelectItem value="health">Health</SelectItem>
-                <SelectItem value="empowerment">Empowerment</SelectItem>
-                <SelectItem value="community">Community</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="author">Author</Label>
+                <Input
+                  id="author"
+                  value={formData.author}
+                  onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
+                  placeholder="Author name"
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Short Description *</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Brief description for program cards and previews"
-              rows={3}
-              required
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="excerpt">Excerpt *</Label>
+                <Textarea
+                  id="excerpt"
+                  value={formData.excerpt}
+                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+                  placeholder="Brief summary for blog previews"
+                  rows={3}
+                  required
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="content">Full Content</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Full program description and details"
-              rows={8}
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="content">Full Content</Label>
+                <Textarea
+                  id="content"
+                  value={formData.content}
+                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  placeholder="Full blog post content (supports Markdown)"
+                  rows={12}
+                />
+              </div>
 
               <ImageUpload
                 currentImageUrl={formData.featured_image}
                 onImageChange={(url) => setFormData(prev => ({ ...prev, featured_image: url }))}
                 label="Featured Image"
-                folder="programs/"
+                folder="blog/"
               />
 
               <div className="flex items-center space-x-2">
@@ -159,7 +153,7 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
                   checked={formData.published}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
                 />
-                <Label htmlFor="published">Publish this program</Label>
+                <Label htmlFor="published">Publish this post</Label>
               </div>
             </TabsContent>
 
@@ -210,7 +204,7 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
 
           <div className="flex gap-4 pt-4">
             <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? 'Saving...' : (program ? 'Update Program' : 'Create Program')}
+              {loading ? 'Saving...' : (post ? 'Update Post' : 'Create Post')}
             </Button>
             <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
               Cancel

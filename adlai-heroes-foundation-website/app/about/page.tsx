@@ -11,9 +11,8 @@ export default function AboutPage() {
         <Image
           src="/placeholder.svg?height=400&width=1200"
           alt="Children learning together"
-          layout="fill"
-          objectFit="cover"
-          className="absolute inset-0 z-0"
+          fill
+          className="absolute inset-0 z-0 object-cover"
         />
         <div className="absolute inset-0 bg-black opacity-60 z-10" aria-hidden="true"></div>
         <h1 className="relative z-20 text-white text-4xl md:text-5xl font-bold drop-shadow-lg">About Us</h1>
@@ -21,82 +20,52 @@ export default function AboutPage() {
 
       {/* Mission, Vision, History */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        <Card variant="glass" className="p-6 shadow-lg">
+        <Card className="p-6 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gradient-primary mb-4">Origin</CardTitle>
+            <CardTitle className="text-2xl font-bold text-primary mb-4">Our Mission</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-900 leading-relaxed">
-              Adlai is a Hebrew word, it means ornament. Adlai Heroes Foundation is a child and teenager focused non-governmental organization set up for the sole purpose of putting smiles on the faces of underprivileged children, and as well creating a safe haven for the vulnerable children. <br>
+            <p className="text-gray-700 leading-relaxed">
+              To create a safe haven for children all around the world, make the world a better and safer place.
             </p>
           </CardContent>
         </Card>
-        <Card variant="glass" className="p-6 shadow-lg">
+
+        <Card className="p-6 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gradient-primary mb-4">Our Vision</CardTitle>
+            <CardTitle className="text-2xl font-bold text-primary mb-4">Our Vision</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-900 leading-relaxed">
+            <p className="text-gray-700 leading-relaxed">
               To see that the basic, mental, financial and emotional needs of the vulnerable children and teenagers we come across are being met.
             </p>
           </CardContent>
         </Card>
-        <Card variant="glass" className="p-6 shadow-lg">
+
+        <Card className="p-6 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gradient-primary mb-4">Our Mision</CardTitle>
+            <CardTitle className="text-2xl font-bold text-primary mb-4">Our Story</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-900 leading-relaxed">
-              To create a safe haven for children all around the world, make the world a better and safer place.
+            <p className="text-gray-700 leading-relaxed">
+              Founded with a passion for empowering the next generation, we work tirelessly to provide education, healthcare, and opportunity to those who need it most.
             </p>
           </CardContent>
         </Card>
       </section>
 
-      {/* Team Overview */}
-      <section className="text-center mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold text-gradient-primary mb-8">Meet Our Dedicated Team</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card variant="glass" className="p-6 flex flex-col items-center text-center shadow-md">
-            <Image
-              src="/placeholder.svg?height=150&width=150"
-              alt="Team Member 1"
-              width={150}
-              height={150}
-              className="rounded-full object-cover mb-4"
-            />
-            <h3 className="text-xl font-semibold text-gray-900">Mibi Ojewale</h3>
-            <p className="text-primary">Founder</p>
-            <p className="text-sm text-gray-900 mt-2">Passionate about child welfare and community development.</p>
-          </Card>
-          <Card variant="glass" className="p-6 flex flex-col items-center text-center shadow-md">
-            <Image
-              src="/placeholder.svg?height=150&width=150"
-              alt="Team Member 2"
-              width={150}
-              height={150}
-              className="rounded-full object-cover mb-4"
-            />
-            <h3 className="text-xl font-semibold text-gray-900">Oyekan Adeola </h3>
-            <p className="text-primary">Programs Director</p>
-            <p className="text-sm text-gray-900 mt-2">Oversees all educational and healthcare initiatives.</p>
-          </Card>
-          <Card variant="glass" className="p-6 flex flex-col items-center text-center shadow-md">
-            <Image
-              src="/placeholder.svg?height=150&width=150"
-              alt="Team Member 3"
-              width={150}
-              height={150}
-              className="rounded-full object-cover mb-4"
-            />
-            <h3 className="text-xl font-semibold text-gray-900">Lauretta Enang</h3>
-            <p className="text-primary">Volunteer Coordinator</p>
-            <p className="text-sm text-gray-900 mt-2">Manages our network of dedicated volunteers.</p>
-          </Card>
-        </div>
-        <div className="mt-12">
-          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 text-lg">
-            <Link href="/board">View All Team Members</Link>
+      {/* Call to Action */}
+      <section className="text-center bg-secondary p-8 rounded-lg">
+        <h2 className="text-3xl font-bold text-primary mb-4">Join Our Mission</h2>
+        <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
+          Together, we can make a lasting impact on the lives of children and communities across Nigeria.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button asChild size="lg">
+            <Link href="/donate">Donate Now</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg">
+            <Link href="/volunteer">Become a Volunteer</Link>
           </Button>
         </div>
       </section>
