@@ -1,0 +1,21 @@
+# Dependencies
+node_modules
+
+# CMS (not needed for frontend deployment)
+adlai-strapi-cms
+
+# Scripts
+scripts
+
+# Local environment files
+.env.local
+
+# IDE
+.vscode
+.idea
+
+# Logs
+*.log
+
+# Build artifacts
+.next/cache
