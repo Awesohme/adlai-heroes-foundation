@@ -508,10 +508,12 @@ export const supabaseApi = {
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
-      .single()
     
     if (error) throw error
-    return result as Page
+    if (!result || result.length === 0) {
+      throw new Error(`Page with id ${id} not found`)
+    }
+    return result[0] as Page
   },
 
   // Content Sections CRUD
@@ -548,10 +550,12 @@ export const supabaseApi = {
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
-      .single()
     
     if (error) throw error
-    return result as ContentSection
+    if (!result || result.length === 0) {
+      throw new Error(`Content section with id ${id} not found`)
+    }
+    return result[0] as ContentSection
   },
 
   async createContentSection(data: Omit<ContentSection, 'id' | 'created_at' | 'updated_at'>) {
