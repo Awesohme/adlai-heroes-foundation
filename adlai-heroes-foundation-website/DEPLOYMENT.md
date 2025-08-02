@@ -4,7 +4,42 @@
 
 ### Step 1: Deploy Strapi CMS (Free)
 
-**Option A: Render with Built-in PostgreSQL (Recommended - Actually Free)**
+**Option A: Supabase Backend (Recommended - Truly Free Forever)**
+1. Go to [Supabase.com](https://supabase.com) and create account (no card required)
+2. Create new project → PostgreSQL database (500MB free forever)
+3. **Use Supabase as Backend**:
+   - Built-in database with REST API
+   - Real-time subscriptions
+   - Authentication system
+   - File storage
+   - No need for separate Strapi!
+4. **Next.js Integration**:
+   - Install `@supabase/supabase-js`
+   - Connect directly to Supabase API
+   - Use their TypeScript auto-generation
+5. **Content Management**:
+   - Use Supabase Dashboard for content editing
+   - Or build custom admin interface
+
+**Option B: Static Site + Decap CMS (Formerly Netlify CMS)**
+1. **Deploy to Vercel/Netlify**: Static Next.js site (free forever)
+2. **Add Decap CMS**: File-based CMS stored in git
+3. **Content Storage**: Markdown files in your repository
+4. **Admin Interface**: `/admin` route for content editing
+5. **Benefits**: 
+   - Zero hosting costs
+   - Version control for content
+   - Works offline
+   - No database needed
+
+**Option C: PlanetScale + Vercel API Routes (MySQL Alternative)**
+1. Create [PlanetScale](https://planetscale.com) account (no card required)
+2. Create database → get MySQL connection string (1GB free forever)
+3. Use Vercel API Routes for backend logic
+4. Build custom API endpoints in `/api` folder
+5. Connect to PlanetScale from API routes
+
+**Option D: Render (Requires Card Verification)**
 1. Go to [Render.com](https://render.com) and create account
 2. Connect your GitHub account
 3. **Create PostgreSQL Database First**:
@@ -37,22 +72,19 @@
 
 6. **Deploy** - Note the URL (e.g., `https://adlai-strapi.onrender.com`)
 
-**Option B: Vercel + PlanetScale (MySQL)**
-1. Can't directly host Strapi on Vercel (serverless limitation)
-2. Use [PlanetScale](https://planetscale.com) for free MySQL database
-3. Host Strapi on Render with PlanetScale database
+**Option E: Cloudflare Workers + D1 Database**
+1. Create [Cloudflare](https://cloudflare.com) account (no card required)
+2. Use D1 SQLite database (free tier)
+3. Deploy API as Cloudflare Workers (100k requests/day free)
+4. Global edge network for performance
+5. Connect Next.js frontend to Workers API
 
-**Option C: Supabase + Render**
-1. Create free [Supabase](https://supabase.com) PostgreSQL database
-2. Deploy Strapi on Render
-3. Connect to Supabase database URL
-
-**Option D: 100% Free Alternative - Static + Netlify CMS**
-If Strapi proves too resource-heavy for free tiers:
-1. Use [Netlify CMS](https://netlifycms.org) (Git-based CMS)
-2. Deploy on Vercel with Netlify CMS admin
-3. Content stored as markdown files in Git
-4. Zero hosting costs, but less dynamic
+**Option F: GitHub Pages + Static CMS (Ultimate Free)**
+1. Deploy static Next.js to GitHub Pages (unlimited free)
+2. Use Decap CMS or Forestry for content management
+3. Content stored as markdown files in repository
+4. Zero monthly costs, version-controlled content
+5. Perfect for nonprofits with budget constraints
 
 ### Step 2: Deploy Next.js Frontend (Free)
 
