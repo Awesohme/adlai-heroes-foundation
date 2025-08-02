@@ -1,6 +1,6 @@
 # Adlai Heroes Foundation Website
 
-A modern, cost-effective website for the Adlai Heroes Foundation nonprofit organization, built with Next.js 15 and Strapi CMS.
+A modern, cost-effective website for the Adlai Heroes Foundation nonprofit organization, built with Next.js 15 and Supabase backend.
 
 ## 🎯 Project Overview
 
@@ -21,13 +21,15 @@ This project rebuilds the Adlai Heroes Foundation website using modern JAMstack 
 - **Lucide React** for icons
 
 ### CMS & Backend
-- **Strapi v5** (Headless CMS)
-- **PostgreSQL** database (free tier)
-- **Cloudinary** for image optimization (free tier)
+- **Supabase** (Backend-as-a-Service) - PRIMARY
+- **PostgreSQL** database (500MB free forever)
+- **Real-time subscriptions** and **Authentication**
+- **File storage** and **REST API**
+- **Strapi v5** (Legacy backup option)
 
 ### Hosting & Deployment
-- **Vercel** for Next.js frontend (free)
-- **Railway/Render** for Strapi backend (free tier)
+- **Vercel** for Next.js frontend (free forever)
+- **Supabase** for backend services (free tier)
 - **Custom domain** integration
 
 ## 📁 Project Structure
@@ -45,27 +47,35 @@ This project rebuilds the Adlai Heroes Foundation website using modern JAMstack 
 │   └── components/        # Page-specific components
 ├── components/            # Reusable UI components
 ├── lib/                   # Utilities and configurations
+│   └── supabase.ts        # Supabase client and API functions
 ├── types/                 # TypeScript type definitions
 ├── public/                # Static assets
-└── adlai-strapi-cms/      # Strapi CMS setup
+├── scripts/               # Database setup and utilities
+└── adlai-strapi-cms/      # Strapi CMS setup (legacy)
 ```
 
-## 🗃️ Content Types (Strapi)
+## 🗃️ Database Structure (Supabase)
 
-### Core Content Models
-1. **Pages** - Dynamic page content
-2. **Programs** - Foundation programs (Pad Up, Teen Fever, etc.)
-3. **Blog Posts** - News and updates
-4. **Board Members** - Leadership team
-5. **Testimonials** - Community feedback
-6. **Impact Stats** - Metrics and achievements
+### Current Content Tables ✅
+1. **Programs** - Foundation programs (Pad Up Initiative, Teen Fever, Community Outreach)
+2. **Blog Posts** - News and updates with SEO fields
+3. **Board Members** - Leadership team with order management
+4. **Testimonials** - Community feedback with featured status
+5. **Impact Stats** - Metrics and achievements with custom icons
 
-### Content Fields
-- Rich text editors for content
-- Image uploads with optimization
-- SEO meta fields
-- Publish/draft status
-- Scheduling capabilities
+### Database Features
+- **Row Level Security (RLS)** - Public read access for published content
+- **Real-time subscriptions** - Live updates when content changes
+- **TypeScript integration** - Auto-generated types from database schema
+- **REST API** - Automatic API endpoints for all tables
+- **File storage** - Built-in image and media management
+
+### Sample Data Included ✅
+- 3 Sample programs with different categories
+- 4 Impact statistics with real foundation metrics
+- 3 Community testimonials
+- 3 Board member profiles
+- 2 Blog posts with content
 
 ## 🚀 Getting Started
 
@@ -96,36 +106,35 @@ This project rebuilds the Adlai Heroes Foundation website using modern JAMstack 
    npm run dev
    ```
 
-### Strapi CMS Setup
+### Database Setup ✅ COMPLETED
 
-1. **Install Strapi CLI**
-   ```bash
-   npm install -g @strapi/strapi@5.20.0
-   ```
+**Supabase Integration Ready!**
+- ✅ Database tables created
+- ✅ Sample data inserted  
+- ✅ Row Level Security configured
+- ✅ API client configured
 
-2. **Create Strapi project** (if needed)
-   ```bash
-   npx create-strapi-app@latest adlai-strapi-cms --quickstart
-   ```
-
-3. **Configure content types**
-   - Follow the content model setup guide
-   - Import provided content type schemas
+**To recreate database (if needed):**
+1. Run SQL from `scripts/create-tables.sql` in Supabase SQL Editor
+2. Run `SUPABASE_SERVICE_ROLE_KEY=your-key node scripts/insert-remaining-data.js`
 
 ## 🌍 Environment Variables
 
-### Required Variables
+### Current Configuration ✅
 ```env
-# Strapi API Configuration
+# Supabase Configuration (PRIMARY)
+NEXT_PUBLIC_SUPABASE_URL=https://suwgdnjyzdqjyanlpqdd.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Site Configuration
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_NAME=Adlai Heroes Foundation
+
+# Legacy Strapi (Backup)
 STRAPI_API_URL=http://localhost:1337
 STRAPI_API_TOKEN=your-api-token-here
 NEXT_PUBLIC_STRAPI_API_URL=http://localhost:1337
-
-# Image Optimization
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloudinary-name
-
-# Site Configuration
-NEXT_PUBLIC_SITE_URL=https://your-domain.com
 ```
 
 ## 📊 Performance & SEO
