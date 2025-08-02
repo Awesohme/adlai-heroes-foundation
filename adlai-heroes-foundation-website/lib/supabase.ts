@@ -2,12 +2,19 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
+// Public client for read operations
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Admin client for write operations (server-side only)
+export const supabaseAdmin = typeof window === 'undefined' && supabaseServiceKey 
+  ? createClient(supabaseUrl, supabaseServiceKey)
+  : supabase
 
 // Database types
 export interface Program {
@@ -289,7 +296,7 @@ export const supabaseApi = {
 
   // CRUD operations for all entities
   async createProgram(data: Omit<Program, 'id' | 'created_at' | 'updated_at'>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('programs')
       .insert([data])
       .select()
@@ -300,7 +307,7 @@ export const supabaseApi = {
   },
 
   async updateProgram(id: number, data: Partial<Omit<Program, 'id' | 'created_at' | 'updated_at'>>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('programs')
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -314,7 +321,7 @@ export const supabaseApi = {
   },
 
   async deleteProgram(id: number) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('programs')
       .delete()
       .eq('id', id)
@@ -324,7 +331,7 @@ export const supabaseApi = {
   },
 
   async createBlogPost(data: Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('blog_posts')
       .insert([data])
       .select()
@@ -335,7 +342,7 @@ export const supabaseApi = {
   },
 
   async updateBlogPost(id: number, data: Partial<Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('blog_posts')
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -349,7 +356,7 @@ export const supabaseApi = {
   },
 
   async deleteBlogPost(id: number) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('blog_posts')
       .delete()
       .eq('id', id)
@@ -359,7 +366,7 @@ export const supabaseApi = {
   },
 
   async createTestimonial(data: Omit<Testimonial, 'id' | 'created_at'>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('testimonials')
       .insert([data])
       .select()
@@ -370,7 +377,7 @@ export const supabaseApi = {
   },
 
   async updateTestimonial(id: number, data: Partial<Omit<Testimonial, 'id' | 'created_at'>>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('testimonials')
       .update(data)
       .eq('id', id)
@@ -384,7 +391,7 @@ export const supabaseApi = {
   },
 
   async deleteTestimonial(id: number) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('testimonials')
       .delete()
       .eq('id', id)
@@ -394,7 +401,7 @@ export const supabaseApi = {
   },
 
   async createImpactStat(data: Omit<ImpactStat, 'id' | 'created_at'>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('impact_stats')
       .insert([data])
       .select()
@@ -405,7 +412,7 @@ export const supabaseApi = {
   },
 
   async updateImpactStat(id: number, data: Partial<Omit<ImpactStat, 'id' | 'created_at'>>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('impact_stats')
       .update(data)
       .eq('id', id)
@@ -419,7 +426,7 @@ export const supabaseApi = {
   },
 
   async deleteImpactStat(id: number) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('impact_stats')
       .delete()
       .eq('id', id)
@@ -429,7 +436,7 @@ export const supabaseApi = {
   },
 
   async createBoardMember(data: Omit<BoardMember, 'id' | 'created_at'>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('board_members')
       .insert([data])
       .select()
@@ -440,7 +447,7 @@ export const supabaseApi = {
   },
 
   async updateBoardMember(id: number, data: Partial<Omit<BoardMember, 'id' | 'created_at'>>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('board_members')
       .update(data)
       .eq('id', id)
@@ -454,7 +461,7 @@ export const supabaseApi = {
   },
 
   async deleteBoardMember(id: number) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('board_members')
       .delete()
       .eq('id', id)
@@ -503,7 +510,7 @@ export const supabaseApi = {
   },
 
   async updatePage(id: number, data: Partial<Omit<Page, 'id' | 'created_at' | 'updated_at'>>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('pages')
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -545,7 +552,7 @@ export const supabaseApi = {
   },
 
   async updateContentSection(id: number, data: Partial<Omit<ContentSection, 'id' | 'created_at' | 'updated_at'>>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('content_sections')
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -559,7 +566,7 @@ export const supabaseApi = {
   },
 
   async createContentSection(data: Omit<ContentSection, 'id' | 'created_at' | 'updated_at'>) {
-    const { data: result, error } = await supabase
+    const { data: result, error } = await supabaseAdmin
       .from('content_sections')
       .insert([data])
       .select()
@@ -570,7 +577,7 @@ export const supabaseApi = {
   },
 
   async deleteContentSection(id: number) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('content_sections')
       .delete()
       .eq('id', id)
