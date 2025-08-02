@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { PlusIcon, EditIcon, TrashIcon, UsersIcon, BookOpenIcon, MessageSquareIcon, BarChartIcon, SettingsIcon, GlobeIcon } from "lucide-react"
 import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page } from "@/lib/supabase"
+import { toast } from "sonner"
 import ProgramForm from "./components/program-form"
 import TestimonialForm from "./components/testimonial-form"
 import ImpactStatForm from "./components/impact-stat-form"
@@ -124,30 +125,59 @@ export default function AdminDashboard() {
 
   const handleDelete = async (id: number, type: string) => {
     try {
+      toast.loading(`Deleting ${type}...`)
+      
       switch (type) {
         case 'program':
           await supabaseApi.deleteProgram(id)
+          toast.success('Program Deleted Successfully!', {
+            description: 'The program has been permanently removed.',
+            duration: 3000
+          })
           break
         case 'testimonial':
           await supabaseApi.deleteTestimonial(id)
+          toast.success('Testimonial Deleted Successfully!', {
+            description: 'The testimonial has been permanently removed.',
+            duration: 3000
+          })
           break
         case 'stat':
           await supabaseApi.deleteImpactStat(id)
+          toast.success('Impact Statistic Deleted Successfully!', {
+            description: 'The statistic has been permanently removed.',
+            duration: 3000
+          })
           break
         case 'blog':
           await supabaseApi.deleteBlogPost(id)
+          toast.success('Blog Post Deleted Successfully!', {
+            description: 'The blog post has been permanently removed.',
+            duration: 3000
+          })
           break
         case 'board':
           await supabaseApi.deleteBoardMember(id)
+          toast.success('Board Member Deleted Successfully!', {
+            description: 'The board member has been permanently removed.',
+            duration: 3000
+          })
           break
         case 'section':
           await supabaseApi.deleteContentSection(id)
+          toast.success('Content Section Deleted Successfully!', {
+            description: 'The content section has been permanently removed.',
+            duration: 3000
+          })
           break
       }
       loadAllData()
     } catch (error) {
       console.error('Error deleting item:', error)
-      alert('Error deleting item. Please try again.')
+      toast.error(`Failed to Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`, {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.',
+        duration: 6000
+      })
     }
   }
 

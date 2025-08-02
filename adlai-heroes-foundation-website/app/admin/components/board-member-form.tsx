@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { supabaseApi, type BoardMember } from "@/lib/supabase"
+import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 
 interface BoardMemberFormProps {
@@ -30,15 +31,29 @@ export default function BoardMemberForm({ member, onSave, onCancel }: BoardMembe
     setLoading(true)
 
     try {
+      const action = member ? 'updating' : 'creating'
+      toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} board member...`)
+      
       if (member) {
         await supabaseApi.updateBoardMember(member.id, formData)
+        toast.success('Board Member Updated Successfully!', {
+          description: `${formData.name} (${formData.position}) has been updated`,
+          duration: 4000
+        })
       } else {
         await supabaseApi.createBoardMember(formData)
+        toast.success('Board Member Added Successfully!', {
+          description: `${formData.name} (${formData.position}) has been added to the team`,
+          duration: 4000
+        })
       }
       onSave()
     } catch (error) {
       console.error('Error saving board member:', error)
-      alert('Error saving board member. Please try again.')
+      toast.error('Failed to Save Board Member', {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.',
+        duration: 6000
+      })
     } finally {
       setLoading(false)
     }

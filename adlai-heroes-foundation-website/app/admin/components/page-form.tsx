@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabaseApi, type Page } from "@/lib/supabase"
+import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 
 interface PageFormProps {
@@ -37,11 +38,20 @@ export default function PageForm({ page, onSave, onCancel }: PageFormProps) {
     setLoading(true)
 
     try {
+      toast.loading('Updating page...')
+      
       await supabaseApi.updatePage(page.id, formData)
+      toast.success('Page Updated Successfully!', {
+        description: `"${formData.title}" page has been updated with new content`,
+        duration: 4000
+      })
       onSave()
     } catch (error) {
       console.error('Error saving page:', error)
-      alert('Error saving page. Please try again.')
+      toast.error('Failed to Update Page', {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.',
+        duration: 6000
+      })
     } finally {
       setLoading(false)
     }

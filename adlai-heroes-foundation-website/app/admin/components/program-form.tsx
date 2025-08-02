@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabaseApi, type Program } from "@/lib/supabase"
+import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 
 interface ProgramFormProps {
@@ -57,15 +58,29 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
     setLoading(true)
 
     try {
+      const action = program ? 'updating' : 'creating'
+      toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} program...`)
+      
       if (program) {
         await supabaseApi.updateProgram(program.id, formData)
+        toast.success('Program Updated Successfully!', {
+          description: `"${formData.title}" has been updated in the ${formData.category} category`,
+          duration: 4000
+        })
       } else {
         await supabaseApi.createProgram(formData)
+        toast.success('Program Created Successfully!', {
+          description: `"${formData.title}" has been added to the ${formData.category} category`,
+          duration: 4000
+        })
       }
       onSave()
     } catch (error) {
       console.error('Error saving program:', error)
-      alert('Error saving program. Please try again.')
+      toast.error('Failed to Save Program', {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.',
+        duration: 6000
+      })
     } finally {
       setLoading(false)
     }
