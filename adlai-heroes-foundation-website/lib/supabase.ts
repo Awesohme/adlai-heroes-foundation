@@ -305,10 +305,12 @@ export const supabaseApi = {
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
-      .single()
     
     if (error) throw error
-    return result as Program
+    if (!result || result.length === 0) {
+      throw new Error(`Program with id ${id} not found`)
+    }
+    return result[0] as Program
   },
 
   async deleteProgram(id: number) {
@@ -338,10 +340,12 @@ export const supabaseApi = {
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
-      .single()
     
     if (error) throw error
-    return result as BlogPost
+    if (!result || result.length === 0) {
+      throw new Error(`Blog post with id ${id} not found`)
+    }
+    return result[0] as BlogPost
   },
 
   async deleteBlogPost(id: number) {
@@ -371,10 +375,12 @@ export const supabaseApi = {
       .update(data)
       .eq('id', id)
       .select()
-      .single()
     
     if (error) throw error
-    return result as Testimonial
+    if (!result || result.length === 0) {
+      throw new Error(`Testimonial with id ${id} not found`)
+    }
+    return result[0] as Testimonial
   },
 
   async deleteTestimonial(id: number) {
@@ -404,10 +410,12 @@ export const supabaseApi = {
       .update(data)
       .eq('id', id)
       .select()
-      .single()
     
     if (error) throw error
-    return result as ImpactStat
+    if (!result || result.length === 0) {
+      throw new Error(`Impact stat with id ${id} not found`)
+    }
+    return result[0] as ImpactStat
   },
 
   async deleteImpactStat(id: number) {
@@ -437,10 +445,12 @@ export const supabaseApi = {
       .update(data)
       .eq('id', id)
       .select()
-      .single()
     
     if (error) throw error
-    return result as BoardMember
+    if (!result || result.length === 0) {
+      throw new Error(`Board member with id ${id} not found`)
+    }
+    return result[0] as BoardMember
   },
 
   async deleteBoardMember(id: number) {
