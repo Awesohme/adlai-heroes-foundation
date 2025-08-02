@@ -38,15 +38,48 @@ export default function AdminDashboard() {
   async function loadAllData() {
     try {
       setIsLoading(true)
+      console.log('🔍 Loading admin data...')
+      
       const [programsData, statsData, testimonialsData, blogData, boardData, sectionsData, pagesData] = await Promise.all([
-        supabaseApi.getPrograms(false), // Include unpublished
-        supabaseApi.getImpactStats(),
-        supabaseApi.getTestimonials(),
-        supabaseApi.getBlogPosts(false), // Include unpublished
-        supabaseApi.getBoardMembers(),
-        supabaseApi.getContentSections(),
-        supabaseApi.getPages(false)
+        supabaseApi.getPrograms(false).catch(err => {
+          console.error('❌ Programs error:', err)
+          return []
+        }),
+        supabaseApi.getImpactStats().catch(err => {
+          console.error('❌ Impact Stats error:', err)
+          return []
+        }),
+        supabaseApi.getTestimonials().catch(err => {
+          console.error('❌ Testimonials error:', err)
+          return []
+        }),
+        supabaseApi.getBlogPosts(false).catch(err => {
+          console.error('❌ Blog Posts error:', err)
+          return []
+        }),
+        supabaseApi.getBoardMembers().catch(err => {
+          console.error('❌ Board Members error:', err)
+          return []
+        }),
+        supabaseApi.getContentSections().catch(err => {
+          console.error('❌ Content Sections error:', err)
+          return []
+        }),
+        supabaseApi.getPages(false).catch(err => {
+          console.error('❌ Pages error:', err)
+          return []
+        })
       ])
+
+      console.log('📊 Data loaded:', {
+        programs: programsData.length,
+        stats: statsData.length,
+        testimonials: testimonialsData.length,
+        blogPosts: blogData.length,
+        boardMembers: boardData.length,
+        contentSections: sectionsData.length,
+        pages: pagesData.length
+      })
 
       setPrograms(programsData)
       setStats(statsData)
@@ -56,7 +89,9 @@ export default function AdminDashboard() {
       setContentSections(sectionsData)
       setPages(pagesData)
     } catch (error) {
-      console.error('Error loading data:', error)
+      console.error('💥 Critical error loading admin data:', error)
+      // Show a user-friendly message
+      alert(`Admin data loading failed: ${error}. Check console for details.`)
     } finally {
       setIsLoading(false)
     }
