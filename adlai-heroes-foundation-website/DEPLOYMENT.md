@@ -4,24 +4,38 @@
 
 ### Step 1: Deploy Strapi CMS (Free)
 
-**Option A: Render (Recommended - Actually Free)**
-1. Go to [Render.com](https://render.com)
-2. Connect GitHub repository
-3. Create new Web Service
-4. Select the `adlai-strapi-cms` folder
-5. Set build command: `npm install && npm run build`
-6. Set start command: `npm start`
-7. Add environment variables:
+**Option A: Render with Built-in PostgreSQL (Recommended - Actually Free)**
+1. Go to [Render.com](https://render.com) and create account
+2. Connect your GitHub account
+3. **Create PostgreSQL Database First**:
+   - Click "New" → "PostgreSQL"
+   - Database Name: `adlai-strapi-db`
+   - User: `strapi_user` 
+   - Plan: **Free** ($0/month)
+   - Click "Create Database"
+   - **Copy the Internal Database URL** (starts with `postgresql://`)
+
+4. **Create Strapi Web Service**:
+   - Click "New" → "Web Service"
+   - Connect Repository: `Awesohme/adlai-heroes-foundation`
+   - **Important**: Set Root Directory to `.` (not a subfolder)
+   - Build Command: `cd adlai-strapi-cms && npm install && npm run build`
+   - Start Command: `cd adlai-strapi-cms && npm start`
+   - Plan: **Free** ($0/month)
+
+5. **Environment Variables** (click Advanced → Add Environment Variable):
    ```
-   DATABASE_URL=postgresql://...  (Use free PostgreSQL from Render)
-   JWT_SECRET=your-random-string-here
-   API_TOKEN_SALT=your-random-string-here
-   ADMIN_JWT_SECRET=your-random-string-here
+   DATABASE_URL=<paste-internal-database-url-from-step-3>
+   JWT_SECRET=your-super-secret-jwt-key-32-chars-min
+   API_TOKEN_SALT=your-api-token-salt-32-chars-min
+   ADMIN_JWT_SECRET=your-admin-jwt-secret-32-chars-min
    APP_KEYS=key1,key2,key3,key4
    NODE_ENV=production
+   HOST=0.0.0.0
+   PORT=10000
    ```
-8. Create free PostgreSQL database on Render
-9. Deploy and note the URL (e.g., `https://your-app.onrender.com`)
+
+6. **Deploy** - Note the URL (e.g., `https://adlai-strapi.onrender.com`)
 
 **Option B: Vercel + PlanetScale (MySQL)**
 1. Can't directly host Strapi on Vercel (serverless limitation)
