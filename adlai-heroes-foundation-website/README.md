@@ -187,6 +187,28 @@ STRAPI_API_TOKEN=your-api-token-here
 NEXT_PUBLIC_STRAPI_API_URL=http://localhost:1337
 ```
 
+## 🎨 Brand Colors Integration
+
+### Brand Palette
+- **adlaiBlue**: #20B2F6 - Used for mission, health programs, and primary elements
+- **adlaiGreen**: #BFD836 - Used for empowerment programs and volunteer CTAs
+- **adlaiPink**: #E92A8F - Used for vision, community programs, and donate buttons
+- **adlaiOrange**: #F69731 - Used for education programs and accent elements
+
+### Color Implementation
+- **Impact Stats**: Cycling brand colors with subtle backgrounds and accent borders
+- **Program Categories**: Color-coded by type with consistent mapping across all pages
+- **Mission & Vision**: Gradient backgrounds with brand color themes
+- **Buttons**: Contextual brand colors (donate=pink, volunteer=green, learn more=blue)
+- **Footer**: Brand gradient from blue through pink to orange
+- **Hero Slider**: Primary button (pink) and secondary button (blue) styling
+
+### Design System
+- Consistent color usage across all components
+- Accessibility-compliant contrast ratios
+- Hover effects and transitions with brand colors
+- Category-based color mapping for programs and content
+
 ## 📊 Performance & SEO
 
 ### Current Metrics
@@ -323,5 +345,5 @@ This project is proprietary to Adlai Heroes Foundation.
 ---
 
 **Last Updated**: August 3, 2025
-**Version**: 2.3.0
-**Status**: Production Ready - Complete CMS with Team Management & Enhanced UI
+**Version**: 2.4.0
+**Status**: Production Ready - Complete CMS with Brand Color Integration & Enhanced UI
