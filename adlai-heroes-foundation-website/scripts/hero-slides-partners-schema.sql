@@ -29,34 +29,29 @@ CREATE TABLE IF NOT EXISTS partners (
 CREATE INDEX IF NOT EXISTS idx_hero_slides_active_order ON hero_slides(active, order_index);
 CREATE INDEX IF NOT EXISTS idx_partners_active_order ON partners(active, order_index);
 
--- Insert default hero slide
-INSERT INTO hero_slides (title, subtitle, image_url, button_text, button_link, order_index, active) VALUES
-('Empowering Futures, One Child at a Time', 'The Adlai Heroes Foundation is dedicated to supporting underprivileged children through education, healthcare, and community development.', 'https://res.cloudinary.com/dcvuzffgj/image/upload/v1754226708/Adlai_heroes_nq7ugl.jpg', 'Donate Now', '/donate', 1, true);
+-- Insert default hero slide with dual buttons
+INSERT INTO hero_slides (title, subtitle, image_url, button_text, button_link, button_text_2, button_link_2, order_index, active) VALUES
+('Empowering Futures, One Child at a Time', 'The Adlai Heroes Foundation is dedicated to supporting underprivileged children through education, healthcare, and community development.', 'https://res.cloudinary.com/dcvuzffgj/image/upload/v1754226708/Adlai_heroes_nq7ugl.jpg', 'Donate Now', '/donate', 'Learn More', '/about', 1, true);
 
 -- Enable Row Level Security
 ALTER TABLE hero_slides ENABLE ROW LEVEL SECURITY;
 ALTER TABLE partners ENABLE ROW LEVEL SECURITY;
 
--- Create policies for public read access (only if they don't exist)
-DO $$ 
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public can view active hero slides' AND tablename = 'hero_slides') THEN
-        CREATE POLICY "Public can view active hero slides" ON hero_slides
-          FOR SELECT USING (active = true);
-    END IF;
-    
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public can view active partners' AND tablename = 'partners') THEN
-        CREATE POLICY "Public can view active partners" ON partners
-          FOR SELECT USING (active = true);
-    END IF;
-    
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service role can manage hero slides' AND tablename = 'hero_slides') THEN
-        CREATE POLICY "Service role can manage hero slides" ON hero_slides
-          FOR ALL USING (auth.role() = 'service_role');
-    END IF;
-    
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service role can manage partners' AND tablename = 'partners') THEN
-        CREATE POLICY "Service role can manage partners" ON partners
-          FOR ALL USING (auth.role() = 'service_role');
-    END IF;
-END $$;
+-- Create policies for public read access (drop and recreate to avoid conflicts)
+DROP POLICY IF EXISTS "Public can view active hero slides" ON hero_slides;
+DROP POLICY IF EXISTS "Public can view active partners" ON partners;
+DROP POLICY IF EXISTS "Service role can manage hero slides" ON hero_slides;
+DROP POLICY IF EXISTS "Service role can manage partners" ON partners;
+
+-- Create new policies
+CREATE POLICY "Public can view active hero slides" ON hero_slides
+  FOR SELECT USING (active = true);
+
+CREATE POLICY "Public can view active partners" ON partners
+  FOR SELECT USING (active = true);
+
+CREATE POLICY "Service role can manage hero slides" ON hero_slides
+  FOR ALL USING (auth.role() = 'service_role');
+
+CREATE POLICY "Service role can manage partners" ON partners
+  FOR ALL USING (auth.role() = 'service_role');

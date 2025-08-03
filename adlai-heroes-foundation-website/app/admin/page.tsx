@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { PlusIcon, EditIcon, TrashIcon, UsersIcon, BookOpenIcon, MessageSquareIcon, BarChartIcon, SettingsIcon, GlobeIcon } from "lucide-react"
-import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page, type HeroSlide, type Partner } from "@/lib/supabase"
+import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page, type HeroSlide, type Partner, type ImpactTimeline } from "@/lib/supabase"
 import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ProgramForm from "./components/program-form"
@@ -20,6 +20,7 @@ import ContentSectionForm from "./components/content-section-form"
 import PageForm from "./components/page-form"
 import HeroSlideForm from "./components/hero-slide-form"
 import PartnerForm from "./components/partner-form"
+import { ImpactTimelineForm } from "./components/impact-timeline-form"
 import AdminTabs from "./components/admin-tabs"
 
 export default function AdminDashboard() {
@@ -32,6 +33,7 @@ export default function AdminDashboard() {
   const [pages, setPages] = useState<Page[]>([])
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([])
   const [partners, setPartners] = useState<Partner[]>([])
+  const [timeline, setTimeline] = useState<ImpactTimeline[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [editingItem, setEditingItem] = useState<any>(null)
   const [editingType, setEditingType] = useState<string>('')
@@ -46,7 +48,7 @@ export default function AdminDashboard() {
       setIsLoading(true)
       console.log('🔍 Loading admin data...')
       
-      const [programsData, statsData, testimonialsData, blogData, boardData, sectionsData, pagesData, heroSlidesData, partnersData] = await Promise.all([
+      const [programsData, statsData, testimonialsData, blogData, boardData, sectionsData, pagesData, heroSlidesData, partnersData, timelineData] = await Promise.all([
         supabaseApi.getPrograms(false).catch(err => {
           console.error('❌ Programs error:', err)
           return []
@@ -82,6 +84,10 @@ export default function AdminDashboard() {
         supabaseApi.getPartners().catch(err => {
           console.error('❌ Partners error:', err)
           return []
+        }),
+        supabaseApi.getImpactTimeline().catch(err => {
+          console.error('❌ Impact Timeline error:', err)
+          return []
         })
       ])
 
@@ -94,7 +100,8 @@ export default function AdminDashboard() {
         contentSections: sectionsData.length,
         pages: pagesData.length,
         heroSlides: heroSlidesData.length,
-        partners: partnersData.length
+        partners: partnersData.length,
+        timeline: timelineData.length
       })
 
       setPrograms(programsData)
@@ -106,6 +113,7 @@ export default function AdminDashboard() {
       setPages(pagesData)
       setHeroSlides(heroSlidesData)
       setPartners(partnersData)
+      setTimeline(timelineData)
     } catch (error) {
       console.error('💥 Critical error loading admin data:', error)
       // Show a user-friendly message
@@ -201,6 +209,13 @@ export default function AdminDashboard() {
             duration: 3000
           })
           break
+        case 'timeline':
+          await supabaseApi.deleteImpactTimeline(id)
+          toast.success('Timeline Item Deleted Successfully!', {
+            description: 'The timeline item has been permanently removed.',
+            duration: 3000
+          })
+          break
       }
       loadAllData()
     } catch (error) {
@@ -232,6 +247,20 @@ export default function AdminDashboard() {
         return <HeroSlideForm slide={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'partner':
         return <PartnerForm partner={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'timeline':
+        return <ImpactTimelineForm timeline={editingItem} onSubmit={async (data) => {
+          try {
+            if (editingItem) {
+              await supabaseApi.updateImpactTimeline(editingItem.id, data)
+            } else {
+              await supabaseApi.createImpactTimeline(data)
+            }
+            handleSave()
+          } catch (error) {
+            console.error('Timeline submission error:', error)
+            throw error
+          }
+        }} onCancel={handleCancel} />
       default:
         return null
     }
@@ -335,6 +364,7 @@ export default function AdminDashboard() {
           pages={pages}
           heroSlides={heroSlides}
           partners={partners}
+          timeline={timeline}
           onEdit={handleEdit}
           onAdd={handleAdd}
           onDelete={handleDelete}

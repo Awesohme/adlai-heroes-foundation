@@ -192,6 +192,17 @@ export interface TeamMember {
   updated_at: string
 }
 
+export interface ImpactTimeline {
+  id: number
+  year: number
+  title: string
+  description: string
+  order_index: number
+  active: boolean
+  created_at: string
+  updated_at: string
+}
+
 // Helper functions for data fetching
 export const supabaseApi = {
   // Programs
@@ -824,6 +835,53 @@ export const supabaseApi = {
   async deleteTeamMember(id: number) {
     const { error } = await supabaseAdmin
       .from('team_members')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+    return true
+  },
+
+  // Impact Timeline CRUD
+  async getImpactTimeline() {
+    const { data, error } = await supabase
+      .from('impact_timeline')
+      .select('*')
+      .eq('active', true)
+      .order('year', { ascending: true })
+    
+    if (error) throw error
+    return data as ImpactTimeline[]
+  },
+
+  async createImpactTimeline(data: Omit<ImpactTimeline, 'id' | 'created_at' | 'updated_at'>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('impact_timeline')
+      .insert([{ ...data, updated_at: new Date().toISOString() }])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return result as ImpactTimeline
+  },
+
+  async updateImpactTimeline(id: number, data: Partial<Omit<ImpactTimeline, 'id' | 'created_at' | 'updated_at'>>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('impact_timeline')
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+    
+    if (error) throw error
+    if (!result || result.length === 0) {
+      throw new Error(`Impact timeline item with id ${id} not found`)
+    }
+    return result[0] as ImpactTimeline
+  },
+
+  async deleteImpactTimeline(id: number) {
+    const { error } = await supabaseAdmin
+      .from('impact_timeline')
       .delete()
       .eq('id', id)
     

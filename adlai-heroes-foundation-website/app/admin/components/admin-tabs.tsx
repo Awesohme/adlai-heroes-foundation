@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { PlusIcon, EditIcon, TrashIcon, GlobeIcon, SettingsIcon } from "lucide-react"
-import { type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page, type HeroSlide, type Partner } from "@/lib/supabase"
+import { type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page, type HeroSlide, type Partner, type ImpactTimeline } from "@/lib/supabase"
 
 interface AdminTabsProps {
   programs: Program[]
@@ -18,6 +18,7 @@ interface AdminTabsProps {
   pages: Page[]
   heroSlides: HeroSlide[]
   partners: Partner[]
+  timeline: ImpactTimeline[]
   onEdit: (item: any, type: string) => void
   onAdd: (type: string) => void
   onDelete: (id: number, type: string) => void
@@ -33,16 +34,18 @@ export default function AdminTabs({
   pages,
   heroSlides,
   partners,
+  timeline,
   onEdit,
   onAdd,
   onDelete
 }: AdminTabsProps) {
   return (
     <Tabs defaultValue="programs" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-9">
+      <TabsList className="grid w-full grid-cols-10">
         <TabsTrigger value="hero-slides">Hero Slides</TabsTrigger>
         <TabsTrigger value="programs">Programs</TabsTrigger>
         <TabsTrigger value="stats">Impact Stats</TabsTrigger>
+        <TabsTrigger value="timeline">Timeline</TabsTrigger>
         <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
         <TabsTrigger value="blog">Blog Posts</TabsTrigger>
         <TabsTrigger value="board">Board Members</TabsTrigger>
@@ -231,6 +234,70 @@ export default function AdminTabs({
                   <p className="text-xs text-gray-500 mt-2">Order: {stat.order_index}</p>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Impact Timeline Tab */}
+      <TabsContent value="timeline">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Impact Timeline</CardTitle>
+            <Button onClick={() => onAdd('timeline')}>
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add Timeline Item
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {timeline.map((item) => (
+                <div key={item.id} className="flex items-start justify-between p-4 border rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl font-bold text-adlaiBlue">{item.year}</span>
+                      <h3 className="font-semibold">{item.title}</h3>
+                      {!item.active && <Badge variant="secondary">Inactive</Badge>}
+                    </div>
+                    <p className="text-gray-600 mb-2">{item.description}</p>
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <span>Order: {item.order_index}</span>
+                      <span>Created: {new Date(item.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => onEdit(item, 'timeline')}>
+                      <EditIcon className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="text-red-600">
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Timeline Item</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{item.title}" from {item.year}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => onDelete(item.id, 'timeline')}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              ))}
+              {timeline.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No timeline items found. Create your first timeline item to get started.
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
