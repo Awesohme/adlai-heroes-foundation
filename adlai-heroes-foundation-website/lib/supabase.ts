@@ -160,6 +160,8 @@ export interface HeroSlide {
   image_url: string
   button_text?: string
   button_link?: string
+  button_text_2?: string
+  button_link_2?: string
   order_index: number
   active: boolean
   created_at: string
@@ -174,6 +176,20 @@ export interface Partner {
   order_index: number
   active: boolean
   created_at: string
+}
+
+export interface TeamMember {
+  id: number
+  name: string
+  position: string
+  bio: string
+  image_url?: string
+  email?: string
+  linkedin_url?: string
+  order_index: number
+  active: boolean
+  created_at: string
+  updated_at: string
 }
 
 // Helper functions for data fetching
@@ -761,6 +777,53 @@ export const supabaseApi = {
   async deletePartner(id: number) {
     const { error } = await supabaseAdmin
       .from('partners')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+    return true
+  },
+
+  // Team Members
+  async getTeamMembers() {
+    const { data, error } = await supabase
+      .from('team_members')
+      .select('*')
+      .eq('active', true)
+      .order('order_index', { ascending: true })
+    
+    if (error) throw error
+    return data as TeamMember[]
+  },
+
+  async createTeamMember(data: Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('team_members')
+      .insert([{ ...data, updated_at: new Date().toISOString() }])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return result as TeamMember
+  },
+
+  async updateTeamMember(id: number, data: Partial<Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('team_members')
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+    
+    if (error) throw error
+    if (!result || result.length === 0) {
+      throw new Error(`Team member with id ${id} not found`)
+    }
+    return result[0] as TeamMember
+  },
+
+  async deleteTeamMember(id: number) {
+    const { error } = await supabaseAdmin
+      .from('team_members')
       .delete()
       .eq('id', id)
     

@@ -32,6 +32,10 @@ export default function ImageUpload({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (file: File) => {
+    // Temporarily disable file upload until Supabase Storage is configured
+    alert('File upload is temporarily disabled. Please use image URL input instead.')
+    return
+    
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file')
       return

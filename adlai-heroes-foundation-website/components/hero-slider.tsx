@@ -64,7 +64,7 @@ export function HeroSlider({ slides, autoplayInterval = 6000, height = "h-[600px
             {currentSlide.subtitle}
           </p>
         )}
-        {currentSlide.button_text && currentSlide.button_link && (
+        {(currentSlide.button_text && currentSlide.button_link) && (
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               asChild
@@ -74,6 +74,17 @@ export function HeroSlider({ slides, autoplayInterval = 6000, height = "h-[600px
                 {currentSlide.button_text}
               </Link>
             </Button>
+            {currentSlide.button_text_2 && currentSlide.button_link_2 && (
+              <Button
+                asChild
+                variant="outline"
+                className="bg-white/20 text-white border-white hover:bg-white hover:text-gray-900 px-8 py-3 text-lg shadow-lg backdrop-blur-sm"
+              >
+                <Link href={currentSlide.button_link_2}>
+                  {currentSlide.button_text_2}
+                </Link>
+              </Button>
+            )}
           </div>
         )}
       </div>

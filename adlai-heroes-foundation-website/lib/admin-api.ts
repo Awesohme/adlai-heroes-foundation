@@ -1,5 +1,5 @@
 // Admin API client for secure server-side operations
-import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner } from './supabase'
+import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner, TeamMember } from './supabase'
 
 class AdminApiClient {
   private async request<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -191,6 +191,27 @@ class AdminApiClient {
 
   async deletePartner(id: number): Promise<{ success: boolean }> {
     return this.request<{ success: boolean }>(`/api/admin/partners/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  // Team Members
+  async updateTeamMember(id: number, data: Partial<Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>>): Promise<TeamMember> {
+    return this.request<TeamMember>(`/api/admin/team-members/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async createTeamMember(data: Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>): Promise<TeamMember> {
+    return this.request<TeamMember>('/api/admin/team-members', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteTeamMember(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/team-members/${id}`, {
       method: 'DELETE',
     })
   }

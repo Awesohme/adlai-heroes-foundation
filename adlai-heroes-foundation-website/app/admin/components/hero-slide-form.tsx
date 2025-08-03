@@ -26,6 +26,8 @@ export default function HeroSlideForm({ slide, onSave, onCancel }: HeroSlideForm
     image_url: slide?.image_url || '',
     button_text: slide?.button_text || '',
     button_link: slide?.button_link || '',
+    button_text_2: slide?.button_text_2 || '',
+    button_link_2: slide?.button_link_2 || '',
     order_index: slide?.order_index || 0,
     active: slide?.active ?? true
   })
@@ -101,25 +103,55 @@ export default function HeroSlideForm({ slide, onSave, onCancel }: HeroSlideForm
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="button_text">Button Text</Label>
-              <Input
-                id="button_text"
-                value={formData.button_text}
-                onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
-                placeholder="e.g., Donate Now"
-              />
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Call-to-Action Buttons (1-2 buttons)</h3>
+            
+            {/* First Button (Required) */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="button_text">Button 1 Text *</Label>
+                <Input
+                  id="button_text"
+                  value={formData.button_text}
+                  onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
+                  placeholder="e.g., Donate Now"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="button_link">Button 1 Link *</Label>
+                <Input
+                  id="button_link"
+                  value={formData.button_link}
+                  onChange={(e) => setFormData(prev => ({ ...prev, button_link: e.target.value }))}
+                  placeholder="e.g., /donate"
+                  required
+                />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="button_link">Button Link</Label>
-              <Input
-                id="button_link"
-                value={formData.button_link}
-                onChange={(e) => setFormData(prev => ({ ...prev, button_link: e.target.value }))}
-                placeholder="e.g., /donate"
-              />
+            {/* Second Button (Optional) */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="button_text_2">Button 2 Text (Optional)</Label>
+                <Input
+                  id="button_text_2"
+                  value={formData.button_text_2}
+                  onChange={(e) => setFormData(prev => ({ ...prev, button_text_2: e.target.value }))}
+                  placeholder="e.g., Learn More"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="button_link_2">Button 2 Link (Optional)</Label>
+                <Input
+                  id="button_link_2"
+                  value={formData.button_link_2}
+                  onChange={(e) => setFormData(prev => ({ ...prev, button_link_2: e.target.value }))}
+                  placeholder="e.g., /about"
+                />
+              </div>
             </div>
           </div>
 

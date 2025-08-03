@@ -20,6 +20,8 @@ const fallbackHeroSlides: HeroSlide[] = [
     image_url: "https://res.cloudinary.com/dcvuzffgj/image/upload/v1754226708/Adlai_heroes_nq7ugl.jpg",
     button_text: "Donate Now",
     button_link: "/donate",
+    button_text_2: "Learn More",
+    button_link_2: "/about",
     order_index: 1,
     active: true,
     created_at: new Date().toISOString(),
@@ -111,12 +113,34 @@ const fallbackTestimonials = [
   },
 ]
 
+// Fallback partners data for testing
+const fallbackPartners: Partner[] = [
+  {
+    id: 1,
+    name: "Sample Partner 1",
+    logo_url: "https://via.placeholder.com/200x100/1f2937/ffffff?text=Partner+1",
+    website_url: "https://example.com",
+    order_index: 1,
+    active: true,
+    created_at: new Date().toISOString()
+  },
+  {
+    id: 2,
+    name: "Sample Partner 2", 
+    logo_url: "https://via.placeholder.com/200x100/3b82f6/ffffff?text=Partner+2",
+    website_url: "https://example.com",
+    order_index: 2,
+    active: true,
+    created_at: new Date().toISOString()
+  }
+]
+
 export default function DynamicHomepage() {
   const [stats, setStats] = useState<ImpactStat[]>(fallbackStats)
   const [programs, setPrograms] = useState<Program[]>(fallbackPrograms)
   const [testimonials, setTestimonials] = useState(fallbackTestimonials)
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(fallbackHeroSlides)
-  const [partners, setPartners] = useState<Partner[]>([])
+  const [partners, setPartners] = useState<Partner[]>(fallbackPartners)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -196,17 +220,10 @@ export default function DynamicHomepage() {
                 <CardTitle className="text-3xl font-bold text-gradient-primary mb-4">Our Mission</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <p className="text-lg text-gray-900 leading-relaxed">
+                <p className="text-lg text-gray-900 leading-relaxed mb-6">
                   To create a safe haven for children all around the world, make the world a better and safer place.
                 </p>
-                <Image
-                  src="/placeholder.svg?height=300&width=500"
-                  alt="Children learning in a group"
-                  width={500}
-                  height={300}
-                  className="rounded-lg shadow-xl object-cover w-full h-auto mt-6"
-                />
-                <Button asChild variant="link" className="text-primary text-lg px-0 mt-4">
+                <Button asChild variant="link" className="text-primary text-lg px-0">
                   <Link href="/about">Learn More About Us &rarr;</Link>
                 </Button>
               </CardContent>
@@ -217,18 +234,11 @@ export default function DynamicHomepage() {
                 <CardTitle className="text-3xl font-bold text-gradient-primary mb-4">Our Vision</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <p className="text-lg text-gray-900 leading-relaxed">
+                <p className="text-lg text-gray-900 leading-relaxed mb-6">
                   To see that the basic, mental, financial and emotional needs of the vulnerable children and teenagers
                   we come across are being met.
                 </p>
-                <Image
-                  src="/placeholder.svg?height=300&width=500"
-                  alt="Children dreaming of future"
-                  width={500}
-                  height={300}
-                  className="rounded-lg shadow-xl object-cover w-full h-auto mt-6"
-                />
-                <Button asChild variant="link" className="text-primary text-lg px-0 mt-4">
+                <Button asChild variant="link" className="text-primary text-lg px-0">
                   <Link href="/about">Learn More About Us &rarr;</Link>
                 </Button>
               </CardContent>

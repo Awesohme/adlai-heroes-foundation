@@ -53,10 +53,13 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // New colors from screenshot
-        adlaiBlue: "#003087", // Matches primary
-        adlaiRed: "#E03A5F", // Approximate red from footer gradient and donate button
-        donatePink: "#E03A5F", // Matches adlaiRed for consistency
+        // Adlai brand colors from brand palette
+        adlaiBlue: "#20B2F6", // Brand blue
+        adlaiGreen: "#BFD836", // Brand lime green  
+        adlaiPink: "#E92A8F", // Brand pink
+        adlaiOrange: "#F69731", // Brand orange
+        adlaiRed: "#E03A5F", // Existing red
+        donatePink: "#E92A8F", // Use brand pink for donate button
       },
       borderRadius: {
         lg: "var(--radius)",

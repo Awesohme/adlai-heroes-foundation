@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adlai Brand Colors Integration Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        adlaiBlue: "#20B2F6",
+                        adlaiGreen: "#BFD836", 
+                        adlaiPink: "#E92A8F",
+                        adlaiOrange: "#F69731",
+                        primary: "#003087"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-6xl mx-auto p-8 space-y-12">
+        
+        <!-- Header with Brand Colors -->
+        <header class="bg-gradient-to-r from-adlaiBlue via-adlaiPink to-adlaiOrange text-white p-6 rounded-lg">
+            <h1 class="text-3xl font-bold">Adlai Heroes Foundation</h1>
+            <p class="text-xl opacity-90">Brand Colors Integration Test</p>
+        </header>
+
+        <!-- Color Palette Display -->
+        <section>
+            <h2 class="text-2xl font-bold mb-6">Brand Color Palette</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-adlaiBlue text-white p-6 rounded-lg text-center">
+                    <div class="text-lg font-semibold">#20B2F6</div>
+                    <div class="text-sm opacity-90">Adlai Blue</div>
+                </div>
+                <div class="bg-adlaiGreen text-white p-6 rounded-lg text-center">
+                    <div class="text-lg font-semibold">#BFD836</div>
+                    <div class="text-sm opacity-90">Adlai Green</div>
+                </div>
+                <div class="bg-adlaiPink text-white p-6 rounded-lg text-center">
+                    <div class="text-lg font-semibold">#E92A8F</div>
+                    <div class="text-sm opacity-90">Adlai Pink</div>
+                </div>
+                <div class="bg-adlaiOrange text-white p-6 rounded-lg text-center">
+                    <div class="text-lg font-semibold">#F69731</div>
+                    <div class="text-sm opacity-90">Adlai Orange</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Integration Examples -->
+        <section>
+            <h2 class="text-2xl font-bold mb-6">How Brand Colors Could Be Used</h2>
+            
+            <!-- Impact Stats with Brand Colors -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">Impact Stats with Brand Accent Colors</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-4 rounded-lg bg-adlaiBlue/10 border-l-4 border-adlaiBlue">
+                        <div class="text-3xl font-bold text-adlaiBlue">2,500+</div>
+                        <div class="text-gray-700">Girls Supported</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-adlaiGreen/10 border-l-4 border-adlaiGreen">
+                        <div class="text-3xl font-bold text-adlaiGreen">15</div>
+                        <div class="text-gray-700">Communities Reached</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-adlaiPink/10 border-l-4 border-adlaiPink">
+                        <div class="text-3xl font-bold text-adlaiPink">1,200+</div>
+                        <div class="text-gray-700">Teens Empowered</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Button Variations -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">Button Color Variations</h3>
+                <div class="flex flex-wrap gap-4">
+                    <button class="bg-adlaiBlue text-white px-6 py-3 rounded-lg hover:bg-adlaiBlue/90 transition-colors">
+                        Adlai Blue Button
+                    </button>
+                    <button class="bg-adlaiGreen text-white px-6 py-3 rounded-lg hover:bg-adlaiGreen/90 transition-colors">
+                        Adlai Green Button
+                    </button>
+                    <button class="bg-adlaiPink text-white px-6 py-3 rounded-lg hover:bg-adlaiPink/90 transition-colors">
+                        Donate Now (Pink)
+                    </button>
+                    <button class="bg-adlaiOrange text-white px-6 py-3 rounded-lg hover:bg-adlaiOrange/90 transition-colors">
+                        Adlai Orange Button
+                    </button>
+                </div>
+            </div>
+
+            <!-- Program Cards with Brand Colors -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">Program Cards with Brand Accents</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="h-2 bg-adlaiBlue"></div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-lg mb-2">Pad Up Initiative</h4>
+                            <p class="text-gray-600 text-sm">Providing menstrual hygiene products to young girls...</p>
+                            <span class="inline-block mt-3 text-xs bg-adlaiBlue/10 text-adlaiBlue px-2 py-1 rounded-full">Health</span>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="h-2 bg-adlaiGreen"></div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-lg mb-2">Teen Fever Program</h4>
+                            <p class="text-gray-600 text-sm">Empowering teenagers with life skills...</p>
+                            <span class="inline-block mt-3 text-xs bg-adlaiGreen/10 text-adlaiGreen px-2 py-1 rounded-full">Empowerment</span>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="h-2 bg-adlaiOrange"></div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-lg mb-2">Community Outreach</h4>
+                            <p class="text-gray-600 text-sm">Building stronger communities...</p>
+                            <span class="inline-block mt-3 text-xs bg-adlaiOrange/10 text-adlaiOrange px-2 py-1 rounded-full">Community</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission/Vision with Gradient Accents -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold mb-4">Mission & Vision with Brand Gradients</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="relative p-6 rounded-lg bg-gradient-to-br from-adlaiBlue/10 to-adlaiBlue/5 border border-adlaiBlue/20">
+                        <div class="absolute top-4 right-4 w-8 h-8 bg-adlaiBlue rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 12L5 7l1.5-1.5L10 9l3.5-3.5L15 7l-5 5z"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-adlaiBlue mb-3">Our Mission</h4>
+                        <p class="text-gray-700">To create a safe haven for children all around the world, make the world a better and safer place.</p>
+                    </div>
+                    <div class="relative p-6 rounded-lg bg-gradient-to-br from-adlaiPink/10 to-adlaiPink/5 border border-adlaiPink/20">
+                        <div class="absolute top-4 right-4 w-8 h-8 bg-adlaiPink rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-adlaiPink mb-3">Our Vision</h4>
+                        <p class="text-gray-700">To see that the basic, mental, financial and emotional needs of the vulnerable children and teenagers we come across are being met.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Notes -->
+        <section class="bg-gray-100 p-6 rounded-lg">
+            <h2 class="text-xl font-bold mb-4">Implementation Notes</h2>
+            <div class="prose">
+                <p><strong>Conservative Implementation Strategy:</strong></p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>Primary Colors:</strong> Keep the existing navy blue (#003087) as primary for important elements</li>
+                    <li><strong>Accent Colors:</strong> Use brand colors for accents, highlights, and category indicators</li>
+                    <li><strong>Gradients:</strong> Subtle gradients in sections and card backgrounds</li>
+                    <li><strong>Buttons:</strong> Different colored buttons for different actions (donate = pink, learn more = blue, etc.)</li>
+                    <li><strong>Program Categories:</strong> Color-coded program categories using the brand palette</li>
+                    <li><strong>Impact Stats:</strong> Use brand colors for stat highlights and borders</li>
+                </ul>
+                
+                <p class="mt-4"><strong>Areas to Apply Brand Colors:</strong></p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Hero section buttons (secondary button could use brand color)</li>
+                    <li>Impact statistics cards (each stat gets a different brand color)</li>
+                    <li>Program category badges and borders</li>
+                    <li>Mission/Vision section accents</li>
+                    <li>Footer gradient (current blue-red could become blue-pink-orange)</li>
+                    <li>Admin dashboard accent colors</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

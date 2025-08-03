@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS hero_slides (
   image_url TEXT NOT NULL,
   button_text VARCHAR(100),
   button_link VARCHAR(255),
+  button_text_2 VARCHAR(100),
+  button_link_2 VARCHAR(255),
   order_index INTEGER NOT NULL DEFAULT 0,
   active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
