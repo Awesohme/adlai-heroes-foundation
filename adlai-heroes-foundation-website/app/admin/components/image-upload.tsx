@@ -32,6 +32,18 @@ export default function ImageUpload({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (file: File) => {
+    // Show setup instructions until Cloudinary upload preset is configured
+    alert(`File upload requires Cloudinary upload preset configuration.
+
+Please:
+1. Go to Cloudinary Console → Settings → Upload
+2. Create upload preset named "adlai_preset" 
+3. Set it to "Unsigned"
+4. Enable folder specification
+
+For now, please use the image URL input field instead.`)
+    return
+    
     // File upload enabled using Cloudinary
     
     if (!file.type.startsWith('image/')) {
@@ -51,10 +63,10 @@ export default function ImageUpload({
       const objectUrl = URL.createObjectURL(file)
       setPreviewUrl(objectUrl)
 
-      // Upload to Cloudinary
+      // Upload to Cloudinary (unsigned upload)
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('upload_preset', 'adlai_preset')
+      formData.append('upload_preset', 'unsigned_preset') // Using a more common preset name
       formData.append('folder', folder || 'adlai-heroes')
 
       const response = await fetch(
