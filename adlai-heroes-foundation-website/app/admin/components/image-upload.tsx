@@ -32,19 +32,7 @@ export default function ImageUpload({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (file: File) => {
-    // Show setup instructions until Cloudinary upload preset is configured
-    alert(`File upload requires Cloudinary upload preset configuration.
-
-Please:
-1. Go to Cloudinary Console → Settings → Upload
-2. Create upload preset named "adlai_preset" 
-3. Set it to "Unsigned"
-4. Enable folder specification
-
-For now, please use the image URL input field instead.`)
-    return
-    
-    // File upload enabled using Cloudinary
+    // File upload now enabled with Cloudinary adlai_preset
     
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file')
