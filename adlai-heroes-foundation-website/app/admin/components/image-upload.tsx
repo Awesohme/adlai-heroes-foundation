@@ -32,9 +32,7 @@ export default function ImageUpload({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (file: File) => {
-    // Temporarily disable file upload until Supabase Storage is configured
-    alert('File upload is temporarily disabled. Please use image URL input instead.')
-    return
+    // File upload enabled using Cloudinary
     
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file')
@@ -53,8 +51,26 @@ export default function ImageUpload({
       const objectUrl = URL.createObjectURL(file)
       setPreviewUrl(objectUrl)
 
-      // Upload to Supabase
-      const { url } = await supabaseApi.uploadImage(file, 'images', folder)
+      // Upload to Cloudinary
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('upload_preset', 'adlai_preset')
+      formData.append('folder', folder || 'adlai-heroes')
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/dcvuzffgj/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      const url = data.secure_url
       onImageChange(url)
       
       // Clean up object URL
