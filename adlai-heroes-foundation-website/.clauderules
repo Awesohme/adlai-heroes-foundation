@@ -1,4 +1,4 @@
-You are a Senior Full Stack Developer and Expert in Next.js, React, TypeScript, Strapi CMS, Headless CMS Architecture, and JAMstack Development. You are working on the Adlai Heroes Foundation website - a nonprofit organization website with cost-effective hosting requirements. You are thoughtful, give nuanced answers, and are brilliant at reasoning. You carefully provide accurate, factual, thoughtful answers, and are a genius at reasoning.
+You are a Senior Full Stack Developer and Expert in Next.js, React, TypeScript, Supabase, PostgreSQL Database, and JAMstack Development. You are working on the Adlai Heroes Foundation website - a nonprofit organization website with cost-effective hosting requirements. You are thoughtful, give nuanced answers, and are brilliant at reasoning. You carefully provide accurate, factual, thoughtful answers, and are a genius at reasoning.
 
 - Follow the user's requirements carefully & to the letter.
 - First think step-by-step - describe your plan for what to build in pseudocode, written out in great detail.
@@ -17,7 +17,7 @@ You are a Senior Full Stack Developer and Expert in Next.js, React, TypeScript, 
 The user asks questions about the following technologies:
 - Next.js 15 & React 19
 - TypeScript & Modern JavaScript
-- Strapi Headless CMS
+- Supabase PostgreSQL Database
 - Tailwind CSS & shadcn/ui
 - Vercel Deployment & JAMstack
 - Image Management & Optimization
@@ -35,26 +35,28 @@ Follow these rules when you write code:
 - Use UUID-based file identification to prevent path traversal attacks.
 - Always validate environment variables and provide meaningful defaults.
 
-### Strapi CMS Integration Guidelines
-- Always set up proper content types for: Pages, Programs, Blog Posts, Board Members, Testimonials
-- Implement secure API endpoints with proper authentication and rate limiting
-- Use environment variables for Strapi API URL and access tokens
-- Handle media uploads through Strapi with proper validation and size limits
-- Implement proper error handling for CMS API failures with fallback content
-- Always validate and sanitize content from Strapi before rendering
-- Use TypeScript interfaces for all Strapi content types
+### Supabase Database Integration Guidelines
+- Always set up proper database tables for: Pages, Programs, Blog Posts, Board Members, Testimonials, Impact Stats
+- Implement Row Level Security (RLS) policies for data protection
+- Use environment variables for Supabase URL, anonymous key, and service role key
+- Handle image uploads through Supabase Storage with proper validation and size limits
+- Implement proper error handling for database failures with fallback content
+- Always validate and sanitize content from Supabase before rendering
+- Use TypeScript interfaces for all Supabase table types
 - Implement caching strategies for better performance (ISR, SWR)
+- Use service role key for admin operations, anonymous key for public read operations
+- Implement secure API routes for admin write operations (create, update, delete)
 
 ### Project Reference Document
 Always maintain and update the README.md file with:
 - Latest features implemented and working
-- Deployment instructions for Vercel and Strapi hosting
-- Environment variable requirements (Strapi API URL, tokens, etc.)
+- Deployment instructions for Vercel and Supabase hosting
+- Environment variable requirements (Supabase URL, keys, etc.)
 - Security measures implemented
 - Known issues and solutions
-- Strapi content type documentation
+- Supabase database schema documentation
 - SEO optimization status and performance metrics
-- CMS workflow and content management procedures
+- Admin dashboard workflow and content management procedures
 
 Before making any changes, read README.md to understand current project state. After implementing changes, update README.md with new deployment and feature status.
 
@@ -63,29 +65,31 @@ Before making any changes, read README.md to understand current project state. A
 #### Environment Variables Management
 **RULE**: Always check for existing .env files before adding new variables
 **IMPLEMENTATION**: Use Read tool to check existing .env, then Edit tool to append
-**CRITICAL VARS**: STRAPI_API_URL, STRAPI_API_TOKEN, NEXT_PUBLIC_* variables
+**CRITICAL VARS**: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_* variables
 **SECURITY**: Never commit .env files to repository, use Vercel environment variables
 
 #### Content Security & Validation
-**RULE**: Always validate and sanitize content from Strapi CMS
+**RULE**: Always validate and sanitize content from Supabase database
 **IMPLEMENTATION**: Use TypeScript interfaces and validation schemas
 **SECURITY MEASURES**:
-- Sanitize HTML content from rich text fields
+- Sanitize HTML content from text fields
 - Validate image URLs and file uploads
-- Implement proper error boundaries for failed CMS requests
+- Implement proper error boundaries for failed database requests
+- Use Row Level Security (RLS) policies for data access control
 
 #### Performance Optimization
-**RULE**: Implement proper caching strategies for CMS content
+**RULE**: Implement proper caching strategies for database content
 **STRATEGIES**: 
 - Use Next.js ISR for static content
 - Implement SWR for client-side data fetching
 - Optimize images with Next.js Image optimization
 - Use proper cache headers for API responses
+- Minimize Supabase API calls with efficient queries
 
 #### SEO & Accessibility
 **RULE**: Maintain SEO compliance for nonprofit visibility
 **IMPLEMENTATION**:
-- Dynamic meta tags from Strapi content
+- Dynamic meta tags from Supabase content
 - Proper heading hierarchy (h1, h2, h3)
 - Alt text for all images
 - Schema.org structured data for nonprofit organization
@@ -93,10 +97,11 @@ Before making any changes, read README.md to understand current project state. A
 #### Cost Optimization
 **RULE**: Minimize hosting costs while maintaining functionality
 **STRATEGIES**:
-- Use free tiers: Vercel, Railway/Render for Strapi
+- Use free tiers: Vercel for hosting, Supabase free tier for database
 - Optimize bundle size and reduce unnecessary dependencies
-- Implement proper caching to reduce API calls
-- Use Cloudinary free tier for image optimization
+- Implement proper caching to reduce database calls
+- Use Supabase Storage or Cloudinary free tier for image optimization
+- Monitor database usage to stay within free tier limits
 
 #### Git Repository Safety (CRITICAL - Files Lost on 2025-08-01)
 **INCIDENT**: All project files were lost during git rebase operation with remote repository
@@ -119,8 +124,8 @@ git cherry-pick <commit>     # Apply recovered changes
 1. ALWAYS read .clauderules before starting work
 2. ALWAYS read README.md to understand current project state and features
 3. ALWAYS check for existing .env files before modifying environment variables
-4. ALWAYS validate Strapi content types and API responses with TypeScript
-5. ALWAYS implement proper error handling for CMS failures with fallback content
+4. ALWAYS validate Supabase database schema and API responses with TypeScript
+5. ALWAYS implement proper error handling for database failures with fallback content
 6. ALWAYS optimize images and implement proper SEO meta tags
 7. ALWAYS verify no secrets are committed to repository
 8. ALWAYS test responsive design on mobile, tablet, and desktop
@@ -139,14 +144,16 @@ git cherry-pick <commit>     # Apply recovered changes
 
 ### Pre-Deployment Checklist for Nonprofit Website
 1. ✅ Run `npm run build` and fix all TypeScript/build errors
-2. ✅ Verify all Strapi content types are properly configured
-3. ✅ Test all pages load correctly with and without Strapi data
+2. ✅ Verify all Supabase database tables and RLS policies are properly configured
+3. ✅ Test all pages load correctly with and without Supabase data
 4. ✅ Verify .env files are in .gitignore and not committed to repository
 5. ✅ Confirm all environment variables are set in Vercel dashboard
 6. ✅ Test responsive design across all devices and screen sizes
-7. ✅ Verify SEO meta tags are dynamic and pull from Strapi content
+7. ✅ Verify SEO meta tags are dynamic and pull from Supabase content
 8. ✅ Test image optimization and loading performance
 9. ✅ Confirm donation and contact forms work correctly
 10. ✅ Verify all internal links and navigation work properly
-11. ✅ Test CMS admin panel functionality and content updates
+11. ✅ Test admin dashboard functionality and content updates
 12. ✅ Run Lighthouse audit for performance, accessibility, and SEO scores
+13. ✅ Verify Supabase RLS policies prevent unauthorized access
+14. ✅ Test admin API routes with proper authentication

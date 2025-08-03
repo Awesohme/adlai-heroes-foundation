@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpenIcon, UsersIcon, HeartHandshakeIcon, MapPinIcon, StarIcon, HeartIcon } from "lucide-react"
+import { BookOpenIcon, UsersIcon, HeartHandshakeIcon, MapPinIcon, StarIcon, HeartIcon, TrendingUpIcon, HomeIcon, TargetIcon, AwardIcon } from "lucide-react"
 import { TestimonialCarousel } from "@/components/testimonial-carousel"
 import { supabaseApi, type Program, type ImpactStat, type Testimonial } from "@/lib/supabase"
 
@@ -151,6 +151,14 @@ export default function DynamicHomepage() {
         return HeartHandshakeIcon
       case 'book-open':
         return BookOpenIcon
+      case 'trending-up':
+        return TrendingUpIcon
+      case 'home':
+        return HomeIcon
+      case 'target':
+        return TargetIcon
+      case 'award':
+        return AwardIcon
       default:
         return UsersIcon
     }
@@ -250,7 +258,7 @@ export default function DynamicHomepage() {
       <section className="py-16 md:py-24 bg-secondary">
         <div className="container mx-auto px-4 md:px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-12 text-gradient-primary">Our Impact in Numbers</h2>
-          <div className="flex flex-wrap justify-center items-center gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 place-items-center max-w-6xl mx-auto">
             {stats.map((stat) => {
               const IconComponent = getIconComponent(stat.icon || 'users')
               
@@ -258,7 +266,7 @@ export default function DynamicHomepage() {
                 <Card
                   key={stat.id}
                   variant="glass"
-                  className="p-6 flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300 flex-1 min-w-[280px] max-w-[320px]"
+                  className="p-6 flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300 w-full max-w-[280px]"
                 >
                   <IconComponent className="h-12 w-12 text-primary mb-4" />
                   <CardTitle className="text-5xl font-bold text-gradient-primary mb-2">{stat.value}</CardTitle>
