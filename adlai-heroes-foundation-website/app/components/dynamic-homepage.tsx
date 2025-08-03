@@ -214,31 +214,37 @@ export default function DynamicHomepage() {
       <section className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4 md:px-6 text-center max-w-5xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card variant="glass" className="p-6 shadow-lg flex flex-col items-center text-center">
+            <Card variant="glass" className="p-6 shadow-lg flex flex-col items-center text-center bg-gradient-to-br from-adlaiBlue/10 to-adlaiBlue/5 border border-adlaiBlue/20 hover:from-adlaiBlue/15 hover:to-adlaiBlue/8 transition-all duration-300">
               <CardHeader>
-                <TargetIcon className="h-16 w-16 text-primary mx-auto mb-4" />
-                <CardTitle className="text-3xl font-bold text-gradient-primary mb-4">Our Mission</CardTitle>
+                <div className="relative">
+                  <div className="absolute -inset-2 bg-adlaiBlue/20 rounded-full blur-sm"></div>
+                  <TargetIcon className="relative h-16 w-16 text-adlaiBlue mx-auto mb-4" />
+                </div>
+                <CardTitle className="text-3xl font-bold text-adlaiBlue mb-4">Our Mission</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <p className="text-lg text-gray-900 leading-relaxed mb-6">
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   To create a safe haven for children all around the world, make the world a better and safer place.
                 </p>
-                <Button asChild variant="link" className="text-primary text-lg px-0">
+                <Button asChild className="bg-adlaiBlue text-white hover:bg-adlaiBlue/90 px-6 py-2">
                   <Link href="/about">Learn More About Us &rarr;</Link>
                 </Button>
               </CardContent>
             </Card>
-            <Card variant="glass" className="p-6 shadow-lg flex flex-col items-center text-center">
+            <Card variant="glass" className="p-6 shadow-lg flex flex-col items-center text-center bg-gradient-to-br from-adlaiPink/10 to-adlaiPink/5 border border-adlaiPink/20 hover:from-adlaiPink/15 hover:to-adlaiPink/8 transition-all duration-300">
               <CardHeader>
-                <StarIcon className="h-16 w-16 text-primary mx-auto mb-4" />
-                <CardTitle className="text-3xl font-bold text-gradient-primary mb-4">Our Vision</CardTitle>
+                <div className="relative">
+                  <div className="absolute -inset-2 bg-adlaiPink/20 rounded-full blur-sm"></div>
+                  <StarIcon className="relative h-16 w-16 text-adlaiPink mx-auto mb-4" />
+                </div>
+                <CardTitle className="text-3xl font-bold text-adlaiPink mb-4">Our Vision</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <p className="text-lg text-gray-900 leading-relaxed mb-6">
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   To see that the basic, mental, financial and emotional needs of the vulnerable children and teenagers
                   we come across are being met.
                 </p>
-                <Button asChild variant="link" className="text-primary text-lg px-0">
+                <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 px-6 py-2">
                   <Link href="/about">Learn More About Us &rarr;</Link>
                 </Button>
               </CardContent>
@@ -253,17 +259,20 @@ export default function DynamicHomepage() {
           <h2 className="text-3xl md:text-5xl font-bold mb-12 text-gradient-primary">Our Impact in Numbers</h2>
           <div className="flex justify-center">
             <div className="flex flex-wrap justify-center gap-8">
-            {stats.map((stat) => {
+            {stats.map((stat, index) => {
               const IconComponent = getIconComponent(stat.icon || 'users')
+              // Cycle through brand colors for each stat
+              const brandColors = ['adlaiBlue', 'adlaiGreen', 'adlaiPink', 'adlaiOrange']
+              const colorClass = brandColors[index % brandColors.length]
               
               return (
                 <Card
                   key={stat.id}
                   variant="glass"
-                  className="p-6 flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300 w-[280px] flex-shrink-0"
+                  className={`p-6 flex flex-col items-center text-center hover:shadow-xl transition-all duration-300 w-[280px] flex-shrink-0 bg-${colorClass}/5 border-l-4 border-${colorClass} hover:bg-${colorClass}/10`}
                 >
-                  <IconComponent className="h-12 w-12 text-primary mb-4" />
-                  <CardTitle className="text-5xl font-bold text-gradient-primary mb-2">{stat.value}</CardTitle>
+                  <IconComponent className={`h-12 w-12 text-${colorClass} mb-4`} />
+                  <CardTitle className={`text-5xl font-bold text-${colorClass} mb-2`}>{stat.value}</CardTitle>
                   <CardContent className="p-0 text-lg text-gray-900">{stat.title}</CardContent>
                   {stat.description && (
                     <p className="text-sm text-gray-600 mt-2">{stat.description}</p>
@@ -281,15 +290,29 @@ export default function DynamicHomepage() {
         <div className="container mx-auto px-4 md:px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-gradient-primary mb-12">Our Latest Initiatives</h2>
           <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
-            {programs.slice(0, 3).map((program) => {
+            {programs.slice(0, 3).map((program, index) => {
+              // Map categories to brand colors
+              const getCategoryColor = (category: string) => {
+                const colorMap: { [key: string]: string } = {
+                  'health': 'adlaiBlue',
+                  'empowerment': 'adlaiGreen', 
+                  'community': 'adlaiPink',
+                  'education': 'adlaiOrange'
+                }
+                return colorMap[category] || 'adlaiBlue'
+              }
+              
+              const categoryColor = getCategoryColor(program.category)
+              
               return (
-                <Card key={program.id} variant="glass" className="hover:shadow-xl transition-shadow duration-300 w-[320px] flex-shrink-0">
+                <Card key={program.id} variant="glass" className="hover:shadow-xl transition-shadow duration-300 w-[320px] flex-shrink-0 border-t-4" style={{ borderTopColor: `var(--${categoryColor})` }}>
+                  <div className={`h-2 bg-${categoryColor}`}></div>
                   <Image
                     src={program.featured_image || "/placeholder.svg?height=250&width=400"}
                     alt={program.title}
                     width={400}
                     height={250}
-                    className="rounded-t-lg object-cover w-full h-[250px]"
+                    className="object-cover w-full h-[250px]"
                   />
                   <CardHeader>
                     <CardTitle className="text-xl font-semibold text-gradient-primary">{program.title}</CardTitle>
@@ -299,7 +322,7 @@ export default function DynamicHomepage() {
                       {program.description}
                     </p>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm bg-primary/10 text-primary px-2 py-1 rounded-full capitalize">
+                      <span className={`text-sm bg-${categoryColor}/10 text-${categoryColor} px-2 py-1 rounded-full capitalize font-medium`}>
                         {program.category}
                       </span>
                       <Button asChild variant="link" className="text-primary px-0">

@@ -147,7 +147,7 @@ export default function TeamPage() {
           individuals to join our mission of empowering communities and supporting children.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button asChild className="bg-adlaiGreen text-white hover:bg-adlaiGreen/90">
             <Link href="/volunteer">Volunteer With Us</Link>
           </Button>
           <Button asChild variant="outline">

@@ -87,7 +87,7 @@ export function Header() {
           <Link className="hover:text-primary transition-colors" href="/contact">
             Contact Us
           </Link>
-          <Button asChild className="bg-donatePink text-primary-foreground hover:bg-donatePink/90">
+          <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 shadow-lg">
             <Link href="/donate">Donate</Link>
           </Button>
         </nav>
@@ -129,7 +129,7 @@ export function Header() {
               <Link className="font-medium hover:text-primary transition-colors" href="/contact">
                 Contact Us
               </Link>
-              <Button asChild className="bg-donatePink text-primary-foreground hover:bg-donatePink/90">
+              <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 shadow-lg">
                 <Link href="/donate">Donate</Link>
               </Button>
             </div>

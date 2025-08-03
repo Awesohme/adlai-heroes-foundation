@@ -99,35 +99,52 @@ export default function ProgramsPage() {
       <section className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-bold text-gradient-primary mb-8">Explore Our Initiatives</h2>
         <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
-          {currentPrograms.map((program) => (
-            <Card
-              variant="glass"
-              key={program.slug}
-              className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-[320px] flex-shrink-0"
-            >
-              <Image
-                src={program.featured_image || "/placeholder.svg?height=250&width=400"}
-                alt={program.title}
-                width={400}
-                height={250}
-                className="rounded-t-lg object-cover w-full h-[250px]"
-              />
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold text-gradient-primary">{program.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-900 mb-4">{program.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm bg-primary/10 text-primary px-2 py-1 rounded-full capitalize">
-                    {program.category}
-                  </span>
-                  <Link href={`/programs/${program.slug}`} className="text-primary hover:underline font-medium">
-                    Learn More &rarr;
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {currentPrograms.map((program) => {
+            // Map categories to brand colors
+            const getCategoryColor = (category: string) => {
+              const colorMap: { [key: string]: string } = {
+                'health': 'adlaiBlue',
+                'empowerment': 'adlaiGreen', 
+                'community': 'adlaiPink',
+                'education': 'adlaiOrange'
+              }
+              return colorMap[category] || 'adlaiBlue'
+            }
+            
+            const categoryColor = getCategoryColor(program.category)
+            
+            return (
+              <Card
+                variant="glass"
+                key={program.slug}
+                className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-[320px] flex-shrink-0 border-t-4"
+                style={{ borderTopColor: `var(--${categoryColor})` }}
+              >
+                <div className={`h-2 bg-${categoryColor}`}></div>
+                <Image
+                  src={program.featured_image || "/placeholder.svg?height=250&width=400"}
+                  alt={program.title}
+                  width={400}
+                  height={250}
+                  className="object-cover w-full h-[250px]"
+                />
+                <CardHeader>
+                  <CardTitle className="text-xl font-semibold text-gradient-primary">{program.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-900 mb-4">{program.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm bg-${categoryColor}/10 text-${categoryColor} px-2 py-1 rounded-full capitalize font-medium`}>
+                      {program.category}
+                    </span>
+                    <Link href={`/programs/${program.slug}`} className="text-primary hover:underline font-medium">
+                      Learn More &rarr;
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
 
         {/* Pagination */}

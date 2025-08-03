@@ -4,7 +4,7 @@ import { FacebookIcon, TwitterIcon, InstagramIcon, LinkedinIcon, PhoneIcon, Mail
 
 export function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-adlaiBlue to-adlaiRed text-white py-10 md:py-16">
+    <footer className="bg-gradient-to-r from-adlaiBlue via-adlaiPink to-adlaiOrange text-white py-10 md:py-16">
       <div className="container mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
         <div className="space-y-4 md:col-span-1">
           <Image

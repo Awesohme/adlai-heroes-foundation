@@ -68,7 +68,7 @@ export function HeroSlider({ slides, autoplayInterval = 6000, height = "h-[600px
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               asChild
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 text-lg shadow-lg"
+              className="bg-adlaiPink text-white hover:bg-adlaiPink/90 px-8 py-3 text-lg shadow-lg"
             >
               <Link href={currentSlide.button_link}>
                 {currentSlide.button_text}
@@ -78,7 +78,7 @@ export function HeroSlider({ slides, autoplayInterval = 6000, height = "h-[600px
               <Button
                 asChild
                 variant="outline"
-                className="bg-white/20 text-white border-white hover:bg-white hover:text-gray-900 px-8 py-3 text-lg shadow-lg backdrop-blur-sm"
+                className="bg-adlaiBlue/20 text-white border-adlaiBlue hover:bg-adlaiBlue hover:text-white px-8 py-3 text-lg shadow-lg backdrop-blur-sm"
               >
                 <Link href={currentSlide.button_link_2}>
                   {currentSlide.button_text_2}

@@ -37,16 +37,26 @@ INSERT INTO hero_slides (title, subtitle, image_url, button_text, button_link, o
 ALTER TABLE hero_slides ENABLE ROW LEVEL SECURITY;
 ALTER TABLE partners ENABLE ROW LEVEL SECURITY;
 
--- Create policies for public read access
-CREATE POLICY "Public can view active hero slides" ON hero_slides
-  FOR SELECT USING (active = true);
-
-CREATE POLICY "Public can view active partners" ON partners
-  FOR SELECT USING (active = true);
-
--- Create policies for admin access (service role)
-CREATE POLICY "Service role can manage hero slides" ON hero_slides
-  FOR ALL USING (auth.role() = 'service_role');
-
-CREATE POLICY "Service role can manage partners" ON partners
-  FOR ALL USING (auth.role() = 'service_role');
+-- Create policies for public read access (only if they don't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public can view active hero slides' AND tablename = 'hero_slides') THEN
+        CREATE POLICY "Public can view active hero slides" ON hero_slides
+          FOR SELECT USING (active = true);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Public can view active partners' AND tablename = 'partners') THEN
+        CREATE POLICY "Public can view active partners" ON partners
+          FOR SELECT USING (active = true);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service role can manage hero slides' AND tablename = 'hero_slides') THEN
+        CREATE POLICY "Service role can manage hero slides" ON hero_slides
+          FOR ALL USING (auth.role() = 'service_role');
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service role can manage partners' AND tablename = 'partners') THEN
+        CREATE POLICY "Service role can manage partners" ON partners
+          FOR ALL USING (auth.role() = 'service_role');
+    END IF;
+END $$;
