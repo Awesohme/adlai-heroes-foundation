@@ -51,26 +51,45 @@ export default function ImageUpload({
       const objectUrl = URL.createObjectURL(file)
       setPreviewUrl(objectUrl)
 
-      // Upload to Cloudinary (unsigned upload)
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('upload_preset', 'unsigned_preset') // Using a more common preset name
-      formData.append('folder', folder || 'adlai-heroes')
+      // Upload to Cloudinary with robust preset fallback
+      const presets = ['adlai_preset', 'default', 'unsigned', 'upload_preset']
+      let uploadSuccess = false
+      let uploadResponse = null
 
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/dcvuzffgj/image/upload`,
-        {
-          method: 'POST',
-          body: formData,
+      for (const preset of presets) {
+        try {
+          const formData = new FormData()
+          formData.append('file', file)
+          formData.append('upload_preset', preset)
+          if (folder) formData.append('folder', folder)
+
+          const response = await fetch(
+            `https://api.cloudinary.com/v1_1/dcvuzffgj/image/upload`,
+            {
+              method: 'POST',
+              body: formData,
+            }
+          )
+
+          if (response.ok) {
+            uploadResponse = await response.json()
+            uploadSuccess = true
+            console.log(`✅ Upload successful with preset: ${preset}`)
+            break
+          } else {
+            const errorData = await response.json().catch(() => ({}))
+            console.log(`❌ Preset "${preset}" failed:`, errorData)
+          }
+        } catch (err) {
+          console.log(`❌ Preset "${preset}" error:`, err)
         }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`)
       }
 
-      const data = await response.json()
-      const url = data.secure_url
+      if (!uploadSuccess || !uploadResponse) {
+        throw new Error('Upload failed with all presets. Please check your Cloudinary configuration or use the image URL input.')
+      }
+
+      const url = uploadResponse.secure_url
       onImageChange(url)
       
       // Clean up object URL
@@ -78,7 +97,7 @@ export default function ImageUpload({
       setPreviewUrl(url)
     } catch (error) {
       console.error('Error uploading image:', error)
-      alert('Failed to upload image. Please try again.')
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nTip: You can use the image URL input field as an alternative.`)
       setPreviewUrl(currentImageUrl || null)
     } finally {
       setUploading(false)
