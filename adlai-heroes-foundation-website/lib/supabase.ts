@@ -153,6 +153,29 @@ export interface ImpactStat {
   created_at: string
 }
 
+export interface HeroSlide {
+  id: number
+  title: string
+  subtitle?: string
+  image_url: string
+  button_text?: string
+  button_link?: string
+  order_index: number
+  active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface Partner {
+  id: number
+  name: string
+  logo_url: string
+  website_url?: string
+  order_index: number
+  active: boolean
+  created_at: string
+}
+
 // Helper functions for data fetching
 export const supabaseApi = {
   // Programs
@@ -648,6 +671,96 @@ export const supabaseApi = {
   async deleteNavigationMenu(id: number) {
     const { error } = await supabase
       .from('navigation_menu')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+    return true
+  },
+
+  // Hero Slides CRUD
+  async getHeroSlides() {
+    const { data, error } = await supabase
+      .from('hero_slides')
+      .select('*')
+      .eq('active', true)
+      .order('order_index', { ascending: true })
+    
+    if (error) throw error
+    return data as HeroSlide[]
+  },
+
+  async createHeroSlide(data: Omit<HeroSlide, 'id' | 'created_at' | 'updated_at'>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('hero_slides')
+      .insert([data])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return result as HeroSlide
+  },
+
+  async updateHeroSlide(id: number, data: Partial<Omit<HeroSlide, 'id' | 'created_at' | 'updated_at'>>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('hero_slides')
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return result as HeroSlide
+  },
+
+  async deleteHeroSlide(id: number) {
+    const { error } = await supabaseAdmin
+      .from('hero_slides')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+    return true
+  },
+
+  // Partners CRUD
+  async getPartners() {
+    const { data, error } = await supabase
+      .from('partners')
+      .select('*')
+      .eq('active', true)
+      .order('order_index', { ascending: true })
+    
+    if (error) throw error
+    return data as Partner[]
+  },
+
+  async createPartner(data: Omit<Partner, 'id' | 'created_at'>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('partners')
+      .insert([data])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return result as Partner
+  },
+
+  async updatePartner(id: number, data: Partial<Omit<Partner, 'id' | 'created_at'>>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('partners')
+      .update(data)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return result as Partner
+  },
+
+  async deletePartner(id: number) {
+    const { error } = await supabaseAdmin
+      .from('partners')
       .delete()
       .eq('id', id)
     

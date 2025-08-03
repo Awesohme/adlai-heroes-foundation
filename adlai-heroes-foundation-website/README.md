@@ -66,6 +66,8 @@ This project rebuilds the Adlai Heroes Foundation website using modern JAMstack 
 3. **Board Members** - Leadership team with order management
 4. **Testimonials** - Community feedback with featured status
 5. **Impact Stats** - Metrics and achievements with custom icons
+6. **Hero Slides** - Homepage hero carousel with call-to-action buttons
+7. **Partners** - Partner organizations with logo carousel display
 
 ### Database Features
 - **Row Level Security (RLS)** - Public read access for published content
@@ -126,7 +128,8 @@ This project rebuilds the Adlai Heroes Foundation website using modern JAMstack 
 
 **To recreate database (if needed):**
 1. Run SQL from `scripts/create-tables.sql` in Supabase SQL Editor
-2. Run `SUPABASE_SERVICE_ROLE_KEY=your-key node scripts/insert-remaining-data.js`
+2. Run SQL from `scripts/hero-slides-partners-schema.sql` in Supabase SQL Editor (for hero slides and partners)
+3. Run `SUPABASE_SERVICE_ROLE_KEY=your-key node scripts/insert-remaining-data.js`
 
 ## 🛠 Admin Dashboard Features ✅ COMPLETED
 
@@ -138,13 +141,15 @@ This project rebuilds the Adlai Heroes Foundation website using modern JAMstack 
 - **Form Validation** - Comprehensive input validation and error handling
 
 ### Admin Interface Components
-1. **Program Management** - Create/edit foundation programs with categories
-2. **Blog Post Management** - Full blog CMS with SEO fields and content tabs
-3. **Board Member Management** - Team profiles with photo uploads and ordering
+1. **Hero Slides Management** - Homepage carousel with images, titles, and call-to-action buttons
+2. **Program Management** - Create/edit foundation programs with categories
+3. **Impact Stats Management** - Custom metrics with icon selection
 4. **Testimonial Management** - Community feedback with featured status
-5. **Impact Stats Management** - Custom metrics with icon selection
-6. **Content Section Management** - Dynamic page sections across all pages
-7. **Page Management** - Meta tags and SEO settings for core pages
+5. **Blog Post Management** - Full blog CMS with SEO fields and content tabs
+6. **Board Member Management** - Team profiles with photo uploads and ordering
+7. **Partners Management** - Partner organizations with logo uploads and website links
+8. **Content Section Management** - Dynamic page sections across all pages
+9. **Page Management** - Meta tags and SEO settings for core pages
 
 ### User Experience Features
 - **Toast Notifications** - Loading states, success messages, error feedback
@@ -313,6 +318,6 @@ This project is proprietary to Adlai Heroes Foundation.
 
 ---
 
-**Last Updated**: August 2, 2025
-**Version**: 2.1.0
-**Status**: Production Ready - Supabase Admin CMS Complete
+**Last Updated**: August 3, 2025
+**Version**: 2.2.0
+**Status**: Production Ready - Enhanced Homepage with Hero Slider & Partners Carousel

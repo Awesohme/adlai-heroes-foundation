@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { PlusIcon, EditIcon, TrashIcon, UsersIcon, BookOpenIcon, MessageSquareIcon, BarChartIcon, SettingsIcon, GlobeIcon } from "lucide-react"
-import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page } from "@/lib/supabase"
+import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page, type HeroSlide, type Partner } from "@/lib/supabase"
 import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ProgramForm from "./components/program-form"
@@ -18,6 +18,8 @@ import BlogPostForm from "./components/blog-post-form"
 import BoardMemberForm from "./components/board-member-form"
 import ContentSectionForm from "./components/content-section-form"
 import PageForm from "./components/page-form"
+import HeroSlideForm from "./components/hero-slide-form"
+import PartnerForm from "./components/partner-form"
 import AdminTabs from "./components/admin-tabs"
 
 export default function AdminDashboard() {
@@ -28,6 +30,8 @@ export default function AdminDashboard() {
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([])
   const [contentSections, setContentSections] = useState<ContentSection[]>([])
   const [pages, setPages] = useState<Page[]>([])
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([])
+  const [partners, setPartners] = useState<Partner[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [editingItem, setEditingItem] = useState<any>(null)
   const [editingType, setEditingType] = useState<string>('')
@@ -42,7 +46,7 @@ export default function AdminDashboard() {
       setIsLoading(true)
       console.log('🔍 Loading admin data...')
       
-      const [programsData, statsData, testimonialsData, blogData, boardData, sectionsData, pagesData] = await Promise.all([
+      const [programsData, statsData, testimonialsData, blogData, boardData, sectionsData, pagesData, heroSlidesData, partnersData] = await Promise.all([
         supabaseApi.getPrograms(false).catch(err => {
           console.error('❌ Programs error:', err)
           return []
@@ -70,6 +74,14 @@ export default function AdminDashboard() {
         supabaseApi.getPages(false).catch(err => {
           console.error('❌ Pages error:', err)
           return []
+        }),
+        supabaseApi.getHeroSlides().catch(err => {
+          console.error('❌ Hero Slides error:', err)
+          return []
+        }),
+        supabaseApi.getPartners().catch(err => {
+          console.error('❌ Partners error:', err)
+          return []
         })
       ])
 
@@ -80,7 +92,9 @@ export default function AdminDashboard() {
         blogPosts: blogData.length,
         boardMembers: boardData.length,
         contentSections: sectionsData.length,
-        pages: pagesData.length
+        pages: pagesData.length,
+        heroSlides: heroSlidesData.length,
+        partners: partnersData.length
       })
 
       setPrograms(programsData)
@@ -90,6 +104,8 @@ export default function AdminDashboard() {
       setBoardMembers(boardData)
       setContentSections(sectionsData)
       setPages(pagesData)
+      setHeroSlides(heroSlidesData)
+      setPartners(partnersData)
     } catch (error) {
       console.error('💥 Critical error loading admin data:', error)
       // Show a user-friendly message
@@ -171,6 +187,20 @@ export default function AdminDashboard() {
             duration: 3000
           })
           break
+        case 'hero-slide':
+          await adminApi.deleteHeroSlide(id)
+          toast.success('Hero Slide Deleted Successfully!', {
+            description: 'The hero slide has been permanently removed.',
+            duration: 3000
+          })
+          break
+        case 'partner':
+          await adminApi.deletePartner(id)
+          toast.success('Partner Deleted Successfully!', {
+            description: 'The partner has been permanently removed.',
+            duration: 3000
+          })
+          break
       }
       loadAllData()
     } catch (error) {
@@ -198,6 +228,10 @@ export default function AdminDashboard() {
         return <ContentSectionForm section={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'page':
         return <PageForm page={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'hero-slide':
+        return <HeroSlideForm slide={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'partner':
+        return <PartnerForm partner={editingItem} onSave={handleSave} onCancel={handleCancel} />
       default:
         return null
     }
@@ -299,6 +333,8 @@ export default function AdminDashboard() {
           boardMembers={boardMembers}
           contentSections={contentSections}
           pages={pages}
+          heroSlides={heroSlides}
+          partners={partners}
           onEdit={handleEdit}
           onAdd={handleAdd}
           onDelete={handleDelete}

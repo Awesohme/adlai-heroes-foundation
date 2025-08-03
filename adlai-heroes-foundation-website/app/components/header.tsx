@@ -45,7 +45,7 @@ export function Header() {
       <div className="flex items-center justify-between h-16 px-4 md:px-6">
         <Link className="flex items-center gap-2" href="/">
           <Image
-            src="/placeholder.svg?height=40&width=100"
+            src="https://res.cloudinary.com/dcvuzffgj/image/upload/v1754225835/White_bg_logo_rmuevq.jpg"
             alt="Adlai Heroes Foundation Logo"
             width={100}
             height={40}

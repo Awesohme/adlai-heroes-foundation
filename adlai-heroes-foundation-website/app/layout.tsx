@@ -22,7 +22,11 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
   title: "Adlai Heroes Foundation",
   description: "Supporting underprivileged children through education and empowerment.",
-    generator: 'v0.dev'
+  generator: 'v0.dev',
+  icons: {
+    icon: 'https://res.cloudinary.com/dcvuzffgj/image/upload/v1754225835/White_bg_logo_rmuevq.jpg',
+    apple: 'https://res.cloudinary.com/dcvuzffgj/image/upload/v1754225835/White_bg_logo_rmuevq.jpg',
+  }
 }
 
 export default function RootLayout({

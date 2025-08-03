@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { PlusIcon, EditIcon, TrashIcon, GlobeIcon, SettingsIcon } from "lucide-react"
-import { type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page } from "@/lib/supabase"
+import { type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page, type HeroSlide, type Partner } from "@/lib/supabase"
 
 interface AdminTabsProps {
   programs: Program[]
@@ -16,6 +16,8 @@ interface AdminTabsProps {
   boardMembers: BoardMember[]
   contentSections: ContentSection[]
   pages: Page[]
+  heroSlides: HeroSlide[]
+  partners: Partner[]
   onEdit: (item: any, type: string) => void
   onAdd: (type: string) => void
   onDelete: (id: number, type: string) => void
@@ -29,21 +31,95 @@ export default function AdminTabs({
   boardMembers,
   contentSections,
   pages,
+  heroSlides,
+  partners,
   onEdit,
   onAdd,
   onDelete
 }: AdminTabsProps) {
   return (
     <Tabs defaultValue="programs" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-7">
+      <TabsList className="grid w-full grid-cols-9">
+        <TabsTrigger value="hero-slides">Hero Slides</TabsTrigger>
         <TabsTrigger value="programs">Programs</TabsTrigger>
         <TabsTrigger value="stats">Impact Stats</TabsTrigger>
         <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
         <TabsTrigger value="blog">Blog Posts</TabsTrigger>
         <TabsTrigger value="board">Board Members</TabsTrigger>
+        <TabsTrigger value="partners">Partners</TabsTrigger>
         <TabsTrigger value="content">Page Content</TabsTrigger>
         <TabsTrigger value="pages">Page Settings</TabsTrigger>
       </TabsList>
+
+      {/* Hero Slides Tab */}
+      <TabsContent value="hero-slides">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Hero Slides Management</CardTitle>
+            <Button onClick={() => onAdd('hero-slide')} size="sm">
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add Hero Slide
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {heroSlides.map((slide) => (
+                <div key={slide.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">{slide.title}</h3>
+                      {!slide.active && <Badge variant="secondary">Inactive</Badge>}
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">{slide.subtitle}</p>
+                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                      <span>Order: {slide.order_index}</span>
+                      <span>Created: {new Date(slide.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => onEdit(slide, 'hero-slide')}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <EditIcon className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="destructive">
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Hero Slide</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{slide.title}"? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => onDelete(slide.id, 'hero-slide')}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              ))}
+              {heroSlides.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No hero slides found. Create your first hero slide to get started.
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
 
       {/* Programs Tab */}
       <TabsContent value="programs">
@@ -326,6 +402,81 @@ export default function AdminTabs({
                   <p className="text-xs text-gray-500 mt-2">Order: {member.order_index}</p>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Partners Tab */}
+      <TabsContent value="partners">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Partners Management</CardTitle>
+            <Button onClick={() => onAdd('partner')} size="sm">
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add Partner
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {partners.map((partner) => (
+                <div key={partner.id} className="p-4 border rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold">{partner.name}</h3>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => onEdit(partner, 'partner')}>
+                        <EditIcon className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="text-red-600">
+                            <TrashIcon className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Partner</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{partner.name}"? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => onDelete(partner.id, 'partner')}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    {!partner.active && <Badge variant="secondary">Inactive</Badge>}
+                    <span className="text-xs text-gray-500">Order: {partner.order_index}</span>
+                  </div>
+                  {partner.website_url && (
+                    <a 
+                      href={partner.website_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      {partner.website_url}
+                    </a>
+                  )}
+                  <p className="text-xs text-gray-500 mt-2">
+                    Created: {new Date(partner.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+              {partners.length === 0 && (
+                <div className="col-span-full text-center py-8 text-gray-500">
+                  No partners found. Add your first partner to get started.
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

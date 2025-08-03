@@ -7,14 +7,25 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BookOpenIcon, UsersIcon, HeartHandshakeIcon, MapPinIcon, StarIcon, HeartIcon, TrendingUpIcon, HomeIcon, TargetIcon, AwardIcon } from "lucide-react"
 import { TestimonialCarousel } from "@/components/testimonial-carousel"
-import { supabaseApi, type Program, type ImpactStat, type Testimonial } from "@/lib/supabase"
+import { HeroSlider } from "@/components/hero-slider"
+import { PartnersCarousel } from "@/components/partners-carousel"
+import { supabaseApi, type Program, type ImpactStat, type Testimonial, type HeroSlide, type Partner } from "@/lib/supabase"
 
 // Fallback data when Supabase is not available
-const fallbackHero = {
-  title: "Empowering Futures, One Child at a Time",
-  subtitle: "The Adlai Heroes Foundation is dedicated to supporting underprivileged children through education, healthcare, and community development.",
-  backgroundImage: "/placeholder.svg?height=800&width=1920"
-}
+const fallbackHeroSlides: HeroSlide[] = [
+  {
+    id: 1,
+    title: "Empowering Futures, One Child at a Time",
+    subtitle: "The Adlai Heroes Foundation is dedicated to supporting underprivileged children through education, healthcare, and community development.",
+    image_url: "https://res.cloudinary.com/dcvuzffgj/image/upload/v1754226708/Adlai_heroes_nq7ugl.jpg",
+    button_text: "Donate Now",
+    button_link: "/donate",
+    order_index: 1,
+    active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+]
 
 const fallbackStats: ImpactStat[] = [
   {
@@ -104,16 +115,20 @@ export default function DynamicHomepage() {
   const [stats, setStats] = useState<ImpactStat[]>(fallbackStats)
   const [programs, setPrograms] = useState<Program[]>(fallbackPrograms)
   const [testimonials, setTestimonials] = useState(fallbackTestimonials)
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(fallbackHeroSlides)
+  const [partners, setPartners] = useState<Partner[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function loadData() {
       try {
         // Load data from Supabase
-        const [statsData, programsData, testimonialsData] = await Promise.all([
+        const [statsData, programsData, testimonialsData, heroSlidesData, partnersData] = await Promise.all([
           supabaseApi.getImpactStats(),
           supabaseApi.getPrograms(),
-          supabaseApi.getTestimonials(true) // Only featured testimonials
+          supabaseApi.getTestimonials(true), // Only featured testimonials
+          supabaseApi.getHeroSlides(),
+          supabaseApi.getPartners()
         ])
 
         // Use Supabase data if available, otherwise keep fallback
@@ -126,6 +141,8 @@ export default function DynamicHomepage() {
             title: t.location || "Community Member",
           })))
         }
+        if (heroSlidesData.length > 0) setHeroSlides(heroSlidesData)
+        if (partnersData.length > 0) setPartners(partnersData)
       } catch (error) {
         console.error('Error loading data from Supabase:', error)
         // Keep fallback data on error
@@ -167,43 +184,7 @@ export default function DynamicHomepage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative h-[600px] md:h-[700px] lg:h-[800px] flex items-center justify-center text-center overflow-hidden">
-        <Image
-          src={fallbackHero.backgroundImage}
-          alt={fallbackHero.title}
-          fill
-          className="absolute inset-0 z-0 object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10" aria-hidden="true"></div>
-        <div className="relative z-20 text-white px-4 max-w-5xl mx-auto space-y-6">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight drop-shadow-lg">
-            {fallbackHero.title}
-          </h1>
-          <p className="text-lg md:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto drop-shadow-md">
-            {fallbackHero.subtitle}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 text-lg shadow-lg"
-            >
-              <Link href="/donate">
-                Donate Now
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary px-8 py-3 text-lg bg-transparent shadow-lg"
-            >
-              <Link href="/volunteer">
-                Become a Volunteer
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <HeroSlider slides={heroSlides} />
 
       {/* Mission & Vision Section */}
       <section className="py-16 md:py-24 bg-white">
@@ -211,6 +192,7 @@ export default function DynamicHomepage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card variant="glass" className="p-6 shadow-lg flex flex-col items-center text-center">
               <CardHeader>
+                <TargetIcon className="h-16 w-16 text-primary mx-auto mb-4" />
                 <CardTitle className="text-3xl font-bold text-gradient-primary mb-4">Our Mission</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -231,6 +213,7 @@ export default function DynamicHomepage() {
             </Card>
             <Card variant="glass" className="p-6 shadow-lg flex flex-col items-center text-center">
               <CardHeader>
+                <StarIcon className="h-16 w-16 text-primary mx-auto mb-4" />
                 <CardTitle className="text-3xl font-bold text-gradient-primary mb-4">Our Vision</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -328,6 +311,11 @@ export default function DynamicHomepage() {
           <TestimonialCarousel testimonials={testimonials} />
         </div>
       </section>
+
+      {/* Partners Section */}
+      {partners.length > 0 && (
+        <PartnersCarousel partners={partners} />
+      )}
     </>
   )
 }

@@ -8,7 +8,7 @@ export function Footer() {
       <div className="container mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
         <div className="space-y-4 md:col-span-1">
           <Image
-            src="/placeholder.svg?height=60&width=150"
+            src="https://res.cloudinary.com/dcvuzffgj/image/upload/v1754225835/White_bg_logo_rmuevq.jpg"
             alt="Adlai Heroes Foundation Logo"
             width={150}
             height={60}

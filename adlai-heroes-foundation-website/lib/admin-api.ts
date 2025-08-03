@@ -1,5 +1,5 @@
 // Admin API client for secure server-side operations
-import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page } from './supabase'
+import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner } from './supabase'
 
 class AdminApiClient {
   private async request<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -150,6 +150,48 @@ class AdminApiClient {
     return this.request<Page>(`/api/admin/pages/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
+    })
+  }
+
+  // Hero Slides
+  async updateHeroSlide(id: number, data: Partial<Omit<HeroSlide, 'id' | 'created_at' | 'updated_at'>>): Promise<HeroSlide> {
+    return this.request<HeroSlide>(`/api/admin/hero-slides/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async createHeroSlide(data: Omit<HeroSlide, 'id' | 'created_at' | 'updated_at'>): Promise<HeroSlide> {
+    return this.request<HeroSlide>('/api/admin/hero-slides', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteHeroSlide(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/hero-slides/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  // Partners
+  async updatePartner(id: number, data: Partial<Omit<Partner, 'id' | 'created_at'>>): Promise<Partner> {
+    return this.request<Partner>(`/api/admin/partners/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async createPartner(data: Omit<Partner, 'id' | 'created_at'>): Promise<Partner> {
+    return this.request<Partner>('/api/admin/partners', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deletePartner(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/partners/${id}`, {
+      method: 'DELETE',
     })
   }
 }

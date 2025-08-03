@@ -36,7 +36,7 @@ Follow these rules when you write code:
 - Always validate environment variables and provide meaningful defaults.
 
 ### Supabase Database Integration Guidelines
-- Always set up proper database tables for: Pages, Programs, Blog Posts, Board Members, Testimonials, Impact Stats
+- Always set up proper database tables for: Pages, Programs, Blog Posts, Board Members, Testimonials, Impact Stats, Hero Slides, Partners
 - Implement Row Level Security (RLS) policies for data protection
 - Use environment variables for Supabase URL, anonymous key, and service role key
 - Handle image uploads through Supabase Storage with proper validation and size limits
