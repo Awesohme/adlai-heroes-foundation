@@ -97,9 +97,9 @@ export default function BlogPage() {
       <section className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-bold text-gradient-primary mb-8">Updates from the Foundation</h2>
         {currentPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
             {currentPosts.map((post) => (
-              <Card variant="glass" key={post.id} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <Card variant="glass" key={post.id} className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-[320px] flex-shrink-0">
                 <Image
                   src={post.image || "/placeholder.svg"}
                   alt={post.title}

@@ -258,7 +258,7 @@ export default function DynamicHomepage() {
       <section className="py-16 md:py-24 bg-secondary">
         <div className="container mx-auto px-4 md:px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-12 text-gradient-primary">Our Impact in Numbers</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 place-items-center max-w-6xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
             {stats.map((stat) => {
               const IconComponent = getIconComponent(stat.icon || 'users')
               
@@ -266,7 +266,7 @@ export default function DynamicHomepage() {
                 <Card
                   key={stat.id}
                   variant="glass"
-                  className="p-6 flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300 w-full max-w-[280px]"
+                  className="p-6 flex flex-col items-center text-center hover:shadow-xl transition-shadow duration-300 w-[280px] flex-shrink-0"
                 >
                   <IconComponent className="h-12 w-12 text-primary mb-4" />
                   <CardTitle className="text-5xl font-bold text-gradient-primary mb-2">{stat.value}</CardTitle>
@@ -285,10 +285,10 @@ export default function DynamicHomepage() {
       <section className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4 md:px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-gradient-primary mb-12">Our Latest Initiatives</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
             {programs.slice(0, 3).map((program) => {
               return (
-                <Card key={program.id} variant="glass" className="hover:shadow-xl transition-shadow duration-300">
+                <Card key={program.id} variant="glass" className="hover:shadow-xl transition-shadow duration-300 w-[320px] flex-shrink-0">
                   <Image
                     src={program.featured_image || "/placeholder.svg?height=250&width=400"}
                     alt={program.title}

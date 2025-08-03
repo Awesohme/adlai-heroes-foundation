@@ -53,9 +53,9 @@ export default function BoardPage() {
       {/* Board Members Grid */}
       <section className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-bold text-gradient-primary mb-8">Meet Our Esteemed Board Members</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
           {boardMembers.map((member, index) => (
-            <Card variant="glass" key={index} className="p-6 flex flex-col items-center text-center shadow-lg">
+            <Card variant="glass" key={index} className="p-6 flex flex-col items-center text-center shadow-lg w-[240px] flex-shrink-0">
               <Image
                 src={member.image || "/placeholder.svg"}
                 alt={member.name}
