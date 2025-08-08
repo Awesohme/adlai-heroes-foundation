@@ -85,8 +85,15 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
       
       if (program) {
         console.log('📤 Sending update to Supabase:', { id: program.id, data: formData })
-        const result = await supabaseApi.updateProgram(program.id, formData)
-        console.log('✅ Update result:', result)
+        try {
+          const result = await supabaseApi.updateProgram(program.id, formData)
+          console.log('✅ Update result:', result)
+        } catch (updateError) {
+          console.error('💥 Supabase update error details:', updateError)
+          console.error('💥 Error message:', updateError.message)
+          console.error('💥 Error code:', updateError.code)
+          throw updateError // Re-throw to be caught by outer catch block
+        }
         toast.success('Program Updated Successfully!', {
           description: `"${formData.title}" has been updated in the ${formData.category} category`,
           duration: 4000
