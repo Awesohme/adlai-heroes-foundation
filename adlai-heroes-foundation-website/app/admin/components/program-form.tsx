@@ -58,33 +58,58 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('🚀 Form submission started')
+    console.log('📝 Form data:', formData)
+    console.log('🏷️ Program ID:', program?.id)
+    
+    // Validate required fields
+    if (!formData.title.trim()) {
+      toast.error('Title is required')
+      return
+    }
+    if (!formData.slug.trim()) {
+      toast.error('URL slug is required')
+      return
+    }
+    if (!formData.description.trim()) {
+      toast.error('Description is required')
+      return
+    }
+    
     setLoading(true)
 
     try {
       const action = program ? 'updating' : 'creating'
+      console.log(`🔄 ${action} program...`)
       toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} program...`)
       
       if (program) {
-        await supabaseApi.updateProgram(program.id, formData)
+        console.log('📤 Sending update to Supabase:', { id: program.id, data: formData })
+        const result = await supabaseApi.updateProgram(program.id, formData)
+        console.log('✅ Update result:', result)
         toast.success('Program Updated Successfully!', {
           description: `"${formData.title}" has been updated in the ${formData.category} category`,
           duration: 4000
         })
       } else {
-        await supabaseApi.createProgram(formData)
+        console.log('📤 Sending create to Supabase:', formData)
+        const result = await supabaseApi.createProgram(formData)
+        console.log('✅ Create result:', result)
         toast.success('Program Created Successfully!', {
           description: `"${formData.title}" has been added to the ${formData.category} category`,
           duration: 4000
         })
       }
+      console.log('🎉 Operation completed, calling onSave()')
       onSave()
     } catch (error) {
-      console.error('Error saving program:', error)
+      console.error('❌ Error saving program:', error)
       toast.error('Failed to Save Program', {
         description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.',
         duration: 6000
       })
     } finally {
+      console.log('🏁 Finally block - setting loading to false')
       setLoading(false)
     }
   }
