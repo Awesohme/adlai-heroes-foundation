@@ -1,18 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import dynamic from 'next/dynamic'
 import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-
-// Dynamically import ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), { 
-  ssr: false,
-  loading: () => <div className="h-32 bg-gray-50 animate-pulse rounded-md" />
-})
-
-// Import Quill styles
-import 'react-quill/dist/quill.snow.css'
+import { 
+  Bold, 
+  Italic, 
+  Underline, 
+  List, 
+  ListOrdered, 
+  Link, 
+  Quote,
+  Type
+} from "lucide-react"
 
 interface WYSIWYGEditorProps {
   value: string
@@ -33,136 +34,223 @@ export default function WYSIWYGEditor({
   minHeight = "200px",
   required = false
 }: WYSIWYGEditorProps) {
-  const [isMounted, setIsMounted] = useState(false)
+  const [isPreview, setIsPreview] = useState(false)
 
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
+  const applyFormat = (format: string) => {
+    // Simple text formatting for basic rich text
+    const textarea = document.getElementById('rich-editor') as HTMLTextAreaElement
+    if (!textarea) return
 
-  // Quill modules configuration
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
-      ['link', 'blockquote'],
-      [{ 'align': [] }],
-      [{ 'color': [] }, { 'background': [] }],
-      ['clean']
-    ],
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const selectedText = value.substring(start, end)
+    let newText = value
+
+    if (selectedText) {
+      let formattedText = selectedText
+      
+      switch (format) {
+        case 'bold':
+          formattedText = `**${selectedText}**`
+          break
+        case 'italic':
+          formattedText = `*${selectedText}*`
+          break
+        case 'underline':
+          formattedText = `<u>${selectedText}</u>`
+          break
+        case 'list':
+          formattedText = `- ${selectedText}`
+          break
+        case 'ordered-list':
+          formattedText = `1. ${selectedText}`
+          break
+        case 'link':
+          const url = prompt('Enter URL:')
+          if (url) formattedText = `[${selectedText}](${url})`
+          break
+        case 'quote':
+          formattedText = `> ${selectedText}`
+          break
+        case 'h1':
+          formattedText = `# ${selectedText}`
+          break
+        case 'h2':
+          formattedText = `## ${selectedText}`
+          break
+        case 'h3':
+          formattedText = `### ${selectedText}`
+          break
+      }
+      
+      newText = value.substring(0, start) + formattedText + value.substring(end)
+      onChange(newText)
+    }
   }
 
-  const formats = [
-    'header', 'font', 'size',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'align', 'color', 'background'
-  ]
-
-  if (!isMounted) {
-    return (
-      <div className="space-y-2">
-        {label && (
-          <Label htmlFor="wysiwyg-editor">
-            {label} {required && <span className="text-red-500">*</span>}
-          </Label>
-        )}
-        <div className="h-32 bg-gray-50 animate-pulse rounded-md" />
-      </div>
-    )
+  const renderPreview = (text: string) => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+      .replace(/^- (.*$)/gm, '<li>$1</li>')
+      .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/\n/g, '<br>')
   }
 
   return (
     <div className={cn("space-y-2", className)}>
       {label && (
-        <Label htmlFor="wysiwyg-editor">
+        <Label htmlFor="rich-editor">
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
       )}
       
-      <div className="wysiwyg-editor-wrapper">
-        <ReactQuill
-          theme="snow"
-          value={value}
-          onChange={onChange}
-          modules={modules}
-          formats={formats}
-          placeholder={placeholder}
-          className="bg-white"
-          style={{
-            minHeight: minHeight,
-            '--quill-editor-height': minHeight
-          } as React.CSSProperties}
-        />
+      <div className="border border-gray-300 rounded-md overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('bold')}
+            className="h-8 w-8 p-0"
+          >
+            <Bold className="w-4 h-4" />
+          </Button>
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('italic')}
+            className="h-8 w-8 p-0"
+          >
+            <Italic className="w-4 h-4" />
+          </Button>
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('underline')}
+            className="h-8 w-8 p-0"
+          >
+            <Underline className="w-4 h-4" />
+          </Button>
+
+          <div className="w-px h-6 bg-gray-300 mx-1" />
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('h1')}
+            className="h-8 px-2"
+          >
+            H1
+          </Button>
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('h2')}
+            className="h-8 px-2"
+          >
+            H2
+          </Button>
+
+          <div className="w-px h-6 bg-gray-300 mx-1" />
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('list')}
+            className="h-8 w-8 p-0"
+          >
+            <List className="w-4 h-4" />
+          </Button>
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('ordered-list')}
+            className="h-8 w-8 p-0"
+          >
+            <ListOrdered className="w-4 h-4" />
+          </Button>
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('link')}
+            className="h-8 w-8 p-0"
+          >
+            <Link className="w-4 h-4" />
+          </Button>
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => applyFormat('quote')}
+            className="h-8 w-8 p-0"
+          >
+            <Quote className="w-4 h-4" />
+          </Button>
+
+          <div className="flex-1" />
+          
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsPreview(!isPreview)}
+            className="h-8 px-3 text-sm"
+          >
+            {isPreview ? 'Edit' : 'Preview'}
+          </Button>
+        </div>
+
+        {/* Editor/Preview Area */}
+        {isPreview ? (
+          <div 
+            className="p-4 prose max-w-none"
+            style={{ minHeight }}
+            dangerouslySetInnerHTML={{ __html: renderPreview(value) }}
+          />
+        ) : (
+          <textarea
+            id="rich-editor"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="w-full p-4 border-0 resize-none focus:outline-none focus:ring-0"
+            style={{ minHeight }}
+            rows={Math.max(8, Math.ceil(parseInt(minHeight) / 24))}
+          />
+        )}
       </div>
 
-      <style jsx global>{`
-        .wysiwyg-editor-wrapper .ql-editor {
-          min-height: ${minHeight};
-          font-family: inherit;
-          font-size: 14px;
-          line-height: 1.5;
-        }
-        
-        .wysiwyg-editor-wrapper .ql-toolbar {
-          border-top: 1px solid #e2e8f0;
-          border-left: 1px solid #e2e8f0;
-          border-right: 1px solid #e2e8f0;
-          border-bottom: none;
-          border-radius: 0.375rem 0.375rem 0 0;
-          background: #f8fafc;
-        }
-        
-        .wysiwyg-editor-wrapper .ql-container {
-          border: 1px solid #e2e8f0;
-          border-top: none;
-          border-radius: 0 0 0.375rem 0.375rem;
-          font-size: 14px;
-        }
-        
-        .wysiwyg-editor-wrapper .ql-editor.ql-blank::before {
-          color: #9ca3af;
-          font-style: normal;
-          font-size: 14px;
-        }
-        
-        .wysiwyg-editor-wrapper .ql-editor:focus {
-          outline: none;
-        }
-        
-        .wysiwyg-editor-wrapper .ql-container.ql-snow {
-          border: 1px solid #e2e8f0;
-          border-top: none;
-        }
-        
-        .wysiwyg-editor-wrapper:focus-within .ql-toolbar,
-        .wysiwyg-editor-wrapper:focus-within .ql-container {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 1px #3b82f6;
-        }
-
-        /* Dark mode styles */
-        @media (prefers-color-scheme: dark) {
-          .wysiwyg-editor-wrapper .ql-toolbar {
-            background: #1e293b;
-            border-color: #334155;
-          }
-          
-          .wysiwyg-editor-wrapper .ql-container {
-            border-color: #334155;
-            background: #0f172a;
-          }
-          
-          .wysiwyg-editor-wrapper .ql-editor {
-            color: #f1f5f9;
-          }
-          
-          .wysiwyg-editor-wrapper .ql-editor.ql-blank::before {
-            color: #64748b;
-          }
-        }
-      `}</style>
+      <div className="text-sm text-gray-500">
+        <p className="mb-1">Formatting help:</p>
+        <div className="flex flex-wrap gap-4 text-xs">
+          <span>**bold**</span>
+          <span>*italic*</span>
+          <span># Heading</span>
+          <span>- List item</span>
+          <span>[link](url)</span>
+          <span>&gt; Quote</span>
+        </div>
+      </div>
     </div>
   )
 }

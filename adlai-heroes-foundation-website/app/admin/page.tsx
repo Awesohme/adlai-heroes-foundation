@@ -22,6 +22,7 @@ import HeroSlideForm from "./components/hero-slide-form"
 import PartnerForm from "./components/partner-form"
 import { ImpactTimelineForm } from "./components/impact-timeline-form"
 import AdminTabs from "./components/admin-tabs"
+import ErrorBoundary from "./components/error-boundary"
 
 export default function AdminDashboard() {
   const [programs, setPrograms] = useState<Program[]>([])
@@ -354,27 +355,31 @@ export default function AdminDashboard() {
         </div>
 
         {/* Content Management Tabs */}
-        <AdminTabs
-          programs={programs}
-          stats={stats}
-          testimonials={testimonials}
-          blogPosts={blogPosts}
-          boardMembers={boardMembers}
-          contentSections={contentSections}
-          pages={pages}
-          heroSlides={heroSlides}
-          partners={partners}
-          timeline={timeline}
-          onEdit={handleEdit}
-          onAdd={handleAdd}
-          onDelete={handleDelete}
-        />
+        <ErrorBoundary>
+          <AdminTabs
+            programs={programs}
+            stats={stats}
+            testimonials={testimonials}
+            blogPosts={blogPosts}
+            boardMembers={boardMembers}
+            contentSections={contentSections}
+            pages={pages}
+            heroSlides={heroSlides}
+            partners={partners}
+            timeline={timeline}
+            onEdit={handleEdit}
+            onAdd={handleAdd}
+            onDelete={handleDelete}
+          />
+        </ErrorBoundary>
 
         {/* Edit Form Dialog */}
         {showForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg w-full max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl max-h-[95vh] overflow-y-auto shadow-2xl">
-              {renderForm()}
+              <ErrorBoundary>
+                {renderForm()}
+              </ErrorBoundary>
             </div>
           </div>
         )}
