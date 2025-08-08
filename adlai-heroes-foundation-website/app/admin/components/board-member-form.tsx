@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { supabaseApi, type BoardMember } from "@/lib/supabase"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
+import WYSIWYGEditor from "@/components/wysiwyg-editor"
 
 interface BoardMemberFormProps {
   member?: BoardMember
@@ -60,7 +61,7 @@ export default function BoardMemberForm({ member, onSave, onCancel }: BoardMembe
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>{member ? 'Edit Board Member' : 'Add New Board Member'}</CardTitle>
       </CardHeader>
@@ -87,16 +88,13 @@ export default function BoardMemberForm({ member, onSave, onCancel }: BoardMembe
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="bio">Biography</Label>
-            <Textarea
-              id="bio"
-              value={formData.bio}
-              onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-              placeholder="Brief biography and background"
-              rows={6}
-            />
-          </div>
+          <WYSIWYGEditor
+            label="Biography"
+            value={formData.bio}
+            onChange={(value) => setFormData(prev => ({ ...prev, bio: value }))}
+            placeholder="Write a brief biography and background..."
+            minHeight="250px"
+          />
 
           <ImageUpload
             currentImageUrl={formData.image}

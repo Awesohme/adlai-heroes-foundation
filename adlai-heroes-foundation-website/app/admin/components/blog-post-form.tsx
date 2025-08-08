@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabaseApi, type BlogPost } from "@/lib/supabase"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
+import WYSIWYGEditor from "@/components/wysiwyg-editor"
 
 interface BlogPostFormProps {
   post?: BlogPost
@@ -86,7 +87,7 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
   }
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="w-full max-w-6xl mx-auto">
       <CardHeader>
         <CardTitle>{post ? 'Edit Blog Post' : 'Add New Blog Post'}</CardTitle>
       </CardHeader>
@@ -144,16 +145,14 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="content">Full Content</Label>
-                <Textarea
-                  id="content"
-                  value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                  placeholder="Full blog post content (supports Markdown)"
-                  rows={12}
-                />
-              </div>
+              <WYSIWYGEditor
+                label="Full Content"
+                value={formData.content}
+                onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                placeholder="Write the full blog post content..."
+                minHeight="400px"
+                required
+              />
 
               <ImageUpload
                 currentImageUrl={formData.featured_image}

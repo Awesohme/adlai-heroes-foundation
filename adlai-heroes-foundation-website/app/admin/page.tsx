@@ -373,7 +373,7 @@ export default function AdminDashboard() {
         {/* Edit Form Dialog */}
         {showForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-lg w-full max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl max-h-[95vh] overflow-y-auto shadow-2xl">
               {renderForm()}
             </div>
           </div>

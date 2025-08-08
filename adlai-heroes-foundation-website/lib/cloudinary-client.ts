@@ -1,24 +1,35 @@
 // Cloudinary configuration and upload utilities
-import { v2 as cloudinary } from 'cloudinary'
 
-// Configure Cloudinary (server-side only)
-if (process.env.CLOUDINARY_URL) {
-  // Parse the CLOUDINARY_URL if provided
-  const url = new URL(process.env.CLOUDINARY_URL)
-  cloudinary.config({
-    cloud_name: url.hostname,
-    api_key: url.username,
-    api_secret: url.password,
-    secure: true
-  })
-} else {
-  // Fallback to individual environment variables
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-    secure: true
-  })
+// Server-side cloudinary import only
+let cloudinary: any = null
+if (typeof window === 'undefined') {
+  // Only import on server-side
+  try {
+    const { v2 } = require('cloudinary')
+    cloudinary = v2
+    
+    // Configure Cloudinary (server-side only)
+    if (process.env.CLOUDINARY_URL) {
+      // Parse the CLOUDINARY_URL if provided
+      const url = new URL(process.env.CLOUDINARY_URL)
+      cloudinary.config({
+        cloud_name: url.hostname,
+        api_key: url.username,
+        api_secret: url.password,
+        secure: true
+      })
+    } else {
+      // Fallback to individual environment variables
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        secure: true
+      })
+    }
+  } catch (error) {
+    console.warn('Cloudinary not available on server-side:', error)
+  }
 }
 
 // Client-side upload function using unsigned upload
@@ -62,6 +73,10 @@ export const serverUploadToCloudinary = async (file: Buffer | string, options: {
   public_id?: string
   transformation?: any
 } = {}) => {
+  if (!cloudinary) {
+    throw new Error('Cloudinary not available on server-side')
+  }
+  
   try {
     const result = await cloudinary.uploader.upload(file, {
       folder: options.folder || 'adlai-heroes',
@@ -86,6 +101,10 @@ export const serverUploadToCloudinary = async (file: Buffer | string, options: {
 
 // Delete image from Cloudinary
 export const deleteFromCloudinary = async (publicId: string) => {
+  if (!cloudinary) {
+    throw new Error('Cloudinary not available on server-side')
+  }
+  
   try {
     const result = await cloudinary.uploader.destroy(publicId)
     return result

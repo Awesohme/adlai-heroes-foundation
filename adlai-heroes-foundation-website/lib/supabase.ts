@@ -24,6 +24,7 @@ export interface Program {
   description?: string
   content?: string
   featured_image?: string
+  gallery_images?: string[]
   category: 'education' | 'health' | 'empowerment' | 'community'
   published: boolean
   meta_title?: string

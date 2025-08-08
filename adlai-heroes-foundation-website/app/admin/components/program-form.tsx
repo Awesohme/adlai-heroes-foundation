@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabaseApi, type Program } from "@/lib/supabase"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
+import WYSIWYGEditor from "@/components/wysiwyg-editor"
+import GalleryManager from "./gallery-manager"
 
 interface ProgramFormProps {
   program?: Program
@@ -27,6 +29,7 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
     description: program?.description || '',
     content: program?.content || '',
     featured_image: program?.featured_image || '',
+    gallery_images: program?.gallery_images || [],
     category: program?.category || 'education' as 'education' | 'health' | 'empowerment' | 'community',
     published: program?.published || false,
     meta_title: program?.meta_title || '',
@@ -87,15 +90,16 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
   }
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="w-full max-w-6xl mx-auto">
       <CardHeader>
         <CardTitle>{program ? 'Edit Program' : 'Add New Program'}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="content">Content</TabsTrigger>
+              <TabsTrigger value="gallery">Gallery</TabsTrigger>
               <TabsTrigger value="seo">SEO & Meta</TabsTrigger>
             </TabsList>
 
@@ -150,23 +154,13 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="content">Full Content</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Full program description and details"
-              rows={8}
-            />
-          </div>
-
-              <ImageUpload
-                currentImageUrl={formData.featured_image}
-                onImageChange={(url) => setFormData(prev => ({ ...prev, featured_image: url }))}
-                label="Featured Image"
-                folder="programs/"
-              />
+          <WYSIWYGEditor
+            label="Full Content"
+            value={formData.content}
+            onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+            placeholder="Write the full program description and details..."
+            minHeight="300px"
+          />
 
               <div className="flex items-center space-x-2">
                 <Switch
@@ -176,6 +170,18 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
                 />
                 <Label htmlFor="published">Publish this program</Label>
               </div>
+            </TabsContent>
+
+            <TabsContent value="gallery" className="space-y-6">
+              <GalleryManager
+                images={formData.gallery_images}
+                featuredImage={formData.featured_image}
+                onImagesChange={(images) => setFormData(prev => ({ ...prev, gallery_images: images }))}
+                onFeaturedImageChange={(url) => setFormData(prev => ({ ...prev, featured_image: url }))}
+                label="Program Gallery"
+                maxImages={5}
+                folder="programs/"
+              />
             </TabsContent>
 
             <TabsContent value="seo" className="space-y-6">

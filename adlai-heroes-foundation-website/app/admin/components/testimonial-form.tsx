@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { supabaseApi, type Testimonial } from "@/lib/supabase"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
+import WYSIWYGEditor from "@/components/wysiwyg-editor"
 
 interface TestimonialFormProps {
   testimonial?: Testimonial
@@ -61,7 +62,7 @@ export default function TestimonialForm({ testimonial, onSave, onCancel }: Testi
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle>{testimonial ? 'Edit Testimonial' : 'Add New Testimonial'}</CardTitle>
       </CardHeader>
@@ -88,17 +89,14 @@ export default function TestimonialForm({ testimonial, onSave, onCancel }: Testi
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="content">Testimonial Content *</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Enter the testimonial text"
-              rows={6}
-              required
-            />
-          </div>
+          <WYSIWYGEditor
+            label="Testimonial Content *"
+            value={formData.content}
+            onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+            placeholder="Write the testimonial content..."
+            minHeight="200px"
+            required
+          />
 
           <ImageUpload
             currentImageUrl={formData.image}
