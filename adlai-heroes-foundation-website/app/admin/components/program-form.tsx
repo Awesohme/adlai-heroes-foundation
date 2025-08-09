@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { supabaseApi, type Program } from "@/lib/supabase"
+import { type Program } from "@/lib/supabase"
+import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 import WYSIWYGEditor from "@/components/wysiwyg-editor"
@@ -61,6 +62,7 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
     console.log('🚀 Form submission started')
     console.log('📝 Form data:', formData)
     console.log('🏷️ Program ID:', program?.id)
+    console.log('🔍 Full program object:', program)
     
     // Validate required fields
     if (!formData.title.trim()) {
@@ -84,23 +86,22 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
       toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} program...`)
       
       if (program) {
-        console.log('📤 Sending update to Supabase:', { id: program.id, data: formData })
+        console.log('📤 Sending update to API:', { id: program.id, data: formData })
         try {
-          const result = await supabaseApi.updateProgram(program.id, formData)
+          const result = await adminApi.updateProgram(program.id, formData)
           console.log('✅ Update result:', result)
-        } catch (updateError) {
-          console.error('💥 Supabase update error details:', updateError)
-          console.error('💥 Error message:', updateError.message)
-          console.error('💥 Error code:', updateError.code)
-          throw updateError // Re-throw to be caught by outer catch block
+        } catch (updateError: any) {
+          console.error('💥 API update error details:', updateError)
+          console.error('💥 Error message:', updateError?.message)
+          throw updateError
         }
         toast.success('Program Updated Successfully!', {
           description: `"${formData.title}" has been updated in the ${formData.category} category`,
           duration: 4000
         })
       } else {
-        console.log('📤 Sending create to Supabase:', formData)
-        const result = await supabaseApi.createProgram(formData)
+        console.log('📤 Sending create to API:', formData)
+        const result = await adminApi.createProgram(formData as any)
         console.log('✅ Create result:', result)
         toast.success('Program Created Successfully!', {
           description: `"${formData.title}" has been added to the ${formData.category} category`,
