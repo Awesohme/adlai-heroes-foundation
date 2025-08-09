@@ -54,10 +54,22 @@ export default function BoardMemberForm({ member, existingMembers = [], onSave, 
       onSave()
     } catch (error) {
       console.error('Error saving board member:', error)
+      console.error('Form data:', formData)
       toast.error('Failed to Save Board Member', {
         description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.',
         duration: 6000
       })
+      
+      // Show detailed error for debugging
+      if (error instanceof Error && error.message) {
+        console.error('Detailed error:', error.message)
+        if (error.message.includes('fetch')) {
+          toast.error('Network Error', {
+            description: 'Please check your internet connection and try again.',
+            duration: 6000
+          })
+        }
+      }
     } finally {
       setLoading(false)
     }

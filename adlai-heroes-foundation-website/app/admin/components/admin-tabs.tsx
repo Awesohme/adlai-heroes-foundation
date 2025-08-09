@@ -26,16 +26,16 @@ interface AdminTabsProps {
 }
 
 export default function AdminTabs({
-  programs,
-  stats,
-  testimonials,
-  blogPosts,
-  boardMembers,
-  contentSections,
-  pages,
-  heroSlides,
-  partners,
-  timeline,
+  programs = [],
+  stats = [],
+  testimonials = [],
+  blogPosts = [],
+  boardMembers = [],
+  contentSections = [],
+  pages = [],
+  heroSlides = [],
+  partners = [],
+  timeline = [],
   onEdit,
   onAdd,
   onDelete
@@ -68,7 +68,7 @@ export default function AdminTabs({
         <TabsTrigger value="board">Board Members</TabsTrigger>
         <TabsTrigger value="partners">Partners</TabsTrigger>
         <TabsTrigger value="content">Page Content</TabsTrigger>
-        <TabsTrigger value="pages">Page Settings</TabsTrigger>
+        <TabsTrigger value="settings">Site Settings</TabsTrigger>
       </TabsList>
 
       {/* Hero Slides Tab */}
@@ -628,36 +628,53 @@ export default function AdminTabs({
         </Card>
       </TabsContent>
 
-      {/* Page Settings Tab */}
-      <TabsContent value="pages">
+      {/* Site Settings Tab */}
+      <TabsContent value="settings">
         <Card>
-          <CardHeader>
-            <CardTitle>Page SEO & Settings</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <SettingsIcon className="h-5 w-5" />
+                Site Settings & Contact Information
+              </CardTitle>
+              <p className="text-sm text-gray-600 mt-1">
+                Manage contact details, social media links, and payment information
+              </p>
+            </div>
+            <Button onClick={() => onAdd('settings')} size="sm">
+              <SettingsIcon className="h-4 w-4 mr-2" />
+              Edit Settings
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {pages.map((page) => (
-                <div key={page.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-semibold text-lg">{page.title}</h3>
-                      <Badge variant="outline">/{page.slug}</Badge>
-                      <Badge variant={page.published ? "default" : "secondary"}>
-                        {page.published ? "Published" : "Draft"}
-                      </Badge>
-                    </div>
-                    <p className="text-gray-600 mt-1 line-clamp-2">{page.meta_description}</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Page Key: {page.page_key} • Updated: {new Date(page.updated_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => onEdit(page, 'page')}>
-                      <SettingsIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <h3 className="font-semibold text-blue-900 mb-2">📞 Contact Information</h3>
+                <p className="text-sm text-blue-800">
+                  Email, phone, address, and site description displayed in the footer and contact pages.
+                </p>
+              </div>
+              
+              <div className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-400">
+                <h3 className="font-semibold text-purple-900 mb-2">📱 Social Media</h3>
+                <p className="text-sm text-purple-800">
+                  Social media profile URLs. Empty links are automatically hidden from the website.
+                </p>
+              </div>
+              
+              <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-400">
+                <h3 className="font-semibold text-green-900 mb-2">💳 Payment Details</h3>
+                <p className="text-sm text-green-800">
+                  Bank account information and QR codes for donation processing.
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-700">
+                <strong>💡 Pro Tip:</strong> Click "Edit Settings" above to modify contact information, 
+                social media links, payment details, and action button URLs. Changes apply site-wide immediately.
+              </p>
             </div>
           </CardContent>
         </Card>

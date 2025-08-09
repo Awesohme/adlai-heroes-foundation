@@ -205,6 +205,19 @@ export interface ImpactTimeline {
   updated_at: string
 }
 
+export interface SiteSettings {
+  id: number
+  setting_key: string
+  setting_value?: string
+  category: string
+  display_name?: string
+  description?: string
+  input_type: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 // Helper functions for data fetching
 export const supabaseApi = {
   // Programs
@@ -890,5 +903,65 @@ export const supabaseApi = {
     
     if (error) throw error
     return true
+  },
+
+  // Site Settings CRUD
+  async getSiteSettings(category?: string) {
+    const query = supabase
+      .from('site_settings')
+      .select('*')
+      .eq('is_active', true)
+      .order('category')
+      .order('setting_key')
+    
+    if (category) {
+      query.eq('category', category)
+    }
+    
+    const { data, error } = await query
+    if (error) throw error
+    return data as SiteSettings[]
+  },
+
+  async getSiteSettingByKey(settingKey: string) {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('*')
+      .eq('setting_key', settingKey)
+      .eq('is_active', true)
+      .single()
+    
+    if (error && error.code !== 'PGRST116') throw error // PGRST116 is "not found"
+    return data as SiteSettings | null
+  },
+
+  async updateSiteSettings(updates: Array<{setting_key: string, setting_value: string}>) {
+    const { error } = await supabaseAdmin
+      .from('site_settings')
+      .upsert(
+        updates.map(update => ({
+          setting_key: update.setting_key,
+          setting_value: update.setting_value,
+          updated_at: new Date().toISOString()
+        })),
+        { 
+          onConflict: 'setting_key',
+          ignoreDuplicates: false 
+        }
+      )
+    
+    if (error) throw error
+    return true
+  },
+
+  async createSiteSetting(data: Omit<SiteSettings, 'id' | 'created_at' | 'updated_at'>) {
+    const { data: result, error } = await supabaseAdmin
+      .from('site_settings')
+      .insert([{ ...data, updated_at: new Date().toISOString() }])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return result as SiteSettings
   }
 }

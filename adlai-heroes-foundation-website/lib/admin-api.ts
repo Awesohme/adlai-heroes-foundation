@@ -1,5 +1,5 @@
 // Admin API client for secure server-side operations
-import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner, TeamMember, ImpactTimeline } from './supabase'
+import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner, TeamMember, ImpactTimeline, SiteSettings } from './supabase'
 
 class AdminApiClient {
   private async request<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -263,6 +263,32 @@ class AdminApiClient {
   async deleteImpactTimeline(id: number): Promise<{ success: boolean }> {
     return this.request<{ success: boolean }>(`/api/admin/impact-timeline/${id}`, {
       method: 'DELETE',
+    })
+  }
+
+  // Site Settings
+  async getSiteSettings(category?: string): Promise<SiteSettings[]> {
+    const url = category 
+      ? `/api/admin/site-settings?category=${encodeURIComponent(category)}`
+      : '/api/admin/site-settings'
+    return this.request<SiteSettings[]>(url)
+  }
+
+  async updateSiteSettings(updates: Array<{setting_key: string, setting_value: string}>): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>('/api/admin/site-settings', {
+      method: 'POST',
+      body: JSON.stringify(updates),
+    })
+  }
+
+  async getSiteSettingByKey(settingKey: string): Promise<SiteSettings> {
+    return this.request<SiteSettings>(`/api/admin/site-settings/${settingKey}`)
+  }
+
+  async updateSiteSetting(settingKey: string, settingValue: string): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/site-settings/${settingKey}`, {
+      method: 'PUT',
+      body: JSON.stringify({ setting_value: settingValue }),
     })
   }
 }

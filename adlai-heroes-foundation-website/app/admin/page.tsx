@@ -21,6 +21,7 @@ import PageForm from "./components/page-form"
 import HeroSlideForm from "./components/hero-slide-form"
 import PartnerForm from "./components/partner-form"
 import { ImpactTimelineForm } from "./components/impact-timeline-form"
+import SiteSettingsForm from "./components/site-settings-form"
 import AdminTabs from "./components/admin-tabs"
 import ErrorBoundary from "./components/error-boundary"
 
@@ -250,6 +251,8 @@ function AdminDashboardContent() {
         return <HeroSlideForm slide={editingItem} existingSlides={heroSlides} onSave={handleSave} onCancel={handleCancel} />
       case 'partner':
         return <PartnerForm partner={editingItem} onSave={handleSave} onCancel={handleCancel} />
+      case 'settings':
+        return <SiteSettingsForm onSave={handleSave} onCancel={handleCancel} />
       case 'timeline':
         return <ImpactTimelineForm timeline={editingItem} onSubmit={async (data) => {
           try {
