@@ -147,13 +147,6 @@ class AdminApiClient {
     })
   }
 
-  async createBoardMember(data: Omit<BoardMember, 'id' | 'created_at'>): Promise<BoardMember> {
-    return this.request<BoardMember>('/api/admin/board-members', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-  }
-
   async deleteBoardMember(id: number): Promise<{ success: boolean }> {
     return this.request<{ success: boolean }>(`/api/admin/board-members/${id}`, {
       method: 'DELETE',

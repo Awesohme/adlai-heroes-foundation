@@ -141,10 +141,10 @@ export default function NotFound() {
         <p className="mt-6 text-gray-600 text-sm">
           Need immediate help? Email us at{" "}
           <a 
-            href="mailto:info@adlaiheroesfoundation.org" 
+            href="mailto:admin@adlaiheroesfoundation.com.ng" 
             className="text-adlaiBlue hover:underline"
           >
-            info@adlaiheroesfoundation.org
+            admin@adlaiheroesfoundation.com.ng
           </a>
         </p>
       </div>
