@@ -1,10 +1,36 @@
+'use client'
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CheckCircleIcon } from "lucide-react"
 import { Card } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { supabaseApi } from "@/lib/supabase"
+import type { SiteSettings } from "@/lib/supabase"
 
 export default function VolunteerPage() {
+  const [settings, setSettings] = useState<{ [key: string]: string }>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadSettings()
+  }, [])
+
+  const loadSettings = async () => {
+    try {
+      const allSettings = await supabaseApi.getSiteSettings() as SiteSettings[]
+      const settingsMap: { [key: string]: string } = {}
+      allSettings.forEach(setting => {
+        settingsMap[setting.setting_key] = setting.setting_value || ''
+      })
+      setSettings(settingsMap)
+    } catch (error) {
+      console.error('Error loading site settings:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       {/* Hero Section */}
@@ -71,11 +97,13 @@ export default function VolunteerPage() {
         <p className="text-lg text-gray-900 mb-8">
           Fill out our volunteer application form to get started. We look forward to welcoming you!
         </p>
-        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 text-lg">
-          <Link href="https://forms.gle/your-google-form-link" target="_blank" rel="noopener noreferrer">
-            Apply to Volunteer
-          </Link>
-        </Button>
+        {settings.volunteer_button_url && (
+          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 text-lg">
+            <Link href={settings.volunteer_button_url} target="_blank" rel="noopener noreferrer">
+              Apply to Volunteer
+            </Link>
+          </Button>
+        )}
       </Card>
     </div>
   )

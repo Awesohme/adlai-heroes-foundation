@@ -1,9 +1,35 @@
+'use client'
+
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
+import { supabaseApi } from "@/lib/supabase"
+import type { SiteSettings } from "@/lib/supabase"
 
 export default function AboutPage() {
+  const [settings, setSettings] = useState<{ [key: string]: string }>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadSettings()
+  }, [])
+
+  const loadSettings = async () => {
+    try {
+      const allSettings = await supabaseApi.getSiteSettings() as SiteSettings[]
+      const settingsMap: { [key: string]: string } = {}
+      allSettings.forEach(setting => {
+        settingsMap[setting.setting_key] = setting.setting_value || ''
+      })
+      setSettings(settingsMap)
+    } catch (error) {
+      console.error('Error loading site settings:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       {/* Hero Section */}
@@ -61,12 +87,16 @@ export default function AboutPage() {
           Together, we can make a lasting impact on the lives of children and communities across Nigeria.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button asChild size="lg">
-            <Link href="/donate">Donate Now</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link href="/volunteer">Become a Volunteer</Link>
-          </Button>
+          {settings.donate_button_url && (
+            <Button asChild size="lg">
+              <Link href={settings.donate_button_url}>Donate Now</Link>
+            </Button>
+          )}
+          {settings.volunteer_button_url && (
+            <Button asChild variant="outline" size="lg">
+              <Link href={settings.volunteer_button_url}>Become a Volunteer</Link>
+            </Button>
+          )}
         </div>
       </section>
     </div>

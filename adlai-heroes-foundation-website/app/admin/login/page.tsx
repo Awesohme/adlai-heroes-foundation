@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { useAuth } from '../lib/auth-context'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -16,6 +17,7 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { login } = useAuth()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,21 +30,13 @@ export default function AdminLogin() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/admin/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const result = await response.json()
-
-      if (response.ok && result.success) {
+      const success = await login(email, password)
+      
+      if (success) {
         toast.success('Login successful!')
         router.push('/admin')
       } else {
-        toast.error(result.error || 'Login failed')
+        toast.error('Invalid email or password')
       }
     } catch (error) {
       console.error('Login error:', error)

@@ -25,10 +25,11 @@ import SiteSettingsForm from "./components/site-settings-form"
 import AdminTabs from "./components/admin-tabs"
 import ErrorBoundary from "./components/error-boundary"
 import AuthGuard from "./components/auth-guard"
+import UserManagement from "./components/user-management"
 import { useAuth } from "./lib/auth-context"
 
 function AdminDashboardContent() {
-  const { user, logout } = useAuth()
+  const { user, logout, hasPermission } = useAuth()
   const [programs, setPrograms] = useState<Program[]>([])
   const [stats, setStats] = useState<ImpactStat[]>([])
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
@@ -43,6 +44,7 @@ function AdminDashboardContent() {
   const [editingItem, setEditingItem] = useState<any>(null)
   const [editingType, setEditingType] = useState<string>('')
   const [showForm, setShowForm] = useState(false)
+  const [showUserManagement, setShowUserManagement] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -413,6 +415,8 @@ function AdminDashboardContent() {
             heroSlides={heroSlides}
             partners={partners}
             timeline={timeline}
+            userPermissions={user?.permissions || []}
+            userRole={user?.role || ''}
             onEdit={handleEdit}
             onAdd={handleAdd}
             onDelete={handleDelete}
@@ -428,6 +432,13 @@ function AdminDashboardContent() {
               </ErrorBoundary>
             </div>
           </div>
+        )}
+
+        {/* User Management Dialog */}
+        {showUserManagement && (
+          <ErrorBoundary>
+            <UserManagement onClose={() => setShowUserManagement(false)} />
+          </ErrorBoundary>
         )}
 
         {/* Quick Actions */}
@@ -458,14 +469,16 @@ function AdminDashboardContent() {
               <SettingsIcon className="h-6 w-6" />
               <span>Refresh Data</span>
             </Button>
-            <Button 
-              className="h-auto p-4 flex flex-col items-center gap-2" 
-              variant="outline"
-              onClick={() => alert('Coming soon: User management functionality')}
-            >
-              <UsersIcon className="h-6 w-6" />
-              <span>User Management</span>
-            </Button>
+            {hasPermission('user_management') && (
+              <Button 
+                className="h-auto p-4 flex flex-col items-center gap-2" 
+                variant="outline"
+                onClick={() => setShowUserManagement(true)}
+              >
+                <UsersIcon className="h-6 w-6" />
+                <span>User Management</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>

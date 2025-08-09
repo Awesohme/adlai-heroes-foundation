@@ -102,15 +102,31 @@ export function Header() {
             <Link className="hover:text-primary transition-colors" href="/">
               Home
             </Link>
-            <Link className="hover:text-primary transition-colors" href="/about">
-              About Adlai
-            </Link>
-            <Link className="hover:text-primary transition-colors" href="/impact">
-              Impact
-            </Link>
-            <Link className="hover:text-primary transition-colors" href="/board">
-              Board
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="hover:text-primary transition-colors cursor-pointer flex items-center gap-1">
+                About
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/about" className="w-full cursor-pointer">
+                    About Adlai
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/impact" className="w-full cursor-pointer">
+                    Impact
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/board" className="w-full cursor-pointer">
+                    Board
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link className="hover:text-primary transition-colors" href="/programs">
               Programs
             </Link>
@@ -147,15 +163,20 @@ export function Header() {
                 <Link className="font-medium hover:text-primary transition-colors" href="/">
                   Home
                 </Link>
-                <Link className="font-medium hover:text-primary transition-colors" href="/about">
-                  About Adlai
-                </Link>
-                <Link className="font-medium hover:text-primary transition-colors" href="/impact">
-                  Impact
-                </Link>
-                <Link className="font-medium hover:text-primary transition-colors" href="/board">
-                  Board
-                </Link>
+                <div className="space-y-2">
+                  <div className="font-medium text-gray-900">About</div>
+                  <div className="pl-4 space-y-2">
+                    <Link className="block text-sm hover:text-primary transition-colors" href="/about">
+                      About Adlai
+                    </Link>
+                    <Link className="block text-sm hover:text-primary transition-colors" href="/impact">
+                      Impact
+                    </Link>
+                    <Link className="block text-sm hover:text-primary transition-colors" href="/board">
+                      Board
+                    </Link>
+                  </div>
+                </div>
                 <Link className="font-medium hover:text-primary transition-colors" href="/programs">
                   Programs
                 </Link>

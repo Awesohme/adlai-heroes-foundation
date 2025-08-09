@@ -20,6 +20,8 @@ interface AdminTabsProps {
   heroSlides: HeroSlide[]
   partners: Partner[]
   timeline: ImpactTimeline[]
+  userPermissions: string[]
+  userRole: string
   onEdit: (item: any, type: string) => void
   onAdd: (type: string) => void
   onDelete: (id: number, type: string) => void
@@ -36,16 +38,41 @@ export default function AdminTabs({
   heroSlides = [],
   partners = [],
   timeline = [],
+  userPermissions = [],
+  userRole = '',
   onEdit,
   onAdd,
   onDelete
 }: AdminTabsProps) {
-  const [activeTab, setActiveTab] = useState<string>('programs')
+  // Helper function to check permissions
+  const hasPermission = (permission: string): boolean => {
+    if (userRole === 'super_admin' || userPermissions.includes('all')) {
+      return true
+    }
+    return userPermissions.includes(permission)
+  }
 
-  // Load saved tab from localStorage on mount
+  // Define available tabs with their permission requirements
+  const availableTabs = [
+    { key: 'programs', permission: 'programs', label: 'Programs', data: programs },
+    { key: 'stats', permission: 'impact_stats', label: 'Impact Stats', data: stats },
+    { key: 'testimonials', permission: 'testimonials', label: 'Testimonials', data: testimonials },
+    { key: 'blog', permission: 'blog_posts', label: 'Blog Posts', data: blogPosts },
+    { key: 'board', permission: 'board_members', label: 'Board Members', data: boardMembers },
+    { key: 'sections', permission: 'content_sections', label: 'Content Sections', data: contentSections },
+    { key: 'pages', permission: 'pages', label: 'Pages', data: pages },
+    { key: 'hero-slides', permission: 'hero_slides', label: 'Hero Slides', data: heroSlides },
+    { key: 'partners', permission: 'partners', label: 'Partners', data: partners },
+    { key: 'timeline', permission: 'timeline', label: 'Timeline', data: timeline },
+    { key: 'settings', permission: 'site_settings', label: 'Site Settings', data: [] }
+  ].filter(tab => hasPermission(tab.permission))
+
+  const [activeTab, setActiveTab] = useState<string>(availableTabs[0]?.key || 'programs')
+
+  // Load saved tab from localStorage on mount, but ensure user has permission
   useEffect(() => {
     const savedTab = localStorage.getItem('admin-active-tab')
-    if (savedTab) {
+    if (savedTab && availableTabs.some(tab => tab.key === savedTab)) {
       setActiveTab(savedTab)
     }
   }, [])
@@ -58,20 +85,17 @@ export default function AdminTabs({
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-      <TabsList className="grid w-full grid-cols-9">
-        <TabsTrigger value="hero-slides">Hero Slides</TabsTrigger>
-        <TabsTrigger value="programs">Programs</TabsTrigger>
-        <TabsTrigger value="stats">Impact Stats</TabsTrigger>
-        <TabsTrigger value="timeline">Timeline</TabsTrigger>
-        <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
-        <TabsTrigger value="blog">Blog Posts</TabsTrigger>
-        <TabsTrigger value="board">Board Members</TabsTrigger>
-        <TabsTrigger value="partners">Partners</TabsTrigger>
-        <TabsTrigger value="settings">Site Settings</TabsTrigger>
+      <TabsList className={`grid w-full grid-cols-${Math.min(availableTabs.length, 9)}`}>
+        {availableTabs.map(tab => (
+          <TabsTrigger key={tab.key} value={tab.key}>
+            {tab.label}
+          </TabsTrigger>
+        ))}
       </TabsList>
 
       {/* Hero Slides Tab */}
-      <TabsContent value="hero-slides">
+      {hasPermission('hero_slides') && (
+        <TabsContent value="hero-slides">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Hero Slides Management</CardTitle>
