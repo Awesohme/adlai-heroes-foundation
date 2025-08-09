@@ -180,6 +180,7 @@ export default function AdminTabs({
           </CardContent>
         </Card>
       </TabsContent>
+      )}
 
       {/* Programs Tab */}
       <TabsContent value="programs">
