@@ -64,7 +64,7 @@ export default function ImageUpload({
           if (folder) formData.append('folder', folder)
 
           const response = await fetch(
-            `https://api.cloudinary.com/v1_1/dcvuzffgj/image/upload`,
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
             {
               method: 'POST',
               body: formData,

@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { supabaseApi, type BoardMember } from "@/lib/supabase"
+import { type BoardMember } from "@/lib/supabase"
+import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 import WYSIWYGEditor from "@/components/wysiwyg-editor"
@@ -36,13 +37,13 @@ export default function BoardMemberForm({ member, onSave, onCancel }: BoardMembe
       toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} board member...`)
       
       if (member) {
-        await supabaseApi.updateBoardMember(member.id, formData)
+        await adminApi.updateBoardMember(member.id, formData)
         toast.success('Board Member Updated Successfully!', {
           description: `${formData.name} (${formData.position}) has been updated`,
           duration: 4000
         })
       } else {
-        await supabaseApi.createBoardMember(formData)
+        await adminApi.createBoardMember(formData)
         toast.success('Board Member Added Successfully!', {
           description: `${formData.name} (${formData.position}) has been added to the team`,
           duration: 4000

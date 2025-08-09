@@ -81,9 +81,10 @@ export default function PartnerForm({ partner, onSave, onCancel }: PartnerFormPr
           <div className="space-y-2">
             <Label htmlFor="logo_url">Logo *</Label>
             <ImageUpload
-              value={formData.logo_url}
-              onChange={(url) => setFormData(prev => ({ ...prev, logo_url: url }))}
-              placeholder="Upload or enter logo URL"
+              currentImageUrl={formData.logo_url}
+              onImageChange={(url) => setFormData(prev => ({ ...prev, logo_url: url }))}
+              label="Partner Logo"
+              folder="partners/"
             />
           </div>
 

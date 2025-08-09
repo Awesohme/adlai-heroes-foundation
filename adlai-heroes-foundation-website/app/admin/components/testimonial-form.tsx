@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { supabaseApi, type Testimonial } from "@/lib/supabase"
+import { type Testimonial } from "@/lib/supabase"
+import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 import WYSIWYGEditor from "@/components/wysiwyg-editor"
@@ -37,13 +38,13 @@ export default function TestimonialForm({ testimonial, onSave, onCancel }: Testi
       toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} testimonial...`)
       
       if (testimonial) {
-        await supabaseApi.updateTestimonial(testimonial.id, formData)
+        await adminApi.updateTestimonial(testimonial.id, formData)
         toast.success('Testimonial Updated Successfully!', {
           description: `Testimonial from "${formData.name}" has been updated`,
           duration: 4000
         })
       } else {
-        await supabaseApi.createTestimonial(formData)
+        await adminApi.createTestimonial(formData)
         toast.success('Testimonial Created Successfully!', {
           description: `New testimonial from "${formData.name}" has been added`,
           duration: 4000

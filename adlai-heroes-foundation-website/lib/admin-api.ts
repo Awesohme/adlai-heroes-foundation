@@ -26,6 +26,12 @@ class AdminApiClient {
       body: JSON.stringify(data),
     })
   }
+  async deleteImpactTimeline(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/impact-timeline/${id}`, { method: 'DELETE' })
+  }
+  async createImpactTimeline(data: any) {
+    return this.request(`/api/admin/impact-timeline`, { method: 'POST', body: JSON.stringify(data) })
+  }
 
   async createImpactStat(data: Omit<ImpactStat, 'id' | 'created_at'>): Promise<ImpactStat> {
     return this.request<ImpactStat>('/api/admin/impact-stats', {
@@ -46,6 +52,12 @@ class AdminApiClient {
       method: 'PATCH',
       body: JSON.stringify(data),
     })
+  }
+  async createProgram(data: Omit<Program, 'id' | 'created_at' | 'updated_at'>): Promise<Program> {
+    return this.request<Program>(`/api/admin/programs`, { method: 'POST', body: JSON.stringify(data) })
+  }
+  async deleteProgram(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/programs/${id}`, { method: 'DELETE' })
   }
 
   async createProgram(data: Omit<Program, 'id' | 'created_at' | 'updated_at'>): Promise<Program> {
@@ -75,11 +87,32 @@ class AdminApiClient {
       body: JSON.stringify(data),
     })
   }
+  async deleteBlogPost(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/blog-posts/${id}`, { method: 'DELETE' })
+  }
 
   async deleteBlogPost(id: number): Promise<{ success: boolean }> {
     return this.request<{ success: boolean }>(`/api/admin/blog-posts/${id}`, {
       method: 'DELETE',
     })
+  }
+  async deleteBoardMember(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/board-members/${id}`, { method: 'DELETE' })
+  }
+  async createBoardMember(data: Omit<BoardMember, 'id' | 'created_at'>): Promise<BoardMember> {
+    return this.request<BoardMember>('/api/admin/board-members', { method: 'POST', body: JSON.stringify(data) })
+  }
+  async updateBoardMember(id: number, data: Partial<Omit<BoardMember, 'id' | 'created_at'>>): Promise<BoardMember> {
+    return this.request<BoardMember>(`/api/admin/board-members/${id}`, { method: 'PATCH', body: JSON.stringify(data) })
+  }
+  async createContentSection(data: Omit<ContentSection, 'id' | 'created_at' | 'updated_at'>): Promise<ContentSection> {
+    return this.request<ContentSection>('/api/admin/content-sections', { method: 'POST', body: JSON.stringify(data) })
+  }
+  async updateContentSection(id: number, data: Partial<Omit<ContentSection, 'id' | 'created_at' | 'updated_at'>>): Promise<ContentSection> {
+    return this.request<ContentSection>(`/api/admin/content-sections/${id}`, { method: 'PATCH', body: JSON.stringify(data) })
+  }
+  async deleteContentSection(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/content-sections/${id}`, { method: 'DELETE' })
   }
 
   // Testimonials
@@ -95,6 +128,9 @@ class AdminApiClient {
       method: 'POST',
       body: JSON.stringify(data),
     })
+  }
+  async deleteTestimonial(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/testimonials/${id}`, { method: 'DELETE' })
   }
 
   async deleteTestimonial(id: number): Promise<{ success: boolean }> {

@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { supabaseApi, type BlogPost } from "@/lib/supabase"
+import { type BlogPost } from "@/lib/supabase"
+import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 import WYSIWYGEditor from "@/components/wysiwyg-editor"
@@ -62,13 +63,13 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
       toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} blog post...`)
       
       if (post) {
-        await supabaseApi.updateBlogPost(post.id, formData)
+        await adminApi.updateBlogPost(post.id, formData)
         toast.success('Blog Post Updated Successfully!', {
           description: `"${formData.title}" has been updated by ${formData.author || 'Admin'}`,
           duration: 4000
         })
       } else {
-        await supabaseApi.createBlogPost(formData)
+        await adminApi.createBlogPost(formData)
         toast.success('Blog Post Created Successfully!', {
           description: `"${formData.title}" has been created by ${formData.author || 'Admin'}`,
           duration: 4000

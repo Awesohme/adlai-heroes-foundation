@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { supabaseApi, type ContentSection } from "@/lib/supabase"
+import { type ContentSection } from "@/lib/supabase"
+import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 
@@ -70,13 +71,13 @@ export default function ContentSectionForm({ section, onSave, onCancel }: Conten
       toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} content section...`)
       
       if (section) {
-        await supabaseApi.updateContentSection(section.id, formData)
+        await adminApi.updateContentSection(section.id, formData)
         toast.success('Content Section Updated Successfully!', {
           description: `"${formData.title || formData.section_key}" on ${formData.page_key} page has been updated`,
           duration: 4000
         })
       } else {
-        await supabaseApi.createContentSection(formData)
+        await adminApi.createContentSection(formData)
         toast.success('Content Section Created Successfully!', {
           description: `"${formData.title || formData.section_key}" has been added to ${formData.page_key} page`,
           duration: 4000
