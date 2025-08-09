@@ -136,11 +136,11 @@ const fallbackPartners: Partner[] = [
 ]
 
 export default function DynamicHomepage() {
-  const [stats, setStats] = useState<ImpactStat[]>(fallbackStats)
-  const [programs, setPrograms] = useState<Program[]>(fallbackPrograms)
+  const [stats, setStats] = useState<ImpactStat[]>([])
+  const [programs, setPrograms] = useState<Program[]>([])
   const [testimonials, setTestimonials] = useState(fallbackTestimonials)
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(fallbackHeroSlides)
-  const [partners, setPartners] = useState<Partner[]>(fallbackPartners)
+  const [partners, setPartners] = useState<Partner[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -155,18 +155,27 @@ export default function DynamicHomepage() {
           supabaseApi.getPartners()
         ])
 
-        // Use Supabase data if available, otherwise keep fallback
-        if (statsData.length > 0) setStats(statsData)
-        if (programsData.length > 0) setPrograms(programsData.slice(0, 3)) // Limit to 3
+        // Always set data from database (empty arrays if no data)
+        setStats(statsData)
+        setPrograms(programsData.slice(0, 3)) // Limit to 3
+        
+        // Only use testimonials fallback if database is empty
         if (testimonialsData.length > 0) {
           setTestimonials(testimonialsData.map(t => ({
             quote: t.content,
             author: t.name,
             title: t.location || "Community Member",
           })))
+        } else {
+          setTestimonials([]) // Hide section if no testimonials
         }
-        if (heroSlidesData.length > 0) setHeroSlides(heroSlidesData)
-        if (partnersData.length > 0) setPartners(partnersData)
+        
+        // Always use hero slides (keep fallback for this critical section)
+        if (heroSlidesData.length > 0) {
+          setHeroSlides(heroSlidesData)
+        }
+        
+        setPartners(partnersData)
       } catch (error) {
         console.error('Error loading data from Supabase:', error)
         // Keep fallback data on error
@@ -254,12 +263,13 @@ export default function DynamicHomepage() {
       </section>
 
       {/* Impact Stats Section */}
-      <section className="py-16 md:py-24 bg-secondary">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-12 text-gradient-primary">Our Impact in Numbers</h2>
-          <div className="flex justify-center">
-            <div className="flex flex-wrap justify-center gap-8">
-            {stats.map((stat, index) => {
+      {stats.length > 0 && (
+        <section className="py-16 md:py-24 bg-secondary">
+          <div className="container mx-auto px-4 md:px-6 text-center">
+            <h2 className="text-3xl md:text-5xl font-bold mb-12 text-gradient-primary">Our Impact in Numbers</h2>
+            <div className="flex justify-center">
+              <div className="flex flex-wrap justify-center gap-8">
+              {stats.map((stat, index) => {
               const IconComponent = getIconComponent(stat.icon || 'users')
               // Cycle through brand colors for each stat
               const brandColors = ['adlaiBlue', 'adlaiGreen', 'adlaiPink', 'adlaiOrange']
@@ -284,13 +294,15 @@ export default function DynamicHomepage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Recent Programs Section */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-gradient-primary mb-12">Our Latest Initiatives</h2>
-          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
-            {programs.slice(0, 3).map((program, index) => {
+      {programs.length > 0 && (
+        <section className="py-16 md:py-24 bg-white">
+          <div className="container mx-auto px-4 md:px-6 text-center">
+            <h2 className="text-3xl md:text-5xl font-bold text-gradient-primary mb-12">Our Latest Initiatives</h2>
+            <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+              {programs.slice(0, 3).map((program, index) => {
               // Map categories to brand colors
               const getCategoryColor = (category: string) => {
                 const colorMap: { [key: string]: string } = {
@@ -336,14 +348,17 @@ export default function DynamicHomepage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Social Proof / Testimonials Section */}
-      <section className="py-16 md:py-24 bg-secondary">
-        <div className="container mx-auto px-4 md:px-6 text-center max-w-3xl">
-          <h2 className="text-3xl md:text-5xl font-bold text-gradient-primary mb-12">What Our Community Says</h2>
-          <TestimonialCarousel testimonials={testimonials} />
-        </div>
-      </section>
+      {testimonials.length > 0 && (
+        <section className="py-16 md:py-24 bg-secondary">
+          <div className="container mx-auto px-4 md:px-6 text-center max-w-3xl">
+            <h2 className="text-3xl md:text-5xl font-bold text-gradient-primary mb-12">What Our Community Says</h2>
+            <TestimonialCarousel testimonials={testimonials} />
+          </div>
+        </section>
+      )}
 
       {/* Partners Section */}
       {partners.length > 0 && (

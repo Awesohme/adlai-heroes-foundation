@@ -10,7 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { type Testimonial } from "@/lib/supabase"
 import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
-import ImageUpload from "./image-upload"
 import WYSIWYGEditor from "@/components/wysiwyg-editor"
 
 interface TestimonialFormProps {
@@ -24,7 +23,6 @@ export default function TestimonialForm({ testimonial, onSave, onCancel }: Testi
   const [formData, setFormData] = useState({
     name: testimonial?.name || '',
     content: testimonial?.content || '',
-    image: testimonial?.image || '',
     location: testimonial?.location || '',
     featured: testimonial?.featured || false
   })
@@ -97,13 +95,6 @@ export default function TestimonialForm({ testimonial, onSave, onCancel }: Testi
             placeholder="Write the testimonial content..."
             minHeight="200px"
             required
-          />
-
-          <ImageUpload
-            currentImageUrl={formData.image}
-            onImageChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
-            label="Profile Photo"
-            folder="testimonials/"
           />
 
           <div className="flex items-center space-x-2">

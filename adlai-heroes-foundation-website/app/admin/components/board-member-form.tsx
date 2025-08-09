@@ -15,11 +15,12 @@ import OrderInput from "./order-input"
 
 interface BoardMemberFormProps {
   member?: BoardMember
+  existingMembers?: BoardMember[]
   onSave: () => void
   onCancel: () => void
 }
 
-export default function BoardMemberForm({ member, onSave, onCancel }: BoardMemberFormProps) {
+export default function BoardMemberForm({ member, existingMembers = [], onSave, onCancel }: BoardMemberFormProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: member?.name || '',
@@ -108,7 +109,11 @@ export default function BoardMemberForm({ member, onSave, onCancel }: BoardMembe
           <OrderInput
             value={formData.order_index}
             onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
-            existingItems={[]} // TODO: Pass existing board members for better UX
+            existingItems={existingMembers.map(m => ({
+              id: m.id,
+              title: `${m.name} (${m.position})`,
+              order_index: m.order_index
+            }))}
             label="Display Order"
             currentItemId={member?.id}
             className="space-y-2"

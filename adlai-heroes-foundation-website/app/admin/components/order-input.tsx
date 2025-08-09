@@ -141,17 +141,43 @@ export default function OrderInput({
         )}
 
         {sortedItems.length > 0 && (
-          <Card>
-            <CardContent className="p-3">
-              <div className="text-sm text-gray-600 mb-2">Current order:</div>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
+          <Card className="border-blue-100 bg-blue-50/50">
+            <CardContent className="p-4">
+              <h4 className="text-sm font-medium text-gray-800 mb-3 flex items-center gap-2">
+                <span>📋</span>
+                Current Items ({sortedItems.length} total)
+              </h4>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
                 {sortedItems.map((item, index) => (
-                  <div key={item.id} className="flex justify-between text-xs">
-                    <span className="truncate flex-1 mr-2">{index + 1}. {item.title}</span>
-                    <span className="text-gray-400">({item.order_index})</span>
+                  <div key={item.id} className="flex justify-between items-center bg-white px-3 py-2 rounded-lg border-l-4 border-blue-200 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-blue-100 text-blue-800 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold">
+                        {index + 1}
+                      </span>
+                      <span className="font-medium text-gray-700 truncate max-w-[200px]" title={item.title}>
+                        {item.title}
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded font-mono">
+                      #{item.order_index}
+                    </span>
                   </div>
                 ))}
               </div>
+              {mode === 'position' && (
+                <div className="mt-3 p-3 bg-blue-100 rounded-lg">
+                  <p className="text-xs text-blue-800">
+                    <strong>💡 Tip:</strong> Use the dropdown above to place your new item relative to these existing items.
+                  </p>
+                </div>
+              )}
+              {mode === 'manual' && (
+                <div className="mt-3 p-3 bg-amber-100 rounded-lg">
+                  <p className="text-xs text-amber-800">
+                    <strong>⚠️ Manual Mode:</strong> Lower numbers appear first. Choose a unique number that fits your desired position.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

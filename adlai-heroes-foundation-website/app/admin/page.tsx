@@ -24,7 +24,7 @@ import { ImpactTimelineForm } from "./components/impact-timeline-form"
 import AdminTabs from "./components/admin-tabs"
 import ErrorBoundary from "./components/error-boundary"
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   const [programs, setPrograms] = useState<Program[]>([])
   const [stats, setStats] = useState<ImpactStat[]>([])
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
@@ -241,13 +241,13 @@ export default function AdminDashboard() {
       case 'blog':
         return <BlogPostForm post={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'board':
-        return <BoardMemberForm member={editingItem} onSave={handleSave} onCancel={handleCancel} />
+        return <BoardMemberForm member={editingItem} existingMembers={boardMembers} onSave={handleSave} onCancel={handleCancel} />
       case 'section':
         return <ContentSectionForm section={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'page':
         return <PageForm page={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'hero-slide':
-        return <HeroSlideForm slide={editingItem} onSave={handleSave} onCancel={handleCancel} />
+        return <HeroSlideForm slide={editingItem} existingSlides={heroSlides} onSave={handleSave} onCancel={handleCancel} />
       case 'partner':
         return <PartnerForm partner={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'timeline':
@@ -426,5 +426,13 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AdminDashboard() {
+  return (
+    <ErrorBoundary>
+      <AdminDashboardContent />
+    </ErrorBoundary>
   )
 }

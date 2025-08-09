@@ -32,39 +32,61 @@ if (typeof window === 'undefined') {
   }
 }
 
-// Client-side upload function using unsigned upload
+// Client-side upload function using unsigned upload with smart preset fallback
 export const uploadToCloudinary = async (file: File, folder = 'adlai-heroes') => {
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'adlai_preset')
-  formData.append('folder', folder)
-
-  try {
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error(`Upload failed: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    return {
-      url: data.secure_url,
-      public_id: data.public_id,
-      width: data.width,
-      height: data.height,
-      format: data.format,
-      resource_type: data.resource_type,
-    }
-  } catch (error) {
-    console.error('Cloudinary upload error:', error)
-    throw error
+  if (!file || !(file instanceof File)) {
+    throw new Error('Invalid file provided')
   }
+
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  if (!cloudName) {
+    throw new Error('Cloudinary cloud name not configured')
+  }
+
+  // Smart preset fallback - try multiple presets
+  const presets = ['adlai_preset', 'ml_default', 'default']
+  
+  for (const preset of presets) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('upload_preset', preset)
+      if (folder) {
+        formData.append('folder', folder)
+      }
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      )
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.warn(`Upload failed with preset ${preset}:`, errorText)
+        continue // Try next preset
+      }
+
+      const data = await response.json()
+      console.log(`Upload successful with preset: ${preset}`)
+      
+      return {
+        url: data.secure_url,
+        public_id: data.public_id,
+        width: data.width,
+        height: data.height,
+        format: data.format,
+        resource_type: data.resource_type,
+      }
+    } catch (error) {
+      console.warn(`Error with preset ${preset}:`, error)
+      continue // Try next preset
+    }
+  }
+  
+  throw new Error('Upload failed with all available presets. Please try using the URL input field instead.')
 }
 
 // Server-side upload function (for API routes)

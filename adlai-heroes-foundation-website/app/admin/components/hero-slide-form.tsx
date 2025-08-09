@@ -11,14 +11,16 @@ import { type HeroSlide } from "@/lib/supabase"
 import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
+import OrderInput from "./order-input"
 
 interface HeroSlideFormProps {
   slide?: HeroSlide
+  existingSlides?: HeroSlide[]
   onSave: () => void
   onCancel: () => void
 }
 
-export default function HeroSlideForm({ slide, onSave, onCancel }: HeroSlideFormProps) {
+export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCancel }: HeroSlideFormProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: slide?.title || '',
@@ -155,18 +157,18 @@ export default function HeroSlideForm({ slide, onSave, onCancel }: HeroSlideForm
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="order_index">Display Order</Label>
-            <Input
-              id="order_index"
-              type="number"
-              value={formData.order_index}
-              onChange={(e) => setFormData(prev => ({ ...prev, order_index: parseInt(e.target.value) || 0 }))}
-              placeholder="0"
-              min="0"
-            />
-            <p className="text-sm text-gray-500">Lower numbers appear first</p>
-          </div>
+          <OrderInput
+            value={formData.order_index}
+            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
+            existingItems={existingSlides.map(s => ({
+              id: s.id,
+              title: s.title,
+              order_index: s.order_index
+            }))}
+            currentItemId={slide?.id}
+            label="Display Order"
+            className="space-y-2"
+          />
 
           <div className="flex items-center space-x-2">
             <Switch
