@@ -3,67 +3,27 @@ import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { supabaseApi } from "@/lib/supabase"
 
 export default function BlogPage() {
-  const allBlogPosts = [
-    {
-      id: "1",
-      title: "Empowering Futures: Our Latest Educational Initiative",
-      date: "July 25, 2024",
-      excerpt: "Discover how our new program is bringing quality education to remote communities...",
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "2",
-      title: "Health Outreach: A Day of Free Medical Check-ups",
-      date: "July 18, 2024",
-      excerpt: "Recap of our recent health camp, providing vital services to hundreds of children...",
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "3",
-      title: "Volunteer Spotlight: Meet Our Heroes",
-      date: "July 10, 2024",
-      excerpt: "An interview with one of our dedicated volunteers and their inspiring journey...",
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "4",
-      title: "Community Development: Building a Brighter Tomorrow",
-      date: "June 30, 2024",
-      excerpt: "Learn about our sustainable projects aimed at improving living conditions...",
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "5",
-      title: "The Power of Play: Our New Recreational Program",
-      date: "June 20, 2024",
-      excerpt: "Introducing our initiative to provide safe and engaging play spaces for children...",
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "6",
-      title: "Digital Inclusion: Bridging the Tech Gap",
-      date: "June 15, 2024",
-      excerpt: "How our digital literacy program is preparing children for the future...",
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "7",
-      title: "Nutrition for Growth: Healthy Meals Initiative",
-      date: "June 05, 2024",
-      excerpt: "Ensuring children receive nutritious meals for their healthy development...",
-      image: "/placeholder.svg?height=200&width=300",
-    },
-    {
-      id: "8",
-      title: "Success Stories: From Beneficiary to Leader",
-      date: "May 28, 2024",
-      excerpt: "Read inspiring stories of children who have thrived with our support...",
-      image: "/placeholder.svg?height=200&width=300",
-    },
-  ]
+  const [allBlogPosts, setAllBlogPosts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadBlogPosts() {
+      try {
+        const posts = await supabaseApi.getBlogPosts(true) // Only published posts
+        setAllBlogPosts(posts)
+      } catch (error) {
+        console.error('Error loading blog posts:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadBlogPosts()
+  }, [])
 
   const POSTS_PER_PAGE = 6
   const [currentPage, setCurrentPage] = useState(1)
@@ -96,12 +56,16 @@ export default function BlogPage() {
       {/* Blog Posts Grid */}
       <section className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-bold text-gradient-primary mb-8">Updates from the Foundation</h2>
-        {currentPosts.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          </div>
+        ) : currentPosts.length > 0 ? (
           <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
             {currentPosts.map((post) => (
               <Card variant="glass" key={post.id} className="shadow-lg hover:shadow-xl transition-shadow duration-300 w-[320px] flex-shrink-0">
                 <Image
-                  src={post.image || "/placeholder.svg"}
+                  src={post.featured_image || "/placeholder.svg"}
                   alt={post.title}
                   width={300}
                   height={200}
@@ -109,11 +73,17 @@ export default function BlogPage() {
                 />
                 <CardHeader>
                   <CardTitle className="text-xl font-semibold text-gradient-primary">{post.title}</CardTitle>
-                  <CardDescription className="text-sm text-gray-600">{post.date}</CardDescription>
+                  <CardDescription className="text-sm text-gray-600">
+                    {new Date(post.created_at).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-900 mb-4">{post.excerpt}</p>
-                  <Link href={`/blog/${post.id}`} className="text-primary hover:underline font-medium">
+                  <Link href={`/blog/${post.slug}`} className="text-primary hover:underline font-medium">
                     Read More &rarr;
                   </Link>
                 </CardContent>
@@ -121,7 +91,7 @@ export default function BlogPage() {
             ))}
           </div>
         ) : (
-          <p className="text-lg text-gray-600">No blog posts found.</p>
+          <p className="text-lg text-gray-600">No blog posts available at this time.</p>
         )}
         {/* Pagination Controls */}
         {totalPages > 1 && (
