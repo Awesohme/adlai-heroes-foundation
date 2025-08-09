@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { SheetTrigger, SheetContent, Sheet } from "@/components/ui/sheet"
-import { MenuIcon, PhoneIcon, MailIcon, FacebookIcon, TwitterIcon, InstagramIcon, LinkedinIcon } from "lucide-react"
+import { MenuIcon, PhoneIcon, MailIcon, FacebookIcon, InstagramIcon, LinkedinIcon } from "lucide-react"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { useEffect, useState } from "react"
 import { supabaseApi } from "@/lib/supabase"
@@ -65,7 +65,9 @@ export function Header() {
             )}
             {settings.twitter_url && (
               <Link href={settings.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                <TwitterIcon className="h-4 w-4" />
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
               </Link>
             )}
             {settings.instagram_url && (
@@ -87,11 +89,11 @@ export function Header() {
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
             <Image
-              src="/logo.png"
+              src="https://res.cloudinary.com/dcvuzffgj/image/upload/v1754225835/White_bg_logo_rmuevq.jpg"
               alt="Adlai Heroes Foundation"
               width={40}
               height={40}
-              className="h-10 w-10"
+              className="h-10 w-10 rounded-full"
             />
             <span className="text-2xl font-bold text-gradient-primary">Adlai</span>
           </Link>

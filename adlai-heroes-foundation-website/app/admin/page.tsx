@@ -24,8 +24,11 @@ import { ImpactTimelineForm } from "./components/impact-timeline-form"
 import SiteSettingsForm from "./components/site-settings-form"
 import AdminTabs from "./components/admin-tabs"
 import ErrorBoundary from "./components/error-boundary"
+import AuthGuard from "./components/auth-guard"
+import { useAuth } from "./lib/auth-context"
 
 function AdminDashboardContent() {
+  const { user, logout } = useAuth()
   const [programs, setPrograms] = useState<Program[]>([])
   const [stats, setStats] = useState<ImpactStat[]>([])
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
@@ -40,6 +43,7 @@ function AdminDashboardContent() {
   const [editingItem, setEditingItem] = useState<any>(null)
   const [editingType, setEditingType] = useState<string>('')
   const [showForm, setShowForm] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     loadAllData()
@@ -48,6 +52,7 @@ function AdminDashboardContent() {
   async function loadAllData() {
     try {
       setIsLoading(true)
+      setError(null)
       console.log('🔍 Loading admin data...')
       
       const [programsData, statsData, testimonialsData, blogData, boardData, sectionsData, pagesData, heroSlidesData, partnersData, timelineData] = await Promise.all([
@@ -120,8 +125,7 @@ function AdminDashboardContent() {
       setTimeline(timelineData)
     } catch (error) {
       console.error('💥 Critical error loading admin data:', error)
-      // Show a user-friendly message
-      alert(`Admin data loading failed: ${error}. Check console for details.`)
+      setError(error instanceof Error ? error.message : 'An error occurred while loading admin data')
     } finally {
       setIsLoading(false)
     }
@@ -272,6 +276,28 @@ function AdminDashboardContent() {
     }
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="text-red-500 text-6xl mb-4">⚠️</div>
+              <h2 className="text-2xl font-bold text-red-600 mb-2">Admin Dashboard Error</h2>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
+              >
+                Reload Page
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
@@ -291,9 +317,24 @@ function AdminDashboardContent() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-lg text-gray-600">Manage your Adlai Heroes Foundation website content</p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <p className="text-lg text-gray-600">Manage your Adlai Heroes Foundation website content</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm font-medium text-gray-900">{user?.email}</p>
+              <p className="text-xs text-gray-500 capitalize">{user?.role?.replace('_', ' ')}</p>
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={logout}
+              className="text-red-600 hover:text-red-700 hover:border-red-300"
+            >
+              Logout
+            </Button>
+          </div>
         </div>
 
         {/* Stats Overview */}
@@ -434,8 +475,10 @@ function AdminDashboardContent() {
 
 export default function AdminDashboard() {
   return (
-    <ErrorBoundary>
-      <AdminDashboardContent />
-    </ErrorBoundary>
+    <AuthGuard>
+      <ErrorBoundary>
+        <AdminDashboardContent />
+      </ErrorBoundary>
+    </AuthGuard>
   )
 }

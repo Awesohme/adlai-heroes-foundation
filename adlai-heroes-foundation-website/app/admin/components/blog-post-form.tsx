@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 import WYSIWYGEditor from "@/components/wysiwyg-editor"
 import GalleryManager from "./gallery-manager"
+import AuthorCombobox from "./author-combobox"
 
 interface BlogPostFormProps {
   post?: BlogPost
@@ -128,12 +129,11 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="author">Author</Label>
-                <Input
-                  id="author"
+                <Label>Author</Label>
+                <AuthorCombobox
                   value={formData.author}
-                  onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
-                  placeholder="Author name"
+                  onChange={(value) => setFormData(prev => ({ ...prev, author: value }))}
+                  placeholder="Select or create author..."
                 />
               </div>
 

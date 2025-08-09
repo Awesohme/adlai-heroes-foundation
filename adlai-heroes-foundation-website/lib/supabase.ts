@@ -218,6 +218,17 @@ export interface SiteSettings {
   updated_at: string
 }
 
+export interface Author {
+  id: number
+  name: string
+  email?: string
+  bio?: string
+  avatar_url?: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 // Helper functions for data fetching
 export const supabaseApi = {
   // Programs
@@ -933,6 +944,62 @@ export const supabaseApi = {
     
     if (error && error.code !== 'PGRST116') throw error // PGRST116 is "not found"
     return data as SiteSettings | null
+  },
+
+  // Authors CRUD
+  async getAuthors() {
+    const { data, error } = await supabase
+      .from('authors')
+      .select('*')
+      .eq('is_active', true)
+      .order('name')
+    
+    if (error) throw error
+    return data as Author[]
+  },
+
+  async getAuthor(id: number) {
+    const { data, error } = await supabase
+      .from('authors')
+      .select('*')
+      .eq('id', id)
+      .single()
+    
+    if (error) throw error
+    return data as Author
+  },
+
+  async createAuthor(author: Omit<Author, 'id' | 'created_at' | 'updated_at'>) {
+    const { data, error } = await supabase
+      .from('authors')
+      .insert([author])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data as Author
+  },
+
+  async updateAuthor(id: number, updates: Partial<Omit<Author, 'id' | 'created_at' | 'updated_at'>>) {
+    const { data, error } = await supabase
+      .from('authors')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data as Author
+  },
+
+  async deleteAuthor(id: number) {
+    const { data, error } = await supabase
+      .from('authors')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+    return true
   },
 
   async updateSiteSettings(updates: Array<{setting_key: string, setting_value: string}>) {

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { FacebookIcon, TwitterIcon, InstagramIcon, LinkedinIcon, PhoneIcon, MailIcon, MapPinIcon } from "lucide-react"
+import { FacebookIcon, InstagramIcon, LinkedinIcon, PhoneIcon, MailIcon, MapPinIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { supabaseApi } from "@/lib/supabase"
 import type { SiteSettings } from "@/lib/supabase"
@@ -54,8 +54,10 @@ export function Footer() {
               </Link>
             )}
             {settings.twitter_url && (
-              <Link aria-label="Twitter" href={settings.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">
-                <TwitterIcon className="h-6 w-6" />
+              <Link aria-label="X (formerly Twitter)" href={settings.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">
+                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
               </Link>
             )}
             {settings.instagram_url && (

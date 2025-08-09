@@ -1,5 +1,5 @@
 // Admin API client for secure server-side operations
-import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner, TeamMember, ImpactTimeline, SiteSettings } from './supabase'
+import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner, TeamMember, ImpactTimeline, SiteSettings, Author } from './supabase'
 
 class AdminApiClient {
   private async request<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -260,6 +260,31 @@ class AdminApiClient {
     return this.request<{ success: boolean }>(`/api/admin/site-settings/${settingKey}`, {
       method: 'PUT',
       body: JSON.stringify({ setting_value: settingValue }),
+    })
+  }
+
+  // Authors
+  async getAuthors(): Promise<Author[]> {
+    return this.request<Author[]>('/api/admin/authors')
+  }
+
+  async createAuthor(data: Omit<Author, 'id' | 'created_at' | 'updated_at'>): Promise<Author> {
+    return this.request<Author>('/api/admin/authors', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateAuthor(id: number, data: Partial<Omit<Author, 'id' | 'created_at' | 'updated_at'>>): Promise<Author> {
+    return this.request<Author>(`/api/admin/authors/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteAuthor(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/authors/${id}`, {
+      method: 'DELETE',
     })
   }
 }
