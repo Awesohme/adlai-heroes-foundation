@@ -253,6 +253,25 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         </CardHeader>
         <CardContent className="p-0 text-lg text-gray-900 leading-relaxed blog-content">
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          
+          {/* Image Gallery */}
+          {post.gallery_images && post.gallery_images.length > 0 && (
+            <div className="mt-8 pt-8 border-t">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Gallery</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {post.gallery_images.map((imageUrl, index) => (
+                  <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
+                    <Image
+                      src={imageUrl}
+                      alt={`Gallery image ${index + 1}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

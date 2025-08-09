@@ -58,7 +58,7 @@ export default function AdminTabs({
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-      <TabsList className="grid w-full grid-cols-10">
+      <TabsList className="grid w-full grid-cols-9">
         <TabsTrigger value="hero-slides">Hero Slides</TabsTrigger>
         <TabsTrigger value="programs">Programs</TabsTrigger>
         <TabsTrigger value="stats">Impact Stats</TabsTrigger>
@@ -67,7 +67,6 @@ export default function AdminTabs({
         <TabsTrigger value="blog">Blog Posts</TabsTrigger>
         <TabsTrigger value="board">Board Members</TabsTrigger>
         <TabsTrigger value="partners">Partners</TabsTrigger>
-        <TabsTrigger value="content">Page Content</TabsTrigger>
         <TabsTrigger value="settings">Site Settings</TabsTrigger>
       </TabsList>
 
@@ -566,67 +565,6 @@ export default function AdminTabs({
         </Card>
       </TabsContent>
 
-      {/* Page Content Tab */}
-      <TabsContent value="content">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Page Content Sections</CardTitle>
-            <Button onClick={() => onAdd('section')}>
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Add Content Section
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {contentSections.map((section) => (
-                <div key={section.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-semibold text-lg">{section.title || section.section_key}</h3>
-                      <Badge variant="outline" className="capitalize">
-                        {section.page_key}
-                      </Badge>
-                      <Badge variant={section.active ? "default" : "secondary"}>
-                        {section.active ? "Active" : "Inactive"}
-                      </Badge>
-                    </div>
-                    <p className="text-gray-600 mt-1 line-clamp-2">{section.content}</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Order: {section.order_index} • Updated: {new Date(section.updated_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => onEdit(section, 'section')}>
-                      <EditIcon className="h-4 w-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="text-red-600">
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Content Section</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{section.title || section.section_key}"? This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => onDelete(section.id, 'section')}>
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
 
       {/* Site Settings Tab */}
       <TabsContent value="settings">
