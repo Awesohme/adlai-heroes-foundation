@@ -29,13 +29,19 @@ export default function ProgramPage({ params }: ProgramPageProps) {
   const [program, setProgram] = useState<Program | null>(null)
   const [loading, setLoading] = useState(true)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [galleryImages] = useState(fallbackImages)
+  const [galleryImages, setGalleryImages] = useState<string[]>(fallbackImages)
 
   useEffect(() => {
     async function fetchProgram() {
       try {
         const programData = await supabaseApi.getProgram(params.slug)
         setProgram(programData)
+        // Use real gallery images if available
+        if (programData?.gallery_images && programData.gallery_images.length > 0) {
+          setGalleryImages(programData.gallery_images)
+        } else if (programData?.featured_image) {
+          setGalleryImages([programData.featured_image])
+        }
       } catch (error) {
         console.error('Error fetching program:', error)
         setProgram(null)

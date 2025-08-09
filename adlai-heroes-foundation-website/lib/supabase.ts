@@ -211,6 +211,7 @@ export const supabaseApi = {
     const query = supabase
       .from('programs')
       .select('*')
+      .order('updated_at', { ascending: false })
       .order('created_at', { ascending: false })
     
     if (published) {

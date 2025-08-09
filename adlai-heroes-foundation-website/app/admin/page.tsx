@@ -104,6 +104,8 @@ export default function AdminDashboard() {
         partners: partnersData.length,
         timeline: timelineData.length
       })
+      
+      console.log('🔍 Program IDs loaded:', programsData.map(p => ({ id: p.id, title: p.title, slug: p.slug })))
 
       setPrograms(programsData)
       setStats(statsData)
@@ -155,14 +157,14 @@ export default function AdminDashboard() {
       
       switch (type) {
         case 'program':
-          await supabaseApi.deleteProgram(id)
+          await adminApi.deleteProgram(id)
           toast.success('Program Deleted Successfully!', {
             description: 'The program has been permanently removed.',
             duration: 3000
           })
           break
         case 'testimonial':
-          await supabaseApi.deleteTestimonial(id)
+          await adminApi.deleteTestimonial(id)
           toast.success('Testimonial Deleted Successfully!', {
             description: 'The testimonial has been permanently removed.',
             duration: 3000
@@ -176,21 +178,21 @@ export default function AdminDashboard() {
           })
           break
         case 'blog':
-          await supabaseApi.deleteBlogPost(id)
+          await adminApi.deleteBlogPost(id)
           toast.success('Blog Post Deleted Successfully!', {
             description: 'The blog post has been permanently removed.',
             duration: 3000
           })
           break
         case 'board':
-          await supabaseApi.deleteBoardMember(id)
+          await adminApi.deleteBoardMember(id)
           toast.success('Board Member Deleted Successfully!', {
             description: 'The board member has been permanently removed.',
             duration: 3000
           })
           break
         case 'section':
-          await supabaseApi.deleteContentSection(id)
+          await adminApi.deleteContentSection(id)
           toast.success('Content Section Deleted Successfully!', {
             description: 'The content section has been permanently removed.',
             duration: 3000
@@ -211,7 +213,7 @@ export default function AdminDashboard() {
           })
           break
         case 'timeline':
-          await supabaseApi.deleteImpactTimeline(id)
+          await adminApi.deleteImpactTimeline(id)
           toast.success('Timeline Item Deleted Successfully!', {
             description: 'The timeline item has been permanently removed.',
             duration: 3000

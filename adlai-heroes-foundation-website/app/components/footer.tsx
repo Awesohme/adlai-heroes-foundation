@@ -40,7 +40,7 @@ export function Footer() {
             <span>+234 708 306 0892</span>
           </div>
           <div className="flex items-center gap-2">
-            <MailIcon className="h-5 w-5 text-gray-900" /> {/* Changed to text-gray-900 for visibility */}
+            <MailIcon className="h-5 w-5 text-white" />
             <span>admin@adlaiheroesfoundation.com.ng</span>
           </div>
           <div className="flex items-start gap-2">
