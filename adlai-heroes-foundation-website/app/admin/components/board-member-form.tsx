@@ -11,6 +11,7 @@ import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 import WYSIWYGEditor from "@/components/wysiwyg-editor"
+import OrderInput from "./order-input"
 
 interface BoardMemberFormProps {
   member?: BoardMember
@@ -104,18 +105,14 @@ export default function BoardMemberForm({ member, onSave, onCancel }: BoardMembe
             folder="team/"
           />
 
-          <div className="space-y-2">
-            <Label htmlFor="order_index">Display Order</Label>
-            <Input
-              id="order_index"
-              type="number"
-              value={formData.order_index}
-              onChange={(e) => setFormData(prev => ({ ...prev, order_index: parseInt(e.target.value) || 0 }))}
-              placeholder="0"
-              min="0"
-            />
-            <p className="text-sm text-gray-500">Lower numbers appear first on the team page</p>
-          </div>
+          <OrderInput
+            value={formData.order_index}
+            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
+            existingItems={[]} // TODO: Pass existing board members for better UX
+            label="Display Order"
+            currentItemId={member?.id}
+            className="space-y-2"
+          />
 
           <div className="flex gap-4 pt-4">
             <Button type="submit" disabled={loading} className="flex-1">

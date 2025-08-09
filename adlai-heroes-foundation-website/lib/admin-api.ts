@@ -1,5 +1,5 @@
 // Admin API client for secure server-side operations
-import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner, TeamMember } from './supabase'
+import type { ImpactStat, Program, BlogPost, Testimonial, BoardMember, ContentSection, Page, HeroSlide, Partner, TeamMember, ImpactTimeline } from './supabase'
 
 class AdminApiClient {
   private async request<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -248,6 +248,27 @@ class AdminApiClient {
 
   async deleteTeamMember(id: number): Promise<{ success: boolean }> {
     return this.request<{ success: boolean }>(`/api/admin/team-members/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  // Impact Timeline
+  async createImpactTimeline(data: Omit<ImpactTimeline, 'id' | 'created_at' | 'updated_at'>): Promise<ImpactTimeline> {
+    return this.request<ImpactTimeline>('/api/admin/impact-timeline', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateImpactTimeline(id: number, data: Partial<Omit<ImpactTimeline, 'id' | 'created_at' | 'updated_at'>>): Promise<ImpactTimeline> {
+    return this.request<ImpactTimeline>(`/api/admin/impact-timeline/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteImpactTimeline(id: number): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/api/admin/impact-timeline/${id}`, {
       method: 'DELETE',
     })
   }

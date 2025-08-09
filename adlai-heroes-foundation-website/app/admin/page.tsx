@@ -254,9 +254,9 @@ export default function AdminDashboard() {
         return <ImpactTimelineForm timeline={editingItem} onSubmit={async (data) => {
           try {
             if (editingItem) {
-              await supabaseApi.updateImpactTimeline(editingItem.id, data)
+              await adminApi.updateImpactTimeline(editingItem.id, data)
             } else {
-              await supabaseApi.createImpactTimeline(data)
+              await adminApi.createImpactTimeline(data)
             }
             handleSave()
           } catch (error) {

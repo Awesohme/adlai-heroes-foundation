@@ -64,38 +64,50 @@ export function PartnersCarousel({
 
         <div className="relative max-w-6xl mx-auto">
           {/* Partners Grid */}
-          <div className="flex justify-center items-center gap-8 min-h-[120px]">
+          <div className="flex justify-center items-center gap-8 min-h-[160px]">
             {visiblePartners.map((partner, index) => (
               <div
                 key={`${partner.id}-${index}`}
-                className="flex-shrink-0 w-32 h-20 md:w-40 md:h-24 lg:w-48 lg:h-28 relative group"
+                className="flex-shrink-0 w-32 md:w-40 lg:w-48 relative group text-center"
               >
-                {partner.website_url ? (
-                  <Link
-                    href={partner.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full h-full"
-                  >
-                    <Image
-                      src={partner.logo_url}
-                      alt={partner.name}
-                      fill
-                      className="object-contain filter grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 128px, (max-width: 1024px) 160px, 192px"
-                    />
-                  </Link>
-                ) : (
-                  <div className="w-full h-full">
-                    <Image
-                      src={partner.logo_url}
-                      alt={partner.name}
-                      fill
-                      className="object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-                      sizes="(max-width: 768px) 128px, (max-width: 1024px) 160px, 192px"
-                    />
-                  </div>
-                )}
+                <div className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
+                  {partner.website_url ? (
+                    <Link
+                      href={partner.website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <div className="w-full h-16 md:h-20 lg:h-24 relative mb-3">
+                        <Image
+                          src={partner.logo_url}
+                          alt={partner.name}
+                          fill
+                          className="object-contain filter grayscale hover:grayscale-0 transition-all duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 128px, (max-width: 1024px) 160px, 192px"
+                        />
+                      </div>
+                      <h3 className="text-sm md:text-base font-medium text-gray-800 group-hover:text-primary transition-colors duration-300">
+                        {partner.name}
+                      </h3>
+                    </Link>
+                  ) : (
+                    <div>
+                      <div className="w-full h-16 md:h-20 lg:h-24 relative mb-3">
+                        <Image
+                          src={partner.logo_url}
+                          alt={partner.name}
+                          fill
+                          className="object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                          sizes="(max-width: 768px) 128px, (max-width: 1024px) 160px, 192px"
+                        />
+                      </div>
+                      <h3 className="text-sm md:text-base font-medium text-gray-800">
+                        {partner.name}
+                      </h3>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>

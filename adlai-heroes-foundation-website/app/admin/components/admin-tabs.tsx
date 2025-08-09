@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -39,8 +40,24 @@ export default function AdminTabs({
   onAdd,
   onDelete
 }: AdminTabsProps) {
+  const [activeTab, setActiveTab] = useState<string>('programs')
+
+  // Load saved tab from localStorage on mount
+  useEffect(() => {
+    const savedTab = localStorage.getItem('admin-active-tab')
+    if (savedTab) {
+      setActiveTab(savedTab)
+    }
+  }, [])
+
+  // Save tab to localStorage when it changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value)
+    localStorage.setItem('admin-active-tab', value)
+  }
+
   return (
-    <Tabs defaultValue="programs" className="space-y-6">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
       <TabsList className="grid w-full grid-cols-10">
         <TabsTrigger value="hero-slides">Hero Slides</TabsTrigger>
         <TabsTrigger value="programs">Programs</TabsTrigger>
