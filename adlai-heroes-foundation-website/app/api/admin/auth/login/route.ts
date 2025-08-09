@@ -2,27 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { createClient } from '@supabase/supabase-js'
 
-// For now, we'll use hardcoded admin users
-// In production, these should come from a secure database
-const ADMIN_USERS = [
-  {
-    id: 1,
-    email: 'admin@adlaiheroesfoundation.com.ng',
-    // Password: "admin123" (hashed)
-    password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewfKGhqjOD9XCXJ.',
-    role: 'super_admin',
-    permissions: ['all']
-  },
-  {
-    id: 2,
-    email: 'editor@adlaiheroesfoundation.com.ng',
-    // Password: "editor123" (hashed)
-    password: '$2a$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-    role: 'editor',
-    permissions: ['blog', 'programs', 'testimonials']
-  }
-]
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secure-secret-key-change-this-in-production'
 
@@ -37,10 +21,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find user by email
-    const user = ADMIN_USERS.find(u => u.email.toLowerCase() === email.toLowerCase())
+    // Find user by email in database
+    const { data: user, error: userError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .eq('is_active', true)
+      .single()
     
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -48,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password)
+    const isValidPassword = await bcrypt.compare(password, user.password_hash)
     
     if (!isValidPassword) {
       return NextResponse.json(

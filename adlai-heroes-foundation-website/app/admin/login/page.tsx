@@ -81,7 +81,7 @@ export default function AdminLogin() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@adlaiheroesfoundation.com.ng"
+                placeholder="Enter your email address"
                 required
                 disabled={loading}
               />

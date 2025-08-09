@@ -26,9 +26,9 @@ CREATE TRIGGER authors_updated_at_trigger
 
 -- Insert default authors
 INSERT INTO authors (name, email, bio) VALUES
-('Adlai Heroes Team', 'admin@adlaiheroesfoundation.com.ng', 'Official Adlai Heroes Foundation team account'),
-('Dr. Sarah Johnson', 'sarah@adlaiheroesfoundation.com.ng', 'Healthcare Program Director'),
-('Michael Okonkwo', 'michael@adlaiheroesfoundation.com.ng', 'Community Outreach Coordinator')
+('Adlai Heroes Team', 'team@example.com', 'Official Adlai Heroes Foundation team account'),
+('Dr. Sarah Johnson', 'sarah@example.com', 'Healthcare Program Director'),
+('Michael Okonkwo', 'michael@example.com', 'Community Outreach Coordinator')
 ON CONFLICT (name) DO NOTHING;
 
 -- Enable RLS
