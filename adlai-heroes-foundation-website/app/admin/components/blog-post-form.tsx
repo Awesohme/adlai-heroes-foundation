@@ -13,6 +13,7 @@ import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
 import WYSIWYGEditor from "@/components/wysiwyg-editor"
+import GalleryManager from "./gallery-manager"
 
 interface BlogPostFormProps {
   post?: BlogPost
@@ -28,6 +29,7 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
     excerpt: post?.excerpt || '',
     content: post?.content || '',
     featured_image: post?.featured_image || '',
+    gallery_images: post?.gallery_images || [],
     author: post?.author || '',
     published: post?.published || false,
     meta_title: post?.meta_title || '',
@@ -95,8 +97,9 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="content">Content</TabsTrigger>
+              <TabsTrigger value="gallery">Gallery</TabsTrigger>
               <TabsTrigger value="seo">SEO & Meta</TabsTrigger>
             </TabsList>
 
@@ -170,6 +173,18 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
                 />
                 <Label htmlFor="published">Publish this post</Label>
               </div>
+            </TabsContent>
+
+            <TabsContent value="gallery" className="space-y-6">
+              <GalleryManager
+                images={formData.gallery_images}
+                featuredImage={formData.featured_image}
+                onImagesChange={(images) => setFormData(prev => ({ ...prev, gallery_images: images }))}
+                onFeaturedImageChange={(url) => setFormData(prev => ({ ...prev, featured_image: url }))}
+                label="Blog Post Gallery"
+                maxImages={5}
+                folder="blog/"
+              />
             </TabsContent>
 
             <TabsContent value="seo" className="space-y-6">

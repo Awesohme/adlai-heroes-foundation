@@ -42,6 +42,7 @@ export interface BlogPost {
   excerpt?: string
   content?: string
   featured_image?: string
+  gallery_images?: string[]
   author?: string
   published: boolean
   meta_title?: string

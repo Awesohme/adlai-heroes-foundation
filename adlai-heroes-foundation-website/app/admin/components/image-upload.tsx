@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { UploadIcon, XIcon, ImageIcon } from "lucide-react"
-import { supabaseApi } from "@/lib/supabase"
+import { uploadToCloudinary } from "@/lib/cloudinary-client"
 import Image from "next/image"
+import { toast } from "sonner"
 
 interface ImageUploadProps {
   currentImageUrl?: string
@@ -32,15 +33,13 @@ export default function ImageUpload({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (file: File) => {
-    // File upload now enabled with Cloudinary adlai_preset
-    
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file')
+      toast.error('Please select an image file')
       return
     }
 
     if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      alert('File size must be less than 5MB')
+      toast.error('File size must be less than 5MB')
       return
     }
 
@@ -51,50 +50,18 @@ export default function ImageUpload({
       const objectUrl = URL.createObjectURL(file)
       setPreviewUrl(objectUrl)
 
-      // Upload to Cloudinary with robust preset fallback
-      const presets = ['adlai_preset', 'default', 'unsigned', 'upload_preset']
-      let uploadSuccess = false
-      let uploadResponse = null
+      toast.loading('Uploading image...')
 
-      for (const preset of presets) {
-        try {
-          const formData = new FormData()
-          formData.append('file', file)
-          formData.append('upload_preset', preset)
-          if (folder) formData.append('folder', folder)
-
-          const response = await fetch(
-            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-            {
-              method: 'POST',
-              body: formData,
-            }
-          )
-
-          if (response.ok) {
-            uploadResponse = await response.json()
-            uploadSuccess = true
-            console.log(`✅ Upload successful with preset: ${preset}`)
-            break
-          } else {
-            const errorData = await response.json().catch(() => ({}))
-            console.log(`❌ Preset "${preset}" failed:`, errorData)
-          }
-        } catch (err) {
-          console.log(`❌ Preset "${preset}" error:`, err)
-        }
-      }
-
-      if (!uploadSuccess || !uploadResponse) {
-        throw new Error('Upload failed with all presets. Please check your Cloudinary configuration or use the image URL input.')
-      }
-
-      const url = uploadResponse.secure_url
-      onImageChange(url)
+      // Use the standardized Cloudinary upload function
+      const result = await uploadToCloudinary(file, folder)
+      
+      onImageChange(result.url)
       
       // Clean up object URL
       URL.revokeObjectURL(objectUrl)
-      setPreviewUrl(url)
+      setPreviewUrl(result.url)
+      
+      toast.success('Image uploaded successfully!')
     } catch (error) {
       console.error('Error uploading image:', error)
       alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\nTip: You can use the image URL input field as an alternative.`)
