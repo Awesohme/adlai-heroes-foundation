@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ChevronLeftIcon, ChevronRightIcon, ZoomInIcon, CalendarIcon, TagIcon } from "lucide-react"
-import { supabaseApi, type Program } from "@/lib/supabase"
+import { supabaseApi, type Program, type SiteSettings } from "@/lib/supabase"
+import Link from "next/link"
 
 // Fallback images for gallery demonstration
 const fallbackImages = [
@@ -30,12 +31,27 @@ export default function ProgramPage({ params }: ProgramPageProps) {
   const [loading, setLoading] = useState(true)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [galleryImages, setGalleryImages] = useState<string[]>(fallbackImages)
+  const [settings, setSettings] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
     async function fetchProgram() {
       try {
-        const programData = await supabaseApi.getProgram(params.slug)
+        const [programData, allSettings] = await Promise.all([
+          supabaseApi.getProgram(params.slug),
+          supabaseApi.getSiteSettings()
+        ])
+        
         setProgram(programData)
+        
+        // Process settings
+        const settingsMap: { [key: string]: string } = {}
+        if (allSettings && Array.isArray(allSettings)) {
+          (allSettings as SiteSettings[]).forEach(setting => {
+            settingsMap[setting.setting_key] = setting.setting_value || ''
+          })
+        }
+        setSettings(settingsMap)
+        
         // Use real gallery images if available
         if (programData?.gallery_images && programData.gallery_images.length > 0) {
           setGalleryImages(programData.gallery_images)
@@ -256,23 +272,37 @@ export default function ProgramPage({ params }: ProgramPageProps) {
       </section>
 
       {/* Call to Action */}
-      <section className="max-w-4xl mx-auto text-center">
-        <Card className={`p-8 bg-gradient-to-r from-${categoryColor}/10 to-${categoryColor}/5 border-${categoryColor}/20`}>
-          <CardContent className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900">Get Involved</h3>
-            <p className="text-lg text-gray-700">
+      <section className="max-w-4xl mx-auto">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-12 text-center shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 via-purple-500/20 to-pink-500/20 animate-pulse"></div>
+          <div className="relative z-10">
+            <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-white/20 to-white/30 flex items-center justify-center">
+                <span className="text-3xl">💝</span>
+              </div>
+            </div>
+            <h3 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">Get Involved</h3>
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed drop-shadow">
               Want to support the {program.title}? Your contribution can make a real difference in the lives of children and communities.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className={`bg-${categoryColor} text-white hover:bg-${categoryColor}/90`}>
-                <a href="/donate">Donate Now</a>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <a href="/contact">Learn More</a>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              {settings.donate_button_url && (
+                <Button asChild size="lg" className="bg-white text-black hover:bg-gray-100 shadow-xl hover:shadow-2xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-8 py-4 text-lg font-semibold">
+                  <Link href={settings.donate_button_url} className="flex items-center gap-2">
+                    <span>💖</span> Donate Now
+                  </Link>
+                </Button>
+              )}
+              <Button asChild variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-black shadow-xl hover:shadow-2xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-8 py-4 text-lg font-semibold">
+                <Link href="/about" className="flex items-center gap-2">
+                  <span>📖</span> Learn More
+                </Link>
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="absolute top-4 right-4 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
+          <div className="absolute bottom-4 left-4 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
+        </div>
       </section>
     </div>
   )

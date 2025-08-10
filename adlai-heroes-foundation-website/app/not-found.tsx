@@ -56,21 +56,21 @@ export default function NotFound() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-adlaiBlue text-white hover:bg-adlaiBlue/90">
+              <Button asChild size="lg" className="bg-adlaiBlue text-white hover:bg-adlaiBlue/90 shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
                 <Link href="/" className="flex items-center gap-2">
                   <HomeIcon className="h-5 w-5" />
                   Back to Homepage
                 </Link>
               </Button>
               
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="outline" size="lg" className="shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
                 <Link href="/programs" className="flex items-center gap-2">
                   <SearchIcon className="h-5 w-5" />
                   Browse Programs
                 </Link>
               </Button>
               
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="outline" size="lg" className="shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
                 <Link href="/contact" className="flex items-center gap-2">
                   <MailIcon className="h-5 w-5" />
                   Contact Us

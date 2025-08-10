@@ -226,7 +226,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
-      <Button asChild variant="ghost" className="mb-8 text-primary hover:underline">
+      <Button asChild variant="ghost" className="mb-8 text-primary hover:underline hover:rotate-12 transition-all duration-300">
         <Link href="/blog">
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
           Back to Blog

@@ -117,32 +117,34 @@ export function Header() {
               Home
               <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
             </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="relative group hover:text-primary transition-all duration-300 cursor-pointer flex items-center gap-1 py-2">
+            <div className="group relative">
+              <div className="relative hover:text-primary transition-all duration-300 cursor-pointer flex items-center gap-1 py-2">
                 About
                 <svg className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
                 <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href="/about" className="w-full cursor-pointer">
-                    About Adlai
+              </div>
+              <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                <div className="bg-white rounded-lg shadow-xl border border-gray-100 py-2 w-48 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                  <Link href="/about" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 hover:translate-x-1">
+                    <div className="flex items-center gap-2">
+                      <span>📖</span> About Adlai
+                    </div>
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/impact" className="w-full cursor-pointer">
-                    Impact
+                  <Link href="/impact" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 hover:translate-x-1">
+                    <div className="flex items-center gap-2">
+                      <span>📊</span> Impact
+                    </div>
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/board" className="w-full cursor-pointer">
-                    Board
+                  <Link href="/board" className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 hover:translate-x-1">
+                    <div className="flex items-center gap-2">
+                      <span>👥</span> Board
+                    </div>
                   </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </div>
+              </div>
+            </div>
             <Link className="relative group hover:text-primary transition-all duration-300 py-2" href="/programs">
               Programs
               <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
@@ -160,7 +162,7 @@ export function Header() {
               <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
             </Link>
             {shouldShowDonateButton && (
-              <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl transform hover:-translate-y-0.5 relative overflow-hidden group">
+              <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl transform hover:-translate-y-0.5 hover:rotate-12 relative overflow-hidden group">
                 <Link href="/donate" className="relative z-10">
                   Donate
                   <span className="absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></span>
@@ -213,7 +215,7 @@ export function Header() {
                   Contact Us
                 </Link>
                 {shouldShowDonateButton && (
-                  <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 shadow-lg">
+                  <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
                     <Link href="/donate">Donate</Link>
                   </Button>
                 )}

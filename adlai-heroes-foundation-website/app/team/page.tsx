@@ -147,10 +147,10 @@ export default function TeamPage() {
           individuals to join our mission of empowering communities and supporting children.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button asChild className="bg-adlaiGreen text-white hover:bg-adlaiGreen/90">
+          <Button asChild className="bg-adlaiGreen text-white hover:bg-adlaiGreen/90 shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
             <Link href="/volunteer">Volunteer With Us</Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
             <Link href="/contact">Get In Touch</Link>
           </Button>
         </div>

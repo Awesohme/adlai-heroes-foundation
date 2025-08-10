@@ -235,7 +235,7 @@ export default function DynamicHomepage() {
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   To create a safe haven for children all around the world, make the world a better and safer place.
                 </p>
-                <Button asChild className="bg-adlaiBlue text-white hover:bg-adlaiBlue/90 px-6 py-2">
+                <Button asChild className="bg-adlaiBlue text-white hover:bg-adlaiBlue/90 px-6 py-2 shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
                   <Link href="/about">Learn More About Us &rarr;</Link>
                 </Button>
               </CardContent>
@@ -253,7 +253,7 @@ export default function DynamicHomepage() {
                   To see that the basic, mental, financial and emotional needs of the vulnerable children and teenagers
                   we come across are being met.
                 </p>
-                <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 px-6 py-2">
+                <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 px-6 py-2 shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
                   <Link href="/about">Learn More About Us &rarr;</Link>
                 </Button>
               </CardContent>
@@ -337,7 +337,7 @@ export default function DynamicHomepage() {
                       <span className={`text-sm bg-${categoryColor}/10 text-${categoryColor} px-2 py-1 rounded-full capitalize font-medium`}>
                         {program.category}
                       </span>
-                      <Button asChild variant="link" className="text-primary px-0">
+                      <Button asChild variant="link" className="text-primary px-0 hover:rotate-12 transition-all duration-300">
                         <Link href={`/programs/${program.slug}`}>Read More &rarr;</Link>
                       </Button>
                     </div>

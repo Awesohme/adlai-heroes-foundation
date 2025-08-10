@@ -49,24 +49,24 @@ export function Footer() {
           </p>
           <div className="flex space-x-4 pt-2">
             {settings.facebook_url && (
-              <Link aria-label="Facebook" href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">
+              <Link aria-label="Facebook" href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-all duration-300 transform hover:scale-110 hover:rotate-12">
                 <FacebookIcon className="h-6 w-6" />
               </Link>
             )}
             {settings.twitter_url && (
-              <Link aria-label="X (formerly Twitter)" href={settings.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">
+              <Link aria-label="X (formerly Twitter)" href={settings.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-all duration-300 transform hover:scale-110 hover:-rotate-12">
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
               </Link>
             )}
             {settings.instagram_url && (
-              <Link aria-label="Instagram" href={settings.instagram_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">
+              <Link aria-label="Instagram" href={settings.instagram_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-all duration-300 transform hover:scale-110 hover:rotate-12">
                 <InstagramIcon className="h-6 w-6" />
               </Link>
             )}
             {settings.linkedin_url && (
-              <Link aria-label="LinkedIn" href={settings.linkedin_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">
+              <Link aria-label="LinkedIn" href={settings.linkedin_url} target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-all duration-300 transform hover:scale-110 hover:-rotate-12">
                 <LinkedinIcon className="h-6 w-6" />
               </Link>
             )}
@@ -90,33 +90,33 @@ export function Footer() {
         <div className="space-y-4 md:col-span-2">
           <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
           <nav className="grid grid-cols-2 gap-y-1 gap-x-2 text-sm">
-            <Link className="hover:underline" href="/">
+            <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:rotate-3 hover:text-gray-200" href="/">
               Home
             </Link>
-            <Link className="hover:underline" href="/about">
+            <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:-rotate-3 hover:text-gray-200" href="/about">
               About Adlai
             </Link>
-            <Link className="hover:underline" href="/impact">
+            <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:rotate-3 hover:text-gray-200" href="/impact">
               Impact
             </Link>
-            <Link className="hover:underline" href="/board">
+            <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:-rotate-3 hover:text-gray-200" href="/board">
               Board
             </Link>
-            <Link className="hover:underline" href="/programs">
+            <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:rotate-3 hover:text-gray-200" href="/programs">
               Programs
             </Link>
-            <Link className="hover:underline" href="/blog">
+            <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:-rotate-3 hover:text-gray-200" href="/blog">
               Blog
             </Link>
-            <Link className="hover:underline" href="/volunteer">
+            <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:rotate-3 hover:text-gray-200" href="/volunteer">
               Volunteer
             </Link>
             {shouldShowDonateLink && (
-              <Link className="hover:underline" href="/donate">
+              <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:-rotate-3 hover:text-gray-200" href="/donate">
                 Donate
               </Link>
             )}
-            <Link className="hover:underline" href="/contact">
+            <Link className="hover:underline transition-all duration-300 transform hover:scale-105 hover:rotate-3 hover:text-gray-200" href="/contact">
               Contact Us
             </Link>
           </nav>

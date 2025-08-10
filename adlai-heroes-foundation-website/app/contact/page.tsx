@@ -197,14 +197,14 @@ export default function ContactPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 {settings.donate_button_url && (
-                  <Button asChild className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-6 py-3">
-                    <Link href={settings.donate_button_url} className="flex items-center gap-2">
+                  <Button asChild className="bg-white text-black hover:bg-gray-100 hover:text-black shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-6 py-3">
+                    <Link href={settings.donate_button_url} className="flex items-center gap-2 text-black">
                       <span>💖</span> Donate Now
                     </Link>
                   </Button>
                 )}
                 {settings.volunteer_button_url && (
-                  <Button asChild variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-gray-900 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-6 py-3">
+                  <Button asChild variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-black shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-6 py-3">
                     <Link href={settings.volunteer_button_url} className="flex items-center gap-2">
                       <span>🌟</span> Volunteer
                     </Link>
