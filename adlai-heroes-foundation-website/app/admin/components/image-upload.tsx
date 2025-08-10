@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,9 +30,16 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null)
+  const [isMounted, setIsMounted] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const handleFileSelect = async (file: File) => {
+    if (!isMounted) return
+    
     if (!file.type.startsWith('image/')) {
       toast.error('Please select an image file')
       return
@@ -46,9 +53,11 @@ export default function ImageUpload({
     setUploading(true)
     
     try {
-      // Create preview
-      const objectUrl = URL.createObjectURL(file)
-      setPreviewUrl(objectUrl)
+      // Create preview (only on client-side)
+      const objectUrl = typeof window !== 'undefined' ? URL.createObjectURL(file) : null
+      if (objectUrl) {
+        setPreviewUrl(objectUrl)
+      }
 
       toast.loading('Uploading image...')
 
@@ -57,8 +66,10 @@ export default function ImageUpload({
       
       onImageChange(result.url)
       
-      // Clean up object URL
-      URL.revokeObjectURL(objectUrl)
+      // Clean up object URL (only on client-side)
+      if (objectUrl && typeof window !== 'undefined') {
+        URL.revokeObjectURL(objectUrl)
+      }
       setPreviewUrl(result.url)
       
       toast.success('Image uploaded successfully!')
@@ -109,6 +120,27 @@ export default function ImageUpload({
   const handleUrlInput = (url: string) => {
     setPreviewUrl(url)
     onImageChange(url)
+  }
+
+  // Don't render until mounted to prevent hydration issues
+  if (!isMounted) {
+    return (
+      <div className={`space-y-4 ${className}`}>
+        <Label>{label}</Label>
+        <Card className="border-2 border-dashed border-gray-300">
+          <CardContent className="p-6">
+            <div className="text-center space-y-4">
+              <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                <ImageIcon className="h-6 w-6 text-gray-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">Loading...</h3>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (

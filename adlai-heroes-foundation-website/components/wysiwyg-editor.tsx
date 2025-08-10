@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -35,10 +35,18 @@ export default function WYSIWYGEditor({
   required = false
 }: WYSIWYGEditorProps) {
   const [isPreview, setIsPreview] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const applyFormat = (format: string) => {
-    // Simple text formatting for basic rich text
-    const textarea = document.getElementById('rich-editor') as HTMLTextAreaElement
+    if (!isMounted) return
+    
+    // Use ref instead of document.getElementById
+    const textarea = textareaRef.current
     if (!textarea) return
 
     const start = textarea.selectionStart
@@ -100,6 +108,25 @@ export default function WYSIWYGEditor({
       .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
       .replace(/\n/g, '<br>')
+  }
+
+  // Don't render until mounted to prevent hydration issues  
+  if (!isMounted) {
+    return (
+      <div className={cn("space-y-2", className)}>
+        {label && (
+          <Label htmlFor="rich-editor">
+            {label} {required && <span className="text-red-500">*</span>}
+          </Label>
+        )}
+        <div className="border border-gray-300 rounded-md overflow-hidden">
+          <div className="flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50">
+            <div className="text-sm text-gray-500">Loading editor...</div>
+          </div>
+          <div className="p-4 min-h-[200px] bg-gray-50"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -229,6 +256,7 @@ export default function WYSIWYGEditor({
           />
         ) : (
           <textarea
+            ref={textareaRef}
             id="rich-editor"
             value={value}
             onChange={(e) => onChange(e.target.value)}
