@@ -84,6 +84,15 @@ export default function ProgramsPage() {
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-600 via-red-600 to-pink-600 p-12 md:p-16 text-center shadow-2xl mb-16">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/headers/programs-bg.jpg"
+            alt="Programs background"
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/20 via-red-500/20 to-pink-500/20 animate-pulse"></div>
         <div className="relative z-10">
           <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">

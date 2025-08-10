@@ -37,11 +37,10 @@ export default function ContactPage() {
       {/* Hero Section */}
       <section className="relative h-[400px] md:h-[500px] flex items-center justify-center text-center mb-16 rounded-2xl overflow-hidden shadow-2xl">
         <Image
-          src="/placeholder.svg?height=500&width=1200"
+          src="/images/headers/contact-bg.jpg"
           alt="Contact us background"
-          layout="fill"
-          objectFit="cover"
-          className="absolute inset-0 z-0 transition-transform duration-700 hover:scale-105"
+          fill
+          className="absolute inset-0 z-0 object-cover transition-transform duration-700 hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/70 via-purple-900/60 to-pink-900/70 z-10"></div>
         <div className="relative z-20 max-w-4xl px-6">

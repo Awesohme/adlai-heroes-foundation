@@ -85,7 +85,7 @@ export default function DonatePage() {
       {/* Hero Section */}
       <section className="relative h-[400px] md:h-[500px] flex items-center justify-center text-center mb-16 rounded-2xl overflow-hidden shadow-2xl">
         <Image
-          src="/placeholder.svg?height=500&width=1200"
+          src="/images/headers/donate-bg.jpg"
           alt="Donation background"
           fill
           className="absolute inset-0 z-0 object-cover transition-transform duration-700 hover:scale-105"
@@ -121,34 +121,36 @@ export default function DonatePage() {
             {hasPaymentInfo && (
               <Card className="relative overflow-hidden bg-gradient-to-br from-green-50 to-emerald-100 p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:rotate-1 border-0 group">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-200/30 to-emerald-200/30 rounded-full -translate-y-12 translate-x-12"></div>
-                <div className="relative z-10 flex flex-col items-center text-center">
-                  <div className="p-4 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg group-hover:scale-110 transition-transform duration-300 mb-4">
-                    <BanknoteIcon className="h-8 w-8" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-4 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <BanknoteIcon className="h-8 w-8" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-gray-800">Bank Transfer</CardTitle>
                   </div>
-                  <CardTitle className="text-2xl font-bold text-gray-800 mb-6">Bank Transfer</CardTitle>
                   <CardContent className="p-0 text-gray-700 space-y-4 w-full">
                     {settings.bank_name && (
-                      <div className="flex items-center justify-between p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors">
-                        <div>
-                          <strong className="text-gray-800">Bank Name:</strong>
+                      <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors">
+                        <div className="flex-1">
+                          <strong className="text-gray-800 block">Bank Name:</strong>
                           <div className="text-gray-700">{settings.bank_name}</div>
                         </div>
                         <CopyButton text={settings.bank_name} fieldName="Bank Name" />
                       </div>
                     )}
                     {settings.account_name && (
-                      <div className="flex items-center justify-between p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors">
-                        <div>
-                          <strong className="text-gray-800">Account Name:</strong>
+                      <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors">
+                        <div className="flex-1">
+                          <strong className="text-gray-800 block">Account Name:</strong>
                           <div className="text-gray-700">{settings.account_name}</div>
                         </div>
                         <CopyButton text={settings.account_name} fieldName="Account Name" />
                       </div>
                     )}
                     {settings.account_number && (
-                      <div className="flex items-center justify-between p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors">
-                        <div>
-                          <strong className="text-gray-800">Account Number:</strong>
+                      <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg hover:bg-white/70 transition-colors">
+                        <div className="flex-1">
+                          <strong className="text-gray-800 block">Account Number:</strong>
                           <div className="text-gray-700 font-mono">{settings.account_number}</div>
                         </div>
                         <CopyButton text={settings.account_number} fieldName="Account Number" />
