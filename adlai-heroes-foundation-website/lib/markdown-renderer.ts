@@ -1,11 +1,24 @@
 /**
  * Simple markdown renderer that matches the WYSIWYG editor's preview function
  * Converts markdown-style formatting to HTML for display on public pages
+ * XSS-safe: Only allows specific markdown patterns, no raw HTML
  */
 export function renderMarkdown(text: string): string {
   if (!text) return ''
   
-  return text
+  // First, escape any potential HTML to prevent XSS
+  const escapeHtml = (unsafe: string) => {
+    return unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;")
+  }
+  
+  const escaped = escapeHtml(text)
+  
+  return escaped
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-4">$1</h1>')
