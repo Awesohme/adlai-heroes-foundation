@@ -42,7 +42,7 @@ export default function ContactPage() {
           fill
           className="absolute inset-0 z-0 object-cover transition-transform duration-700 hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/70 via-purple-900/60 to-pink-900/70 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/50 via-purple-900/40 to-pink-900/50 z-10"></div>
         <div className="relative z-20 max-w-4xl px-6">
           <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">
             <span className="text-4xl">📞</span>
@@ -188,10 +188,10 @@ export default function ContactPage() {
               <div className="inline-block p-3 rounded-full bg-white/10 backdrop-blur-sm mb-4">
                 <span className="text-2xl">💌</span>
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 drop-shadow-lg">
+              <h3 className="text-2xl md:text-3xl font-bold text-black mb-4 drop-shadow-lg">
                 Ready to Make a Difference?
               </h3>
-              <p className="text-white/90 mb-6 drop-shadow">
+              <p className="text-black/80 mb-6 drop-shadow">
                 Join our mission and help us create lasting change in children's lives.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

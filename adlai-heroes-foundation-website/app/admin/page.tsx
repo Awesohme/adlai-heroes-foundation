@@ -456,14 +456,6 @@ function AdminDashboardContent() {
             <Button 
               className="h-auto p-4 flex flex-col items-center gap-2" 
               variant="outline"
-              onClick={() => handleAdd('section')}
-            >
-              <PlusIcon className="h-6 w-6" />
-              <span>Add Content Section</span>
-            </Button>
-            <Button 
-              className="h-auto p-4 flex flex-col items-center gap-2" 
-              variant="outline"
               onClick={() => window.location.reload()}
             >
               <SettingsIcon className="h-6 w-6" />
