@@ -44,10 +44,12 @@ function AdminDashboardContent() {
   const [editingItem, setEditingItem] = useState<any>(null)
   const [editingType, setEditingType] = useState<string>('')
   const [showForm, setShowForm] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [showUserManagement, setShowUserManagement] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    setMounted(true)
     loadAllData()
   }, [])
 
@@ -424,7 +426,7 @@ function AdminDashboardContent() {
         </ErrorBoundary>
 
         {/* Edit Form Dialog */}
-        {showForm && (
+        {mounted && showForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg w-full max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl max-h-[95vh] overflow-y-auto shadow-2xl">
               <ErrorBoundary>
@@ -435,7 +437,7 @@ function AdminDashboardContent() {
         )}
 
         {/* User Management Dialog */}
-        {showUserManagement && (
+        {mounted && showUserManagement && (
           <ErrorBoundary>
             <UserManagement onClose={() => setShowUserManagement(false)} />
           </ErrorBoundary>

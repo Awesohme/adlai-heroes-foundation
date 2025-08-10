@@ -402,23 +402,26 @@ This project is proprietary to Adlai Heroes Foundation.
 
 ## 📋 Project Status & Changelog
 
-### Version 3.1.0 (August 10, 2025) - Current
-**Status**: Production Ready with Comprehensive UI/UX Enhancements
+### Version 3.2.0 (August 10, 2025) - Current
+**Status**: Production Ready with Header Background Images & Admin Dashboard Fixes
 **Major Features Completed**:
+- ✅ **Header Background Images**: Subtle background images on all page headers (About, Impact, Programs, Volunteer, Contact, Donate)
+- ✅ **Image-Gradient Blending**: Perfect opacity balance to show images while maintaining readability
+- ✅ **Admin Dashboard Stability**: Fixed React hydration errors in Board Members and Hero Slides management
 - ✅ **Dynamic Content Integration**: All donate buttons pull from site settings dynamically
 - ✅ **Enhanced Button UX**: Black text colors with proper hover states across all pages
 - ✅ **Animated Cards**: Mission/vision/story cards with gradient backgrounds and interactive effects
 - ✅ **Fancy Donate Page**: Complete redesign with stunning gradients and glass morphism
-- ✅ **Hover Navigation**: About dropdown menu shows on hover instead of click
+- ✅ **Left-Aligned Bank Details**: Improved donation page UX with better text alignment
 - ✅ **Jiggle Animations**: 12-degree rotation effects on ALL buttons site-wide for engaging UX
-- ✅ **Footer Enhancements**: Jiggle effects on all hyperlinks with varied rotations
-- ✅ **Consistent Design Language**: Gradient themes (blue→purple→pink) across all components
-- ✅ **Interactive Elements**: Scale, shadow, and rotation hover effects on all interactive elements
 
-### Technical Improvements (Version 3.1.0)
+### Technical Improvements (Version 3.2.0)
+- **Header Image Integration**: Background images with perfect opacity balancing (20%-30% image opacity, 40%-50% overlay opacity)
+- **React Hydration Fixes**: Resolved React error #185 in admin dashboard with proper component mounting
+- **Admin Form Stability**: Fixed "Add Member" and "Add Hero Slide" functionality with error boundaries
+- **Image Asset Management**: Organized header images in `/public/images/headers/` directory structure
 - **Site Settings Integration**: Dynamic button URLs and content across all pages
 - **Animation System**: Consistent hover effects with `transform`, `scale`, `rotate`, and `shadow` properties
-- **Design Cohesion**: Unified gradient backgrounds and glass morphism effects
 - **User Experience**: Engaging 12-degree jiggle animations on all buttons and links
 - **Responsive Design**: All enhancements work seamlessly across desktop, tablet, and mobile
 
@@ -444,5 +447,5 @@ This project is proprietary to Adlai Heroes Foundation.
 ---
 
 **Last Updated**: August 10, 2025
-**Current Version**: 3.1.0
-**Status**: Production Ready - Comprehensive UI/UX Enhancements with Dynamic Content & Engaging Animations
+**Current Version**: 3.2.0
+**Status**: Production Ready - Header Background Images & Admin Dashboard Stability Complete
