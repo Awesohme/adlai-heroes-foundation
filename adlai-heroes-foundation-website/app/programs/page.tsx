@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { supabaseApi, type Program } from "@/lib/supabase"
+import { renderMarkdown } from "@/lib/markdown-renderer"
 
 // Fallback programs data
 const fallbackPrograms: Program[] = [
@@ -146,7 +147,10 @@ export default function ProgramsPage() {
                   <CardTitle className="text-xl font-semibold text-gradient-primary">{program.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-900 mb-4">{program.description}</p>
+                  <div 
+                    className="text-gray-900 mb-4 prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(program.description) }}
+                  />
                   <div className="flex justify-between items-center">
                     <span className={`text-sm bg-${categoryColor}/10 text-${categoryColor} px-2 py-1 rounded-full capitalize font-medium`}>
                       {program.category}

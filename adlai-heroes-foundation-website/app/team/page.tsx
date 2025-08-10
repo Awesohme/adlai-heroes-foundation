@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LinkedinIcon, MailIcon } from "lucide-react"
 import { supabaseApi, type TeamMember } from "@/lib/supabase"
+import { renderMarkdown } from "@/lib/markdown-renderer"
 
 // Fallback team members data
 const fallbackTeamMembers: TeamMember[] = [
@@ -92,9 +93,10 @@ export default function TeamPage() {
                 <p className="text-primary font-medium">{member.position}</p>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                  {member.bio}
-                </p>
+                <div 
+                  className="text-gray-700 mb-4 leading-relaxed prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: renderMarkdown(member.bio) }}
+                />
                 
                 {/* Contact Links */}
                 {(member.email || member.linkedin_url) && (

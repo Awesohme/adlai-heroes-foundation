@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ChevronLeftIcon, ChevronRightIcon, ZoomInIcon, CalendarIcon, TagIcon } from "lucide-react"
 import { supabaseApi, type Program, type SiteSettings } from "@/lib/supabase"
+import { renderMarkdown } from "@/lib/markdown-renderer"
 import Link from "next/link"
 
 // Fallback images for gallery demonstration
@@ -145,9 +146,10 @@ export default function ProgramPage({ params }: ProgramPageProps) {
           {/* Short Description */}
           {program.description && (
             <div className="bg-gray-50 p-6 rounded-lg mb-8 border-l-4" style={{ borderColor: `var(--${categoryColor})` }}>
-              <p className="text-xl text-gray-800 leading-relaxed font-medium italic">
-                {program.description}
-              </p>
+              <div 
+                className="text-xl text-gray-800 leading-relaxed font-medium italic prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(program.description) }}
+              />
             </div>
           )}
 

@@ -2,11 +2,14 @@
 
 import Image from "next/image"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { supabaseApi } from "@/lib/supabase"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { supabaseApi, type BoardMember } from "@/lib/supabase"
+import { renderMarkdown } from "@/lib/markdown-renderer"
 import { useState, useEffect } from "react"
 
 export default function BoardPage() {
-  const [boardMembers, setBoardMembers] = useState([])
+  const [boardMembers, setBoardMembers] = useState<BoardMember[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -53,8 +56,8 @@ export default function BoardPage() {
           </div>
         ) : boardMembers.length > 0 ? (
           <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
-            {boardMembers.map((member, index) => (
-              <Card variant="glass" key={member.id} className="p-6 flex flex-col items-center text-center shadow-lg w-[240px] flex-shrink-0">
+            {boardMembers.map((member) => (
+              <Card key={member.id} className="p-6 flex flex-col items-center text-center shadow-lg w-[240px] flex-shrink-0 bg-white/70 backdrop-blur-sm">
                 <Image
                   src={member.image || "/placeholder.svg"}
                   alt={member.name}
@@ -62,8 +65,38 @@ export default function BoardPage() {
                   height={200}
                   className="rounded-full object-cover mb-4 h-40 w-40"
                 />
-                <CardTitle className="text-xl font-semibold text-gray-900">{member.name}</CardTitle>
-                <CardContent className="p-0 text-primary">{member.position}</CardContent>
+                <CardTitle className="text-xl font-semibold text-gray-900 mb-2">{member.name}</CardTitle>
+                <CardContent className="p-0 text-primary mb-4">{member.position}</CardContent>
+                
+                {member.bio && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="bg-white/50 hover:bg-white/70 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all duration-300 hover:scale-105 hover:rotate-3"
+                      >
+                        View Bio
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-gradient-primary mb-2">
+                          {member.name}
+                        </DialogTitle>
+                        <p className="text-lg text-primary font-medium mb-4">
+                          {member.position}
+                        </p>
+                      </DialogHeader>
+                      <div className="mt-4">
+                        <div 
+                          className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: renderMarkdown(member.bio) }}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </Card>
             ))}
           </div>
