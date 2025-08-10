@@ -89,7 +89,7 @@ export default function ProgramsPage() {
             src="/images/headers/programs-bg.jpg"
             alt="Programs background"
             fill
-            className="object-cover opacity-20"
+            className="object-cover opacity-30"
             priority
           />
         </div>

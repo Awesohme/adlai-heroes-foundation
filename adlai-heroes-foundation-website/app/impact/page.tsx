@@ -60,7 +60,7 @@ export default function ImpactPage() {
             src="/images/headers/impact-bg.jpg"
             alt="Impact background"
             fill
-            className="object-cover opacity-20"
+            className="object-cover opacity-30"
             priority
           />
         </div>

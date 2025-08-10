@@ -39,7 +39,7 @@ export default function AboutPage() {
             src="/images/headers/about-us-bg.jpg"
             alt="About us background"
             fill
-            className="object-cover opacity-20"
+            className="object-cover opacity-30"
             priority
           />
         </div>

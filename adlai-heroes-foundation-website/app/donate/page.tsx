@@ -90,7 +90,7 @@ export default function DonatePage() {
           fill
           className="absolute inset-0 z-0 object-cover transition-transform duration-700 hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/70 via-blue-900/60 to-purple-900/70 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/50 via-blue-900/40 to-purple-900/50 z-10"></div>
         <div className="relative z-20 max-w-4xl px-6">
           <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">
             <span className="text-4xl">💖</span>

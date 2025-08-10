@@ -188,10 +188,10 @@ export default function ContactPage() {
               <div className="inline-block p-3 rounded-full bg-white/10 backdrop-blur-sm mb-4">
                 <span className="text-2xl">💌</span>
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-black mb-4 drop-shadow-lg">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 drop-shadow-lg">
                 Ready to Make a Difference?
               </h3>
-              <p className="text-black/80 mb-6 drop-shadow">
+              <p className="text-white/90 mb-6 drop-shadow">
                 Join our mission and help us create lasting change in children's lives.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -203,8 +203,8 @@ export default function ContactPage() {
                   </Button>
                 )}
                 {settings.volunteer_button_url && (
-                  <Button asChild variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-black shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-6 py-3">
-                    <Link href={settings.volunteer_button_url} className="flex items-center gap-2">
+                  <Button asChild variant="outline" className="border-2 border-white bg-white text-black hover:bg-gray-100 hover:text-black shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-6 py-3">
+                    <Link href={settings.volunteer_button_url} className="flex items-center gap-2 text-black">
                       <span>🌟</span> Volunteer
                     </Link>
                   </Button>
