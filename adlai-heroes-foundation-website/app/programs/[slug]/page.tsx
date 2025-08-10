@@ -288,14 +288,14 @@ export default function ProgramPage({ params }: ProgramPageProps) {
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               {settings.donate_button_url && (
                 <Button asChild size="lg" className="bg-white text-black hover:bg-gray-100 shadow-xl hover:shadow-2xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-8 py-4 text-lg font-semibold">
-                  <Link href={settings.donate_button_url} className="flex items-center gap-2">
+                  <Link href={settings.donate_button_url} className="flex items-center gap-2 text-black">
                     <span>💖</span> Donate Now
                   </Link>
                 </Button>
               )}
-              <Button asChild variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-black shadow-xl hover:shadow-2xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-8 py-4 text-lg font-semibold">
-                <Link href="/about" className="flex items-center gap-2">
-                  <span>📖</span> Learn More
+              <Button asChild variant="outline" size="lg" className="border-2 border-white bg-white text-black hover:bg-gray-100 hover:text-black shadow-xl hover:shadow-2xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-8 py-4 text-lg font-semibold">
+                <Link href="/donate" className="flex items-center gap-2 text-black">
+                  <span>💖</span> Donate
                 </Link>
               </Button>
             </div>

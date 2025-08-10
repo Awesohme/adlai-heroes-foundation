@@ -41,16 +41,21 @@ export default function BlogPage() {
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       {/* Hero Section */}
-      <section className="relative h-[300px] md:h-[400px] flex items-center justify-center text-center mb-12 rounded-lg overflow-hidden">
-        <Image
-          src="/placeholder.svg?height=400&width=1200"
-          alt="Blog background"
-          layout="fill"
-          objectFit="cover"
-          className="absolute inset-0 z-0"
-        />
-        <div className="absolute inset-0 bg-black opacity-60 z-10" aria-hidden="true"></div>
-        <h1 className="relative z-20 text-white text-4xl md:text-5xl font-bold drop-shadow-lg">Our Latest News</h1>
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-600 via-cyan-600 to-blue-600 p-12 md:p-16 text-center shadow-2xl mb-16">
+        <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/20 via-cyan-500/20 to-blue-500/20 animate-pulse"></div>
+        <div className="relative z-10">
+          <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-white/20 to-white/30 flex items-center justify-center">
+              <span className="text-3xl">📰</span>
+            </div>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">Our Latest News</h1>
+          <p className="text-xl md:text-2xl text-white/90 drop-shadow max-w-2xl mx-auto">
+            Stay updated with our latest stories, achievements, and community impact
+          </p>
+        </div>
+        <div className="absolute top-6 right-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-6 left-6 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
       </section>
 
       {/* Blog Posts Grid */}
@@ -83,7 +88,7 @@ export default function BlogPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-900 mb-4">{post.excerpt}</p>
-                  <Link href={`/blog/${post.slug}`} className="text-primary hover:underline font-medium">
+                  <Link href={`/blog/${post.slug}`} className="text-primary hover:underline font-medium hover:rotate-12 transition-all duration-300 transform hover:scale-105">
                     Read More &rarr;
                   </Link>
                 </CardContent>
