@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -20,24 +21,51 @@ interface BlogPostFormProps {
   post?: BlogPost
   onSave: () => void
   onCancel: () => void
+  open?: boolean
 }
 
-export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormProps) {
+type FormData = {
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  featured_image: string
+  gallery_images: string[]
+  author: string
+  published: boolean
+  meta_title: string
+  meta_description: string
+  meta_keywords: string
+  og_image: string
+}
+
+export default function BlogPostForm({ post, onSave, onCancel, open = true }: BlogPostFormProps) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    title: post?.title || '',
-    slug: post?.slug || '',
-    excerpt: post?.excerpt || '',
-    content: post?.content || '',
-    featured_image: post?.featured_image || '',
-    gallery_images: post?.gallery_images || [],
-    author: post?.author || 'Adlai Heroes Team',
-    published: post?.published || false,
-    meta_title: post?.meta_title || '',
-    meta_description: post?.meta_description || '',
-    meta_keywords: post?.meta_keywords || '',
-    og_image: post?.og_image || ''
-  })
+  const initialised = useRef(false)
+  
+  const DEFAULTS: FormData = {
+    title: '',
+    slug: '',
+    excerpt: '',
+    content: '',
+    featured_image: '',
+    gallery_images: [],
+    author: 'Adlai Heroes Team',
+    published: false,
+    meta_title: '',
+    meta_description: '',
+    meta_keywords: '',
+    og_image: ''
+  }
+  
+  const { control, handleSubmit, reset, watch, setValue } = useForm<FormData>({ defaultValues: DEFAULTS })
+
+  useEffect(() => {
+    if (!open) { initialised.current = false; return; }
+    if (initialised.current) return;
+    if (post) reset(post); else reset(DEFAULTS);
+    initialised.current = true;
+  }, [open, post?.id, reset])
 
   const generateSlug = (title: string) => {
     return title
@@ -48,17 +76,7 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
       .trim()
   }
 
-  const handleTitleChange = (title: string) => {
-    setFormData(prev => ({
-      ...prev,
-      title,
-      slug: generateSlug(title),
-      meta_title: prev.meta_title || title
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (formData: FormData) => {
     setLoading(true)
 
     try {
@@ -77,6 +95,7 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
           description: `"${formData.title}" has been created by ${formData.author || 'Admin'}`,
           duration: 4000
         })
+        reset(DEFAULTS)
       }
       onSave()
     } catch (error) {
@@ -96,7 +115,7 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
         <CardTitle>{post ? 'Edit Blog Post' : 'Add New Blog Post'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="content">Content</TabsTrigger>
@@ -107,127 +126,215 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
             <TabsContent value="content" className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="title">Post Title *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => handleTitleChange(e.target.value)}
-                  placeholder="Enter blog post title"
-                  required
+                <Controller
+                  name="title"
+                  control={control}
+                  rules={{ required: "Title is required" }}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="title"
+                      placeholder="Enter blog post title"
+                      onChange={(e) => {
+                        const title = e.target.value
+                        field.onChange(title)
+                        if (title && !post) {
+                          const slug = generateSlug(title)
+                          setValue('slug', slug)
+                          if (!watch('meta_title')) {
+                            setValue('meta_title', title)
+                          }
+                        }
+                      }}
+                    />
+                  )}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="slug">URL Slug</Label>
-                <Input
-                  id="slug"
-                  value={formData.slug}
-                  onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                  placeholder="blog-post-url-slug"
-                  required
+                <Label htmlFor="slug">URL Slug *</Label>
+                <Controller
+                  name="slug"
+                  control={control}
+                  rules={{ required: "URL slug is required" }}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="slug"
+                      placeholder="blog-post-url-slug"
+                    />
+                  )}
                 />
-                <p className="text-sm text-gray-500">This will be used in the URL: /blog/{formData.slug}</p>
+                <p className="text-sm text-gray-500">This will be used in the URL: /blog/{watch('slug')}</p>
               </div>
 
               <div className="space-y-2">
                 <Label>Author</Label>
-                <AuthorCombobox
-                  value={formData.author}
-                  onChange={(value) => setFormData(prev => ({ ...prev, author: value }))}
-                  placeholder="Select or create author..."
+                <Controller
+                  name="author"
+                  control={control}
+                  render={({ field }) => (
+                    <AuthorCombobox
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select or create author..."
+                    />
+                  )}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="excerpt">Excerpt *</Label>
-                <Textarea
-                  id="excerpt"
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
-                  placeholder="Brief summary for blog previews"
-                  rows={3}
-                  required
+                <Controller
+                  name="excerpt"
+                  control={control}
+                  rules={{ required: "Excerpt is required" }}
+                  render={({ field }) => (
+                    <Textarea
+                      {...field}
+                      id="excerpt"
+                      placeholder="Brief summary for blog previews"
+                      rows={3}
+                    />
+                  )}
                 />
               </div>
 
-              <WYSIWYGEditor
-                label="Full Content"
-                value={formData.content}
-                onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
-                placeholder="Write the full blog post content..."
-                minHeight="400px"
-                required
+              <Controller
+                name="content"
+                control={control}
+                rules={{ required: "Content is required" }}
+                render={({ field }) => (
+                  <WYSIWYGEditor
+                    label="Full Content *"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Write the full blog post content..."
+                    minHeight="400px"
+                    required
+                  />
+                )}
               />
 
-              <ImageUpload
-                currentImageUrl={formData.featured_image}
-                onImageChange={(url) => setFormData(prev => ({ ...prev, featured_image: url }))}
-                label="Featured Image"
-                folder="blog/"
+              <Controller
+                name="featured_image"
+                control={control}
+                render={({ field }) => (
+                  <ImageUpload
+                    currentImageUrl={field.value}
+                    onImageChange={field.onChange}
+                    label="Featured Image"
+                    folder="blog/"
+                  />
+                )}
               />
 
               <div className="flex items-center space-x-2">
-                <Switch
-                  id="published"
-                  checked={formData.published}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
+                <Controller
+                  name="published"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      id="published"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
                 />
                 <Label htmlFor="published">Publish this post</Label>
               </div>
             </TabsContent>
 
             <TabsContent value="gallery" className="space-y-6">
-              <GalleryManager
-                images={formData.gallery_images}
-                featuredImage={formData.featured_image}
-                onImagesChange={(images) => setFormData(prev => ({ ...prev, gallery_images: images }))}
-                onFeaturedImageChange={(url) => setFormData(prev => ({ ...prev, featured_image: url }))}
-                label="Blog Post Gallery"
-                maxImages={5}
-                folder="blog/"
+              <Controller
+                name="gallery_images"
+                control={control}
+                render={({ field: galleryField }) => (
+                  <Controller
+                    name="featured_image"
+                    control={control}
+                    render={({ field: featuredField }) => (
+                      <GalleryManager
+                        images={galleryField.value}
+                        featuredImage={featuredField.value}
+                        onImagesChange={galleryField.onChange}
+                        onFeaturedImageChange={featuredField.onChange}
+                        label="Blog Post Gallery"
+                        maxImages={5}
+                        folder="blog/"
+                      />
+                    )}
+                  />
+                )}
               />
             </TabsContent>
 
             <TabsContent value="seo" className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="meta_title">Meta Title</Label>
-                <Input
-                  id="meta_title"
-                  value={formData.meta_title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, meta_title: e.target.value }))}
-                  placeholder="SEO title for search engines"
-                  maxLength={60}
+                <Controller
+                  name="meta_title"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <Input
+                        {...field}
+                        id="meta_title"
+                        placeholder="SEO title for search engines"
+                        maxLength={60}
+                      />
+                      <p className="text-sm text-gray-500">{field.value.length}/60 characters</p>
+                    </>
+                  )}
                 />
-                <p className="text-sm text-gray-500">{formData.meta_title.length}/60 characters</p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="meta_description">Meta Description</Label>
-                <Textarea
-                  id="meta_description"
-                  value={formData.meta_description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, meta_description: e.target.value }))}
-                  placeholder="Description for search engine results"
-                  rows={3}
-                  maxLength={160}
+                <Controller
+                  name="meta_description"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <Textarea
+                        {...field}
+                        id="meta_description"
+                        placeholder="Description for search engine results"
+                        rows={3}
+                        maxLength={160}
+                      />
+                      <p className="text-sm text-gray-500">{field.value.length}/160 characters</p>
+                    </>
+                  )}
                 />
-                <p className="text-sm text-gray-500">{formData.meta_description.length}/160 characters</p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="meta_keywords">Meta Keywords</Label>
-                <Input
-                  id="meta_keywords"
-                  value={formData.meta_keywords}
-                  onChange={(e) => setFormData(prev => ({ ...prev, meta_keywords: e.target.value }))}
-                  placeholder="Comma-separated keywords"
+                <Controller
+                  name="meta_keywords"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="meta_keywords"
+                      placeholder="Comma-separated keywords"
+                    />
+                  )}
                 />
               </div>
 
-              <ImageUpload
-                currentImageUrl={formData.og_image}
-                onImageChange={(url) => setFormData(prev => ({ ...prev, og_image: url }))}
-                label="Open Graph Image (Social Media)"
-                folder="og/"
+              <Controller
+                name="og_image"
+                control={control}
+                render={({ field }) => (
+                  <ImageUpload
+                    currentImageUrl={field.value}
+                    onImageChange={field.onChange}
+                    label="Open Graph Image (Social Media)"
+                    folder="og/"
+                  />
+                )}
               />
             </TabsContent>
           </Tabs>

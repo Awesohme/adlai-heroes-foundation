@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -16,19 +17,37 @@ interface TestimonialFormProps {
   testimonial?: Testimonial
   onSave: () => void
   onCancel: () => void
+  open?: boolean
 }
 
-export default function TestimonialForm({ testimonial, onSave, onCancel }: TestimonialFormProps) {
-  const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    name: testimonial?.name || '',
-    content: testimonial?.content || '',
-    location: testimonial?.location || '',
-    featured: testimonial?.featured || false
-  })
+type FormData = {
+  name: string
+  content: string
+  location: string
+  featured: boolean
+}
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+export default function TestimonialForm({ testimonial, onSave, onCancel, open = true }: TestimonialFormProps) {
+  const [loading, setLoading] = useState(false)
+  const initialised = useRef(false)
+  
+  const DEFAULTS: FormData = {
+    name: '',
+    content: '',
+    location: '',
+    featured: false
+  }
+  
+  const { control, handleSubmit, reset } = useForm<FormData>({ defaultValues: DEFAULTS })
+
+  useEffect(() => {
+    if (!open) { initialised.current = false; return; }
+    if (initialised.current) return;
+    if (testimonial) reset(testimonial); else reset(DEFAULTS);
+    initialised.current = true;
+  }, [open, testimonial?.id, reset])
+
+  const onSubmit = async (formData: FormData) => {
     setLoading(true)
 
     try {
@@ -47,6 +66,7 @@ export default function TestimonialForm({ testimonial, onSave, onCancel }: Testi
           description: `New testimonial from "${formData.name}" has been added`,
           duration: 4000
         })
+        reset(DEFAULTS)
       }
       onSave()
     } catch (error) {
@@ -66,42 +86,65 @@ export default function TestimonialForm({ testimonial, onSave, onCancel }: Testi
         <CardTitle>{testimonial ? 'Edit Testimonial' : 'Add New Testimonial'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Enter person's name"
-              required
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: "Name is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="name"
+                  placeholder="Enter person's name"
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-              placeholder="e.g., Lagos, Nigeria"
+            <Controller
+              name="location"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="location"
+                  placeholder="e.g., Lagos, Nigeria"
+                />
+              )}
             />
           </div>
 
-          <WYSIWYGEditor
-            label="Testimonial Content *"
-            value={formData.content}
-            onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
-            placeholder="Write the testimonial content..."
-            minHeight="200px"
-            required
+          <Controller
+            name="content"
+            control={control}
+            rules={{ required: "Content is required" }}
+            render={({ field }) => (
+              <WYSIWYGEditor
+                label="Testimonial Content *"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Write the testimonial content..."
+                minHeight="200px"
+                required
+              />
+            )}
           />
 
           <div className="flex items-center space-x-2">
-            <Switch
-              id="featured"
-              checked={formData.featured}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
+            <Controller
+              name="featured"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="featured"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
             />
             <Label htmlFor="featured">Feature this testimonial on homepage</Label>
           </div>

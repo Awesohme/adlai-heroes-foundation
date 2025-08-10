@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -19,6 +20,20 @@ interface ContentSectionFormProps {
   existingSections?: ContentSection[]
   onSave: () => void
   onCancel: () => void
+  open?: boolean
+}
+
+type FormData = {
+  section_key: string
+  page_key: string
+  title: string
+  subtitle: string
+  content: string
+  image_url: string
+  button_text: string
+  button_link: string
+  order_index: number
+  active: boolean
 }
 
 const pageOptions = [
@@ -31,20 +46,35 @@ const pageOptions = [
   { value: 'global', label: 'Global (All Pages)' }
 ]
 
-export default function ContentSectionForm({ section, existingSections = [], onSave, onCancel }: ContentSectionFormProps) {
+export default function ContentSectionForm({ section, existingSections = [], onSave, onCancel, open = true }: ContentSectionFormProps) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    section_key: section?.section_key || '',
-    page_key: section?.page_key || 'home',
-    title: section?.title || '',
-    subtitle: section?.subtitle || '',
-    content: section?.content || '',
-    image_url: section?.image_url || '',
-    button_text: section?.button_text || '',
-    button_link: section?.button_link || '',
-    order_index: section?.order_index || 0,
-    active: section?.active ?? true
-  })
+  const initialised = useRef(false)
+  
+  const DEFAULTS: FormData = {
+    section_key: '',
+    page_key: 'home',
+    title: '',
+    subtitle: '',
+    content: '',
+    image_url: '',
+    button_text: '',
+    button_link: '',
+    order_index: 0,
+    active: true
+  }
+  
+  const { control, handleSubmit, reset, watch, setValue } = useForm<FormData>({ defaultValues: DEFAULTS })
+  
+  // Watch title and page_key to generate section_key
+  const watchedTitle = watch('title')
+  const watchedPageKey = watch('page_key')
+
+  useEffect(() => {
+    if (!open) { initialised.current = false; return; }
+    if (initialised.current) return;
+    if (section) reset(section); else reset(DEFAULTS);
+    initialised.current = true;
+  }, [open, section?.id, reset])
 
   const generateSectionKey = (title: string, pageKey: string) => {
     const baseKey = title
@@ -56,16 +86,7 @@ export default function ContentSectionForm({ section, existingSections = [], onS
     return `${pageKey}_${baseKey}`
   }
 
-  const handleTitleChange = (title: string) => {
-    setFormData(prev => ({
-      ...prev,
-      title,
-      section_key: prev.section_key || generateSectionKey(title, prev.page_key)
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (formData: FormData) => {
     setLoading(true)
 
     try {
@@ -84,6 +105,7 @@ export default function ContentSectionForm({ section, existingSections = [], onS
           description: `"${formData.title || formData.section_key}" has been added to ${formData.page_key} page`,
           duration: 4000
         })
+        reset(DEFAULTS)
       }
       onSave()
     } catch (error) {
@@ -103,35 +125,44 @@ export default function ContentSectionForm({ section, existingSections = [], onS
         <CardTitle>{section ? 'Edit Content Section' : 'Add New Content Section'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="page_key">Page *</Label>
-              <Select 
-                value={formData.page_key} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, page_key: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select page" />
-                </SelectTrigger>
-                <SelectContent>
-                  {pageOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                name="page_key"
+                control={control}
+                rules={{ required: "Page is required" }}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select page" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pageOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="section_key">Section Key *</Label>
-              <Input
-                id="section_key"
-                value={formData.section_key}
-                onChange={(e) => setFormData(prev => ({ ...prev, section_key: e.target.value }))}
-                placeholder="unique_section_identifier"
-                required
+              <Controller
+                name="section_key"
+                control={control}
+                rules={{ required: "Section key is required" }}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="section_key"
+                    placeholder="unique_section_identifier"
+                  />
+                )}
               />
               <p className="text-sm text-gray-500">Unique identifier for this section</p>
             </div>
@@ -139,83 +170,135 @@ export default function ContentSectionForm({ section, existingSections = [], onS
 
           <div className="space-y-2">
             <Label htmlFor="title">Section Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Main heading for this section"
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="title"
+                  placeholder="Main heading for this section"
+                  onChange={(e) => {
+                    const title = e.target.value
+                    field.onChange(title)
+                    if (title && !section && !watch('section_key')) {
+                      const currentPageKey = watch('page_key')
+                      const newSectionKey = generateSectionKey(title, currentPageKey)
+                      setValue('section_key', newSectionKey)
+                    }
+                  }}
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="subtitle">Subtitle</Label>
-            <Input
-              id="subtitle"
-              value={formData.subtitle}
-              onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-              placeholder="Subheading or tagline"
+            <Controller
+              name="subtitle"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="subtitle"
+                  placeholder="Subheading or tagline"
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Main content text for this section"
-              rows={6}
+            <Controller
+              name="content"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  id="content"
+                  placeholder="Main content text for this section"
+                  rows={6}
+                />
+              )}
             />
           </div>
 
-          <ImageUpload
-            currentImageUrl={formData.image_url}
-            onImageChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-            label="Section Image"
-            folder="sections/"
+          <Controller
+            name="image_url"
+            control={control}
+            render={({ field }) => (
+              <ImageUpload
+                currentImageUrl={field.value}
+                onImageChange={field.onChange}
+                label="Section Image"
+                folder="sections/"
+              />
+            )}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="button_text">Button Text</Label>
-              <Input
-                id="button_text"
-                value={formData.button_text}
-                onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
-                placeholder="e.g., Learn More"
+              <Controller
+                name="button_text"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="button_text"
+                    placeholder="e.g., Learn More"
+                  />
+                )}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="button_link">Button Link</Label>
-              <Input
-                id="button_link"
-                value={formData.button_link}
-                onChange={(e) => setFormData(prev => ({ ...prev, button_link: e.target.value }))}
-                placeholder="e.g., /about or #section"
+              <Controller
+                name="button_link"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="button_link"
+                    placeholder="e.g., /about or #section"
+                  />
+                )}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <OrderInput
-              value={formData.order_index}
-              onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
-              existingItems={existingSections.map(s => ({
-                id: s.id,
-                title: `${s.title} (${s.page_key})`,
-                order_index: s.order_index
-              }))}
-              label="Display Order"
-              currentItemId={section?.id}
-              className="space-y-2"
+            <Controller
+              name="order_index"
+              control={control}
+              render={({ field }) => (
+                <OrderInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  existingItems={existingSections.map(s => ({
+                    id: s.id,
+                    title: `${s.title} (${s.page_key})`,
+                    order_index: s.order_index
+                  }))}
+                  label="Display Order"
+                  currentItemId={section?.id}
+                  className="space-y-2"
+                />
+              )}
             />
 
             <div className="flex items-center space-x-2 pt-6">
-              <Switch
-                id="active"
-                checked={formData.active}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, active: checked }))}
+              <Controller
+                name="active"
+                control={control}
+                render={({ field }) => (
+                  <Switch
+                    id="active"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
               />
               <Label htmlFor="active">Section is active</Label>
             </div>

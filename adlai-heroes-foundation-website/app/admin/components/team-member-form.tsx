@@ -33,21 +33,31 @@ type FormData = {
   active: boolean
 }
 
-export default function TeamMemberForm({ member, existingMembers = [], onSave, onCancel }: TeamMemberFormProps) {
+export default function TeamMemberForm({ member, existingMembers = [], onSave, onCancel, open = true }: TeamMemberFormProps) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    name: member?.name || '',
-    position: member?.position || '',
-    bio: member?.bio || '',
-    image_url: member?.image_url || '',
-    email: member?.email || '',
-    linkedin_url: member?.linkedin_url || '',
-    order_index: member?.order_index || 0,
-    active: member?.active ?? true
-  })
+  const initialised = useRef(false)
+  
+  const DEFAULTS: FormData = {
+    name: '',
+    position: '',
+    bio: '',
+    image_url: '',
+    email: '',
+    linkedin_url: '',
+    order_index: 0,
+    active: true
+  }
+  
+  const { control, handleSubmit, reset } = useForm<FormData>({ defaultValues: DEFAULTS })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  useEffect(() => {
+    if (!open) { initialised.current = false; return; }
+    if (initialised.current) return;
+    if (member) reset(member); else reset(DEFAULTS);
+    initialised.current = true;
+  }, [open, member?.id, reset])
+
+  const onSubmit = async (formData: FormData) => {
     setLoading(true)
 
     try {
@@ -85,92 +95,135 @@ export default function TeamMemberForm({ member, existingMembers = [], onSave, o
         <CardTitle>{member ? 'Edit Team Member' : 'Add New Team Member'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g., John Doe"
-              required
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: "Name is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="name"
+                  placeholder="e.g., John Doe"
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="position">Position *</Label>
-            <Input
-              id="position"
-              value={formData.position}
-              onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
-              placeholder="e.g., Program Director"
-              required
+            <Controller
+              name="position"
+              control={control}
+              rules={{ required: "Position is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="position"
+                  placeholder="e.g., Program Director"
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="bio">Bio *</Label>
-            <Textarea
-              id="bio"
-              value={formData.bio}
-              onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-              placeholder="Brief biography and role description..."
-              rows={4}
-              required
+            <Controller
+              name="bio"
+              control={control}
+              rules={{ required: "Bio is required" }}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  id="bio"
+                  placeholder="Brief biography and role description..."
+                  rows={4}
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
-            <ImageUpload
-              currentImageUrl={formData.image_url}
-              onImageChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-              label="Profile Image"
-              placeholder="Upload or enter profile image URL"
+            <Controller
+              name="image_url"
+              control={control}
+              render={({ field }) => (
+                <ImageUpload
+                  currentImageUrl={field.value}
+                  onImageChange={field.onChange}
+                  label="Profile Image"
+                  placeholder="Upload or enter profile image URL"
+                />
+              )}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="e.g., john@adlaiheroesfoundation.com.ng"
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="email"
+                    type="email"
+                    placeholder="e.g., john@adlaiheroesfoundation.com.ng"
+                  />
+                )}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="linkedin_url">LinkedIn URL</Label>
-              <Input
-                id="linkedin_url"
-                type="url"
-                value={formData.linkedin_url}
-                onChange={(e) => setFormData(prev => ({ ...prev, linkedin_url: e.target.value }))}
-                placeholder="https://linkedin.com/in/username"
+              <Controller
+                name="linkedin_url"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="linkedin_url"
+                    type="url"
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                )}
               />
             </div>
           </div>
 
-          <OrderInput
-            value={formData.order_index}
-            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
-            existingItems={existingMembers.map(m => ({
-              id: m.id,
-              title: `${m.name} (${m.position})`,
-              order_index: m.order_index
-            }))}
-            label="Display Order"
-            currentItemId={member?.id}
-            className="space-y-2"
+          <Controller
+            name="order_index"
+            control={control}
+            render={({ field }) => (
+              <OrderInput
+                value={field.value}
+                onChange={field.onChange}
+                existingItems={existingMembers.map(m => ({
+                  id: m.id,
+                  title: `${m.name} (${m.position})`,
+                  order_index: m.order_index
+                }))}
+                label="Display Order"
+                currentItemId={member?.id}
+                className="space-y-2"
+              />
+            )}
           />
 
           <div className="flex items-center space-x-2">
-            <Switch
-              id="active"
-              checked={formData.active}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, active: checked }))}
+            <Controller
+              name="active"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="active"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
             />
             <Label htmlFor="active">Active (visible on website)</Label>
           </div>

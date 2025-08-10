@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -20,24 +21,51 @@ interface ProgramFormProps {
   program?: Program
   onSave: () => void
   onCancel: () => void
+  open?: boolean
 }
 
-export default function ProgramForm({ program, onSave, onCancel }: ProgramFormProps) {
+type FormData = {
+  title: string
+  slug: string
+  description: string
+  content: string
+  featured_image: string
+  gallery_images: string[]
+  category: 'education' | 'health' | 'empowerment' | 'community'
+  published: boolean
+  meta_title: string
+  meta_description: string
+  meta_keywords: string
+  og_image: string
+}
+
+export default function ProgramForm({ program, onSave, onCancel, open = true }: ProgramFormProps) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    title: program?.title || '',
-    slug: program?.slug || '',
-    description: program?.description || '',
-    content: program?.content || '',
-    featured_image: program?.featured_image || '',
-    gallery_images: program?.gallery_images || [],
-    category: program?.category || 'education' as 'education' | 'health' | 'empowerment' | 'community',
-    published: program?.published || false,
-    meta_title: program?.meta_title || '',
-    meta_description: program?.meta_description || '',
-    meta_keywords: program?.meta_keywords || '',
-    og_image: program?.og_image || ''
-  })
+  const initialised = useRef(false)
+  
+  const DEFAULTS: FormData = {
+    title: '',
+    slug: '',
+    description: '',
+    content: '',
+    featured_image: '',
+    gallery_images: [],
+    category: 'education',
+    published: false,
+    meta_title: '',
+    meta_description: '',
+    meta_keywords: '',
+    og_image: ''
+  }
+  
+  const { control, handleSubmit, reset, watch, setValue } = useForm<FormData>({ defaultValues: DEFAULTS })
+
+  useEffect(() => {
+    if (!open) { initialised.current = false; return; }
+    if (initialised.current) return;
+    if (program) reset(program); else reset(DEFAULTS);
+    initialised.current = true;
+  }, [open, program?.id, reset])
 
   const generateSlug = (title: string) => {
     return title
@@ -48,35 +76,11 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
       .trim()
   }
 
-  const handleTitleChange = (title: string) => {
-    setFormData(prev => ({
-      ...prev,
-      title,
-      slug: generateSlug(title),
-      meta_title: prev.meta_title || title
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (formData: FormData) => {
     console.log('🚀 Form submission started')
     console.log('📝 Form data:', formData)
     console.log('🏷️ Program ID:', program?.id)
     console.log('🔍 Full program object:', program)
-    
-    // Validate required fields
-    if (!formData.title.trim()) {
-      toast.error('Title is required')
-      return
-    }
-    if (!formData.slug.trim()) {
-      toast.error('URL slug is required')
-      return
-    }
-    if (!formData.description.trim()) {
-      toast.error('Description is required')
-      return
-    }
     
     setLoading(true)
 
@@ -107,6 +111,7 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
           description: `"${formData.title}" has been added to the ${formData.category} category`,
           duration: 4000
         })
+        reset(DEFAULTS)
       }
       console.log('🎉 Operation completed, calling onSave()')
       onSave()
@@ -128,7 +133,7 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
         <CardTitle>{program ? 'Edit Program' : 'Add New Program'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="content" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="content">Content</TabsTrigger>
@@ -139,125 +144,207 @@ export default function ProgramForm({ program, onSave, onCancel }: ProgramFormPr
             <TabsContent value="content" className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title">Program Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Enter program title"
-              required
+            <Controller
+              name="title"
+              control={control}
+              rules={{ required: "Title is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="title"
+                  placeholder="Enter program title"
+                  onChange={(e) => {
+                    const title = e.target.value
+                    field.onChange(title)
+                    if (title && !program) {
+                      const slug = generateSlug(title)
+                      setValue('slug', slug)
+                      if (!watch('meta_title')) {
+                        setValue('meta_title', title)
+                      }
+                    }
+                  }}
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slug">URL Slug</Label>
-            <Input
-              id="slug"
-              value={formData.slug}
-              onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-              placeholder="program-url-slug"
-              required
+            <Label htmlFor="slug">URL Slug *</Label>
+            <Controller
+              name="slug"
+              control={control}
+              rules={{ required: "URL slug is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="slug"
+                  placeholder="program-url-slug"
+                />
+              )}
             />
-            <p className="text-sm text-gray-500">This will be used in the URL: /programs/{formData.slug}</p>
+            <p className="text-sm text-gray-500">This will be used in the URL: /programs/{watch('slug')}</p>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="category">Category *</Label>
-            <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="education">Education</SelectItem>
-                <SelectItem value="health">Health</SelectItem>
-                <SelectItem value="empowerment">Empowerment</SelectItem>
-                <SelectItem value="community">Community</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              name="category"
+              control={control}
+              rules={{ required: "Category is required" }}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="education">Education</SelectItem>
+                    <SelectItem value="health">Health</SelectItem>
+                    <SelectItem value="empowerment">Empowerment</SelectItem>
+                    <SelectItem value="community">Community</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">Short Description *</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Brief description for program cards and previews"
-              rows={3}
-              required
+            <Controller
+              name="description"
+              control={control}
+              rules={{ required: "Description is required" }}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  id="description"
+                  placeholder="Brief description for program cards and previews"
+                  rows={3}
+                />
+              )}
             />
           </div>
 
-          <WYSIWYGEditor
-            label="Full Content"
-            value={formData.content}
-            onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
-            placeholder="Write the full program description and details..."
-            minHeight="300px"
+          <Controller
+            name="content"
+            control={control}
+            render={({ field }) => (
+              <WYSIWYGEditor
+                label="Full Content"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Write the full program description and details..."
+                minHeight="300px"
+              />
+            )}
           />
 
               <div className="flex items-center space-x-2">
-                <Switch
-                  id="published"
-                  checked={formData.published}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
+                <Controller
+                  name="published"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      id="published"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
                 />
                 <Label htmlFor="published">Publish this program</Label>
               </div>
             </TabsContent>
 
             <TabsContent value="gallery" className="space-y-6">
-              <GalleryManager
-                images={formData.gallery_images}
-                featuredImage={formData.featured_image}
-                onImagesChange={(images) => setFormData(prev => ({ ...prev, gallery_images: images }))}
-                onFeaturedImageChange={(url) => setFormData(prev => ({ ...prev, featured_image: url }))}
-                label="Program Gallery"
-                maxImages={5}
-                folder="programs/"
+              <Controller
+                name="gallery_images"
+                control={control}
+                render={({ field: galleryField }) => (
+                  <Controller
+                    name="featured_image"
+                    control={control}
+                    render={({ field: featuredField }) => (
+                      <GalleryManager
+                        images={galleryField.value}
+                        featuredImage={featuredField.value}
+                        onImagesChange={galleryField.onChange}
+                        onFeaturedImageChange={featuredField.onChange}
+                        label="Program Gallery"
+                        maxImages={5}
+                        folder="programs/"
+                      />
+                    )}
+                  />
+                )}
               />
             </TabsContent>
 
             <TabsContent value="seo" className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="meta_title">Meta Title</Label>
-                <Input
-                  id="meta_title"
-                  value={formData.meta_title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, meta_title: e.target.value }))}
-                  placeholder="SEO title for search engines"
-                  maxLength={60}
+                <Controller
+                  name="meta_title"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <Input
+                        {...field}
+                        id="meta_title"
+                        placeholder="SEO title for search engines"
+                        maxLength={60}
+                      />
+                      <p className="text-sm text-gray-500">{field.value.length}/60 characters</p>
+                    </>
+                  )}
                 />
-                <p className="text-sm text-gray-500">{formData.meta_title.length}/60 characters</p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="meta_description">Meta Description</Label>
-                <Textarea
-                  id="meta_description"
-                  value={formData.meta_description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, meta_description: e.target.value }))}
-                  placeholder="Description for search engine results"
-                  rows={3}
-                  maxLength={160}
+                <Controller
+                  name="meta_description"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <Textarea
+                        {...field}
+                        id="meta_description"
+                        placeholder="Description for search engine results"
+                        rows={3}
+                        maxLength={160}
+                      />
+                      <p className="text-sm text-gray-500">{field.value.length}/160 characters</p>
+                    </>
+                  )}
                 />
-                <p className="text-sm text-gray-500">{formData.meta_description.length}/160 characters</p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="meta_keywords">Meta Keywords</Label>
-                <Input
-                  id="meta_keywords"
-                  value={formData.meta_keywords}
-                  onChange={(e) => setFormData(prev => ({ ...prev, meta_keywords: e.target.value }))}
-                  placeholder="Comma-separated keywords"
+                <Controller
+                  name="meta_keywords"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="meta_keywords"
+                      placeholder="Comma-separated keywords"
+                    />
+                  )}
                 />
               </div>
 
-              <ImageUpload
-                currentImageUrl={formData.og_image}
-                onImageChange={(url) => setFormData(prev => ({ ...prev, og_image: url }))}
-                label="Open Graph Image (Social Media)"
-                folder="og/"
+              <Controller
+                name="og_image"
+                control={control}
+                render={({ field }) => (
+                  <ImageUpload
+                    currentImageUrl={field.value}
+                    onImageChange={field.onChange}
+                    label="Open Graph Image (Social Media)"
+                    folder="og/"
+                  />
+                )}
               />
             </TabsContent>
           </Tabs>
