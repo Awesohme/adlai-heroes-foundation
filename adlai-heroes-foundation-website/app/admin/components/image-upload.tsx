@@ -30,11 +30,19 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null)
+  const [urlInputValue, setUrlInputValue] = useState<string>(currentImageUrl || '')
   const [isMounted, setIsMounted] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setIsMounted(true)
+  }, [])
+
+  // Initialize URL input value only once, don't sync with currentImageUrl to avoid loops
+  useEffect(() => {
+    if (!urlInputValue && currentImageUrl) {
+      setUrlInputValue(currentImageUrl)
+    }
   }, [])
 
   const handleFileSelect = async (file: File) => {
@@ -117,9 +125,23 @@ export default function ImageUpload({
     }
   }
 
-  const handleUrlInput = (url: string) => {
-    setPreviewUrl(url)
+  const handleUrlInputChange = (url: string) => {
+    setUrlInputValue(url)
+    // Only update preview and notify parent when user finishes typing (on blur) or hits enter
+  }
+
+  const handleUrlInputBlur = () => {
+    const url = urlInputValue.trim()
+    setPreviewUrl(url || null)
     onImageChange(url)
+  }
+
+  const handleUrlInputKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      const url = urlInputValue.trim()
+      setPreviewUrl(url || null)
+      onImageChange(url)
+    }
   }
 
   // Don't render until mounted to prevent hydration issues
@@ -229,8 +251,10 @@ export default function ImageUpload({
           id="image-url"
           type="url"
           placeholder="https://example.com/image.jpg"
-          value={previewUrl || ''}
-          onChange={(e) => handleUrlInput(e.target.value)}
+          value={urlInputValue}
+          onChange={(e) => handleUrlInputChange(e.target.value)}
+          onBlur={handleUrlInputBlur}
+          onKeyPress={handleUrlInputKeyPress}
         />
       </div>
     </div>
