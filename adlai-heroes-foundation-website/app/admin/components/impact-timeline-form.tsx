@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -16,21 +17,49 @@ interface ImpactTimelineFormProps {
   existingItems?: ImpactTimeline[]
   onSubmit: (data: Omit<ImpactTimeline, 'id' | 'created_at' | 'updated_at'>) => Promise<void>
   onCancel?: () => void
+  open?: boolean
 }
 
-export function ImpactTimelineForm({ timeline, existingItems = [], onSubmit, onCancel }: ImpactTimelineFormProps) {
-  const [formData, setFormData] = useState({
-    year: timeline?.year || new Date().getFullYear(),
-    title: timeline?.title || '',
-    description: timeline?.description || '',
-    order_index: timeline?.order_index || 0,
-    active: timeline?.active ?? true
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+type FormData = {
+  year: number
+  title: string
+  description: string
+  order_index: number
+  active: boolean
+}
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+export function ImpactTimelineForm({ timeline, existingItems = [], onSubmit, onCancel, open = true }: ImpactTimelineFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const initialised = useRef(false)
+  
+  const DEFAULTS: FormData = {
+    year: new Date().getFullYear(),
+    title: '',
+    description: '',
+    order_index: 0,
+    active: true
+  }
+  
+  const { control, handleSubmit, reset } = useForm<FormData>({ defaultValues: DEFAULTS })
+
+  useEffect(() => {
+    if (!open) { initialised.current = false; return; }
+    if (initialised.current) return;
+    if (timeline) {
+      reset({
+        year: timeline.year || new Date().getFullYear(),
+        title: timeline.title || '',
+        description: timeline.description || '',
+        order_index: timeline.order_index || 0,
+        active: timeline.active ?? true
+      });
+    } else {
+      reset(DEFAULTS);
+    }
+    initialised.current = true;
+  }, [open, timeline?.id, reset])
+
+  const onSubmitHandler = async (formData: FormData) => {
     if (!formData.title.trim() || !formData.description.trim()) {
       toast.error('Please fill in all required fields')
       return
@@ -43,13 +72,7 @@ export function ImpactTimelineForm({ timeline, existingItems = [], onSubmit, onC
       toast.success(`Timeline item ${timeline ? 'updated' : 'created'} successfully!`)
       if (!timeline) {
         // Reset form for new items
-        setFormData({
-          year: new Date().getFullYear(),
-          title: '',
-          description: '',
-          order_index: 0,
-          active: true
-        })
+        reset(DEFAULTS)
       }
     } catch (error) {
       console.error('Form submission error:', error)
@@ -67,65 +90,93 @@ export function ImpactTimelineForm({ timeline, existingItems = [], onSubmit, onC
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmitHandler)} className="space-y-6">
           {/* Year */}
           <div className="space-y-2">
             <Label htmlFor="year">Year *</Label>
-            <Input
-              id="year"
-              type="number"
-              min="1950"
-              max="2100"
-              value={formData.year}
-              onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || new Date().getFullYear() })}
-              required
+            <Controller
+              name="year"
+              control={control}
+              rules={{ required: "Year is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="year"
+                  type="number"
+                  min="1950"
+                  max="2100"
+                  onChange={(e) => field.onChange(parseInt(e.target.value) || new Date().getFullYear())}
+                />
+              )}
             />
           </div>
 
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="e.g., Foundation Established"
-              required
+            <Controller
+              name="title"
+              control={control}
+              rules={{ required: "Title is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="title"
+                  placeholder="e.g., Foundation Established"
+                />
+              )}
             />
           </div>
 
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description *</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Describe what happened in this year..."
-              rows={3}
-              required
+            <Controller
+              name="description"
+              control={control}
+              rules={{ required: "Description is required" }}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  id="description"
+                  placeholder="Describe what happened in this year..."
+                  rows={3}
+                />
+              )}
             />
           </div>
 
-          <OrderInput
-            value={formData.order_index}
-            onChange={(value) => setFormData({ ...formData, order_index: value })}
-            existingItems={existingItems.map(item => ({
-              id: item.id,
-              title: `${item.year} - ${item.title}`,
-              order_index: item.order_index
-            }))}
-            label="Display Order"
-            currentItemId={timeline?.id}
-            className="space-y-2"
+          <Controller
+            name="order_index"
+            control={control}
+            render={({ field }) => (
+              <OrderInput
+                value={field.value}
+                onChange={field.onChange}
+                existingItems={existingItems.map(item => ({
+                  id: item.id,
+                  title: `${item.year} - ${item.title}`,
+                  order_index: item.order_index
+                }))}
+                label="Display Order"
+                currentItemId={timeline?.id}
+                className="space-y-2"
+              />
+            )}
           />
 
           {/* Active Toggle */}
           <div className="flex items-center space-x-2">
-            <Switch
-              id="active"
-              checked={formData.active}
-              onCheckedChange={(checked) => setFormData({ ...formData, active: checked })}
+            <Controller
+              name="active"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="active"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
             />
             <Label htmlFor="active">Active (visible on website)</Label>
           </div>

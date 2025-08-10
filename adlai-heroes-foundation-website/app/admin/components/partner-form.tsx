@@ -18,20 +18,39 @@ interface PartnerFormProps {
   existingPartners?: Partner[]
   onSave: () => void
   onCancel: () => void
+  open?: boolean
 }
 
-export default function PartnerForm({ partner, existingPartners = [], onSave, onCancel }: PartnerFormProps) {
-  const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    name: partner?.name || '',
-    logo_url: partner?.logo_url || '',
-    website_url: partner?.website_url || '',
-    order_index: partner?.order_index || 0,
-    active: partner?.active ?? true
-  })
+type FormData = {
+  name: string
+  logo_url: string
+  website_url: string
+  order_index: number
+  active: boolean
+}
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+export default function PartnerForm({ partner, existingPartners = [], onSave, onCancel, open = true }: PartnerFormProps) {
+  const [loading, setLoading] = useState(false)
+  const initialised = useRef(false)
+  
+  const DEFAULTS: FormData = {
+    name: '',
+    logo_url: '',
+    website_url: '',
+    order_index: 0,
+    active: true
+  }
+  
+  const { control, handleSubmit, reset } = useForm<FormData>({ defaultValues: DEFAULTS })
+
+  useEffect(() => {
+    if (!open) { initialised.current = false; return; }
+    if (initialised.current) return;
+    if (partner) reset(partner); else reset(DEFAULTS);
+    initialised.current = true;
+  }, [open, partner?.id, reset])
+
+  const onSubmit = async (formData: FormData) => {
     setLoading(true)
 
     try {
@@ -69,57 +88,85 @@ export default function PartnerForm({ partner, existingPartners = [], onSave, on
         <CardTitle>{partner ? 'Edit Partner' : 'Add New Partner'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Partner Name *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g., Microsoft Foundation"
-              required
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: "Partner name is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="name"
+                  placeholder="e.g., Microsoft Foundation"
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="logo_url">Logo *</Label>
-            <ImageUpload
-              currentImageUrl={formData.logo_url}
-              onImageChange={(url) => setFormData(prev => ({ ...prev, logo_url: url }))}
-              label="Partner Logo"
-              folder="partners/"
+            <Controller
+              name="logo_url"
+              control={control}
+              render={({ field }) => (
+                <ImageUpload
+                  currentImageUrl={field.value}
+                  onImageChange={field.onChange}
+                  label="Partner Logo"
+                  folder="partners/"
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="website_url">Website URL</Label>
-            <Input
-              id="website_url"
-              type="url"
-              value={formData.website_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, website_url: e.target.value }))}
-              placeholder="https://example.com"
+            <Controller
+              name="website_url"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="website_url"
+                  type="url"
+                  placeholder="https://example.com"
+                />
+              )}
             />
           </div>
 
-          <OrderInput
-            value={formData.order_index}
-            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
-            existingItems={existingPartners.map(p => ({
-              id: p.id,
-              title: p.name,
-              order_index: p.order_index
-            }))}
-            label="Display Order"
-            currentItemId={partner?.id}
-            className="space-y-2"
+          <Controller
+            name="order_index"
+            control={control}
+            render={({ field }) => (
+              <OrderInput
+                value={field.value}
+                onChange={field.onChange}
+                existingItems={existingPartners.map(p => ({
+                  id: p.id,
+                  title: p.name,
+                  order_index: p.order_index
+                }))}
+                label="Display Order"
+                currentItemId={partner?.id}
+                className="space-y-2"
+              />
+            )}
           />
 
           <div className="flex items-center space-x-2">
-            <Switch
-              id="active"
-              checked={formData.active}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, active: checked }))}
+            <Controller
+              name="active"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="active"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
             />
             <Label htmlFor="active">Active (visible on website)</Label>
           </div>
