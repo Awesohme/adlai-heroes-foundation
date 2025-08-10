@@ -9,12 +9,19 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 const JWT_SECRET = process.env.JWT_SECRET
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required for security')
+if (!JWT_SECRET && process.env.NODE_ENV !== 'development') {
+  console.warn('JWT_SECRET environment variable is required for production security')
 }
 
 export async function POST(request: NextRequest) {
   try {
+    if (!JWT_SECRET) {
+      return NextResponse.json(
+        { error: 'JWT_SECRET environment variable is required for authentication' },
+        { status: 500 }
+      )
+    }
+
     const { email, password } = await request.json()
 
     if (!email || !password) {

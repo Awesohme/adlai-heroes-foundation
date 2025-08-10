@@ -7,11 +7,15 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 const JWT_SECRET = process.env.JWT_SECRET
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required for security')
+if (!JWT_SECRET && process.env.NODE_ENV !== 'development') {
+  console.warn('JWT_SECRET environment variable is required for production security')
 }
 
 async function verifyAuth(request: NextRequest) {
+  if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required for authentication')
+  }
+
   const token = request.cookies.get('admin-token')?.value
   
   if (!token) {

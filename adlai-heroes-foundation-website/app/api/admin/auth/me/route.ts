@@ -2,12 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required for security')
+if (!JWT_SECRET && process.env.NODE_ENV !== 'development') {
+  console.warn('JWT_SECRET environment variable is required for production security')
 }
 
 export async function GET(request: NextRequest) {
   try {
+    if (!JWT_SECRET) {
+      return NextResponse.json(
+        { error: 'JWT_SECRET environment variable is required for authentication' },
+        { status: 500 }
+      )
+    }
+
     const token = request.cookies.get('admin-token')?.value
 
     if (!token) {
