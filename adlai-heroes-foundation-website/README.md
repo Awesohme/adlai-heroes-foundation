@@ -2,6 +2,21 @@
 
 A modern, cost-effective website for the Adlai Heroes Foundation nonprofit organization, built with Next.js 15 and Supabase backend.
 
+## 🆕 Latest Updates (August 2025)
+
+### ✅ React Error #185 - COMPLETELY ELIMINATED (v3.4.0)
+**Major Fix**: Systematic migration of all admin forms from useState to react-hook-form
+- **Fixed Forms**: 6 remaining forms (blog-post, content-section, page, program, team-member, testimonial)
+- **Eliminated**: "Maximum update depth exceeded" errors across entire admin dashboard
+- **Improved**: Form performance, validation, and user experience
+- **Technical**: Replaced problematic `setFormData` patterns with Controller-based form management
+
+### ✅ Blog Author System Overhaul (v3.3.0)
+**User-Requested Fix**: Clean author display and super admin controls
+- **Simplified**: Only "Adlai Heroes Team" as default author (removed individual author details)
+- **Added**: Super admin delete functionality with environment variable protection
+- **Enhanced**: Author management with proper fallback systems
+
 ## 🎯 Project Overview
 
 This project rebuilds the Adlai Heroes Foundation website using modern JAMstack architecture to reduce hosting costs while maintaining professional quality and SEO compliance.
