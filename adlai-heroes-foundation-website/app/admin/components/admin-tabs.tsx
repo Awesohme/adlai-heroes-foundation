@@ -59,8 +59,6 @@ export default function AdminTabs({
     { key: 'testimonials', permission: 'testimonials', label: 'Testimonials', data: testimonials },
     { key: 'blog', permission: 'blog_posts', label: 'Blog Posts', data: blogPosts },
     { key: 'board', permission: 'board_members', label: 'Board Members', data: boardMembers },
-    { key: 'sections', permission: 'content_sections', label: 'Content Sections', data: contentSections },
-    { key: 'pages', permission: 'pages', label: 'Pages', data: pages },
     { key: 'hero-slides', permission: 'hero_slides', label: 'Hero Slides', data: heroSlides },
     { key: 'partners', permission: 'partners', label: 'Partners', data: partners },
     { key: 'timeline', permission: 'timeline', label: 'Timeline', data: timeline },
