@@ -81,23 +81,39 @@ export default function AboutPage() {
       </section>
 
       {/* Call to Action */}
-      <section className="text-center bg-secondary p-8 rounded-lg">
-        <h2 className="text-3xl font-bold text-primary mb-4">Join Our Mission</h2>
-        <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
-          Together, we can make a lasting impact on the lives of children and communities across Nigeria.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          {settings.donate_button_url && (
-            <Button asChild size="lg">
-              <Link href={settings.donate_button_url}>Donate Now</Link>
-            </Button>
-          )}
-          {settings.volunteer_button_url && (
-            <Button asChild variant="outline" size="lg">
-              <Link href={settings.volunteer_button_url}>Become a Volunteer</Link>
-            </Button>
-          )}
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-12 text-center shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 via-purple-500/20 to-pink-500/20 animate-pulse"></div>
+        <div className="relative z-10">
+          <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-white/20 to-white/30 flex items-center justify-center">
+              <span className="text-3xl">🤝</span>
+            </div>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">
+            Join Our Mission
+          </h2>
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed drop-shadow">
+            Together, we can make a lasting impact on the lives of children and communities across Nigeria.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            {settings.donate_button_url && (
+              <Button asChild size="lg" className="bg-white text-gray-900 hover:bg-gray-100 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-8 py-4 text-lg font-semibold">
+                <Link href={settings.donate_button_url} className="flex items-center gap-2">
+                  <span>💖</span> Donate Now
+                </Link>
+              </Button>
+            )}
+            {settings.volunteer_button_url && (
+              <Button asChild variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-gray-900 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 px-8 py-4 text-lg font-semibold">
+                <Link href={settings.volunteer_button_url} className="flex items-center gap-2">
+                  <span>🌟</span> Become a Volunteer
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
+        <div className="absolute top-4 right-4 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
+        <div className="absolute bottom-4 left-4 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
       </section>
     </div>
   )

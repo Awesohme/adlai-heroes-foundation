@@ -40,16 +40,20 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
 
     try {
       const action = slide ? 'updating' : 'creating'
+      console.log(`🚀 Attempting to ${action} hero slide:`, formData)
       toast.loading(`${action.charAt(0).toUpperCase() + action.slice(1)} hero slide...`)
       
       if (slide) {
+        console.log('📝 Updating existing hero slide with ID:', slide.id)
         await adminApi.updateHeroSlide(slide.id, formData)
         toast.success('Hero Slide Updated Successfully!', {
           description: `"${formData.title}" has been updated`,
           duration: 4000
         })
       } else {
-        await adminApi.createHeroSlide(formData)
+        console.log('➕ Creating new hero slide')
+        const result = await adminApi.createHeroSlide(formData)
+        console.log('✅ Hero slide created successfully:', result)
         toast.success('Hero Slide Created Successfully!', {
           description: `"${formData.title}" has been added`,
           duration: 4000
@@ -57,10 +61,32 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
       }
       onSave()
     } catch (error) {
-      console.error('Error saving hero slide:', error)
+      console.error('💥 Hero slide submission error:', error)
+      
+      // Enhanced error logging
+      if (error instanceof Error) {
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          formData: formData
+        })
+      }
+      
+      // Show user-friendly error message
+      let errorMessage = 'An unexpected error occurred. Please try again.'
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to create hero slide')) {
+          errorMessage = 'Could not create hero slide. Please check your data and try again.'
+        } else if (error.message.includes('duplicate')) {
+          errorMessage = 'A hero slide with similar details already exists.'
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       toast.error('Failed to Save Hero Slide', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.',
-        duration: 6000
+        description: errorMessage,
+        duration: 8000
       })
     } finally {
       setLoading(false)

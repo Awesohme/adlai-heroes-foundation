@@ -1,164 +1,221 @@
-"use client"
-
-import type React from "react"
+'use client'
 
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { PhoneIcon, MailIcon, MapPinIcon, FacebookIcon, TwitterIcon, InstagramIcon, LinkedinIcon } from "lucide-react"
+import { PhoneIcon, MailIcon, MapPinIcon, FacebookIcon, InstagramIcon, LinkedinIcon } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
-import { BalloonLoader } from "@/components/balloon-loader"
+import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { supabaseApi } from "@/lib/supabase"
+import type { SiteSettings } from "@/lib/supabase"
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  })
-  const [status, setStatus] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [settings, setSettings] = useState<{ [key: string]: string }>({})
+  const [loading, setLoading] = useState(true)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+  useEffect(() => {
+    loadSettings()
+  }, [])
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setStatus("Sending...")
-    await new Promise((resolve) => setTimeout(resolve, 2500))
-    console.log("Form submitted:", formData)
-    setStatus("Message sent successfully!")
-    setFormData({ name: "", email: "", message: "" })
-    setIsSubmitting(false)
+  const loadSettings = async () => {
+    try {
+      const allSettings = await supabaseApi.getSiteSettings() as SiteSettings[]
+      const settingsMap: { [key: string]: string } = {}
+      allSettings.forEach(setting => {
+        settingsMap[setting.setting_key] = setting.setting_value || ''
+      })
+      setSettings(settingsMap)
+    } catch (error) {
+      console.error('Error loading site settings:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
       {/* Hero Section */}
-      <section className="relative h-[300px] md:h-[400px] flex items-center justify-center text-center mb-12 rounded-lg overflow-hidden">
+      <section className="relative h-[400px] md:h-[500px] flex items-center justify-center text-center mb-16 rounded-2xl overflow-hidden shadow-2xl">
         <Image
-          src="/placeholder.svg?height=400&width=1200"
+          src="/placeholder.svg?height=500&width=1200"
           alt="Contact us background"
           layout="fill"
           objectFit="cover"
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 transition-transform duration-700 hover:scale-105"
         />
-        <div className="absolute inset-0 bg-black opacity-60 z-10" aria-hidden="true"></div>
-        <h1 className="relative z-20 text-white text-4xl md:text-5xl font-bold drop-shadow-lg">Contact Us</h1>
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/70 via-purple-900/60 to-pink-900/70 z-10"></div>
+        <div className="relative z-20 max-w-4xl px-6">
+          <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">
+            <span className="text-4xl">📞</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+            Contact Us
+          </h1>
+          <p className="text-xl md:text-2xl text-white/90 drop-shadow max-w-2xl mx-auto">
+            Get in touch with us. We'd love to hear from you!
+          </p>
+        </div>
+        <div className="absolute top-6 right-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-6 left-6 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
       </section>
 
+      {/* Contact Information */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-        {/* Contact Form */}
-        <Card variant="glass" className="p-8 rounded-lg shadow-lg">
-          <h2 className="text-3xl font-bold text-gradient-primary mb-6">Send Us a Message</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <Label htmlFor="name" className="text-lg text-gray-900">
-                Name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="mt-2 p-3 border rounded-md w-full"
-                disabled={isSubmitting}
-              />
+        {/* Contact Details */}
+        <Card className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 p-10 shadow-xl hover:shadow-2xl transition-all duration-300 border-0">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/30 to-purple-200/30 rounded-full -translate-y-16 translate-x-16"></div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg">
+                <MailIcon className="h-6 w-6" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-800">Get In Touch</h2>
             </div>
-            <div>
-              <Label htmlFor="email" className="text-lg text-gray-900">
-                Email
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="mt-2 p-3 border rounded-md w-full"
-                disabled={isSubmitting}
-              />
-            </div>
-            <div>
-              <Label htmlFor="message" className="text-lg text-gray-900">
-                Message
-              </Label>
-              <Textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                required
-                rows={5}
-                className="mt-2 p-3 border rounded-md w-full"
-                disabled={isSubmitting}
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-3 text-lg"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <div className="flex items-center justify-center gap-2">
-                  <BalloonLoader size={16} colors={["#FFFFFF", "#F5F5F5", "#E03A5F"]} />
-                  <span>Sending...</span>
+            <div className="space-y-6">
+              <div className="group flex items-center gap-4 p-4 rounded-lg hover:bg-white/50 transition-all duration-300 hover:shadow-md">
+                <div className="p-3 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors">
+                  <PhoneIcon className="h-6 w-6 text-green-600" />
                 </div>
-              ) : (
-                "Submit Inquiry"
-              )}
-            </Button>
-            {status && !isSubmitting && (
-              <p className={`mt-4 text-center ${status.includes("success") ? "text-green-600" : "text-red-600"}`}>
-                {status}
-              </p>
-            )}
-          </form>
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">Phone</p>
+                  <Link 
+                    href={`tel:${settings.contact_phone || '+2347083060892'}`}
+                    className="text-lg text-gray-800 hover:text-blue-600 transition-colors"
+                  >
+                    {settings.contact_phone || '+234 708 306 0892'}
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="group flex items-center gap-4 p-4 rounded-lg hover:bg-white/50 transition-all duration-300 hover:shadow-md">
+                <div className="p-3 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors">
+                  <MailIcon className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">Email</p>
+                  <Link 
+                    href={`mailto:${settings.contact_email || 'admin@adlaiheroesfoundation.com.ng'}`}
+                    className="text-lg text-gray-800 hover:text-blue-600 transition-colors"
+                  >
+                    {settings.contact_email || 'admin@adlaiheroesfoundation.com.ng'}
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="group flex items-start gap-4 p-4 rounded-lg hover:bg-white/50 transition-all duration-300 hover:shadow-md">
+                <div className="p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors">
+                  <MapPinIcon className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 font-medium">Address</p>
+                  <p className="text-lg text-gray-800 leading-relaxed">
+                    {settings.contact_address || 'Flat 1a, No. 28, Alhaji Isiakanda street, Ilasamaja, Lagos State'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </Card>
 
-        {/* Contact Details */}
-        <Card variant="glass" className="p-8 rounded-lg shadow-lg flex flex-col justify-center">
-          <h2 className="text-3xl font-bold text-gradient-primary mb-6">Our Contact Details</h2>
-          <div className="space-y-6 text-lg text-gray-900">
-            <div className="flex items-center gap-4">
-              <PhoneIcon className="h-7 w-7 text-primary" />
-              <span>+234 708 306 0892</span>
+        {/* Social Media & CTA */}
+        <div className="space-y-8">
+          <Card className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-pink-100 p-10 shadow-xl hover:shadow-2xl transition-all duration-300 border-0">
+            <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full -translate-y-12 -translate-x-12"></div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg">
+                  <span className="text-lg">🌐</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800">Connect With Us</h3>
+              </div>
+              <p className="text-gray-600 mb-6">
+                Follow us on social media to stay updated on our latest activities and impact stories.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                {settings.facebook_url && (
+                  <Link 
+                    href={settings.facebook_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white/50 hover:bg-blue-50 hover:shadow-md transition-all duration-300 group"
+                  >
+                    <FacebookIcon className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-gray-700">Facebook</span>
+                  </Link>
+                )}
+                {settings.instagram_url && (
+                  <Link 
+                    href={settings.instagram_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white/50 hover:bg-pink-50 hover:shadow-md transition-all duration-300 group"
+                  >
+                    <InstagramIcon className="h-5 w-5 text-pink-600 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-gray-700">Instagram</span>
+                  </Link>
+                )}
+                {settings.twitter_url && (
+                  <Link 
+                    href={settings.twitter_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white/50 hover:bg-gray-50 hover:shadow-md transition-all duration-300 group"
+                  >
+                    <svg className="h-5 w-5 text-black group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <span className="font-medium text-gray-700">Twitter</span>
+                  </Link>
+                )}
+                {settings.linkedin_url && (
+                  <Link 
+                    href={settings.linkedin_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white/50 hover:bg-blue-50 hover:shadow-md transition-all duration-300 group"
+                  >
+                    <LinkedinIcon className="h-5 w-5 text-blue-700 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-gray-700">LinkedIn</span>
+                  </Link>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <MailIcon className="h-7 w-7 text-primary" />
-              <span>admin@adlaiheroesfoundation.com.ng</span>
+          </Card>
+
+          {/* Call to Action */}
+          <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-600 via-red-600 to-pink-600 p-8 text-center shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/20 via-red-500/20 to-pink-500/20 animate-pulse"></div>
+            <div className="relative z-10">
+              <div className="inline-block p-3 rounded-full bg-white/10 backdrop-blur-sm mb-4">
+                <span className="text-2xl">💌</span>
+              </div>
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 drop-shadow-lg">
+                Ready to Make a Difference?
+              </h3>
+              <p className="text-white/90 mb-6 drop-shadow">
+                Join our mission and help us create lasting change in children's lives.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                {settings.donate_button_url && (
+                  <Button asChild className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-6 py-3">
+                    <Link href={settings.donate_button_url} className="flex items-center gap-2">
+                      <span>💖</span> Donate Now
+                    </Link>
+                  </Button>
+                )}
+                {settings.volunteer_button_url && (
+                  <Button asChild variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-gray-900 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 px-6 py-3">
+                    <Link href={settings.volunteer_button_url} className="flex items-center gap-2">
+                      <span>🌟</span> Volunteer
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
-            <div className="flex items-start gap-4">
-              <MapPinIcon className="h-7 w-7 text-primary mt-1" />
-              <span>Flat 1a, No. 28, Alhaji Isiakanda street, Ilasamaja, Lagos State</span>
-            </div>
-          </div>
-          <div className="mt-8">
-            <h3 className="text-xl font-semibold text-gradient-primary mb-4">Follow Us</h3>
-            <div className="flex space-x-6">
-              <Link aria-label="Facebook" href="#" className="text-gray-900 hover:text-primary transition-colors">
-                <FacebookIcon className="h-8 w-8" />
-              </Link>
-              <Link aria-label="Twitter" href="#" className="text-gray-900 hover:text-primary transition-colors">
-                <TwitterIcon className="h-8 w-8" />
-              </Link>
-              <Link aria-label="Instagram" href="#" className="text-gray-900 hover:text-primary transition-colors">
-                <InstagramIcon className="h-8 w-8" />
-              </Link>
-              <Link aria-label="LinkedIn" href="#" className="text-gray-900 hover:text-primary transition-colors">
-                <LinkedinIcon className="h-8 w-8" />
-              </Link>
-            </div>
-          </div>
-        </Card>
+            <div className="absolute top-4 right-4 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
+            <div className="absolute bottom-4 left-4 w-16 h-16 bg-white/5 rounded-full blur-xl"></div>
+          </section>
+        </div>
       </section>
     </div>
   )
