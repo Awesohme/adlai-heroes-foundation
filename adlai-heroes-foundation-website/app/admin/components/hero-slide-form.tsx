@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -33,6 +33,21 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
     order_index: slide?.order_index || 0,
     active: slide?.active ?? true
   })
+
+  // Reset form data when slide prop changes
+  useEffect(() => {
+    setFormData({
+      title: slide?.title || '',
+      subtitle: slide?.subtitle || '',
+      image_url: slide?.image_url || '',
+      button_text: slide?.button_text || '',
+      button_link: slide?.button_link || '',
+      button_text_2: slide?.button_text_2 || '',
+      button_link_2: slide?.button_link_2 || '',
+      order_index: slide?.order_index || 0,
+      active: slide?.active ?? true
+    })
+  }, [slide])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -125,9 +140,10 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
           <div className="space-y-2">
             <Label htmlFor="image_url">Background Image *</Label>
             <ImageUpload
-              value={formData.image_url}
-              onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-              placeholder="Upload or enter background image URL"
+              currentImageUrl={formData.image_url}
+              onImageChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+              label="Background Image"
+              folder="hero-slides/"
             />
           </div>
 

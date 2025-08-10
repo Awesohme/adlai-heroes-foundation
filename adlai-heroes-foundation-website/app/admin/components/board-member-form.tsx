@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -29,6 +29,17 @@ export default function BoardMemberForm({ member, existingMembers = [], onSave, 
     image: member?.image || '',
     order_index: member?.order_index || 0
   })
+
+  // Reset form data when member prop changes
+  useEffect(() => {
+    setFormData({
+      name: member?.name || '',
+      position: member?.position || '',
+      bio: member?.bio || '',
+      image: member?.image || '',
+      order_index: member?.order_index || 0
+    })
+  }, [member])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

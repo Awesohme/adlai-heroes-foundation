@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { PlusIcon, EditIcon, TrashIcon, UsersIcon, BookOpenIcon, MessageSquareIcon, BarChartIcon, SettingsIcon, GlobeIcon } from "lucide-react"
 import { supabaseApi, type Program, type ImpactStat, type Testimonial, type BlogPost, type BoardMember, type ContentSection, type Page, type HeroSlide, type Partner, type ImpactTimeline } from "@/lib/supabase"
@@ -45,6 +45,7 @@ function AdminDashboardContent() {
   const [editingType, setEditingType] = useState<string>('')
   const [showForm, setShowForm] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [showUserManagement, setShowUserManagement] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -138,24 +139,24 @@ function AdminDashboardContent() {
   const handleEdit = (item: any, type: string) => {
     setEditingItem(item)
     setEditingType(type)
-    setShowForm(true)
+    setDialogOpen(true)
   }
 
   const handleAdd = (type: string) => {
     setEditingItem(null)
     setEditingType(type)
-    setShowForm(true)
+    setDialogOpen(true)
   }
 
   const handleSave = () => {
-    setShowForm(false)
+    setDialogOpen(false)
     setEditingItem(null)
     setEditingType('')
     loadAllData()
   }
 
   const handleCancel = () => {
-    setShowForm(false)
+    setDialogOpen(false)
     setEditingItem(null)
     setEditingType('')
   }
@@ -426,15 +427,28 @@ function AdminDashboardContent() {
         </ErrorBoundary>
 
         {/* Edit Form Dialog */}
-        {mounted && showForm && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg w-full max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl max-h-[95vh] overflow-y-auto shadow-2xl">
-              <ErrorBoundary>
-                {renderForm()}
-              </ErrorBoundary>
-            </div>
-          </div>
-        )}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl max-h-[95vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {editingType === 'program' && (editingItem ? 'Edit Program' : 'Add New Program')}
+                {editingType === 'hero-slide' && (editingItem ? 'Edit Hero Slide' : 'Add New Hero Slide')}
+                {editingType === 'board' && (editingItem ? 'Edit Board Member' : 'Add New Board Member')}
+                {editingType === 'testimonial' && (editingItem ? 'Edit Testimonial' : 'Add New Testimonial')}
+                {editingType === 'stat' && (editingItem ? 'Edit Impact Stat' : 'Add New Impact Stat')}
+                {editingType === 'blog' && (editingItem ? 'Edit Blog Post' : 'Add New Blog Post')}
+                {editingType === 'section' && (editingItem ? 'Edit Content Section' : 'Add New Content Section')}
+                {editingType === 'page' && (editingItem ? 'Edit Page' : 'Add New Page')}
+                {editingType === 'partner' && (editingItem ? 'Edit Partner' : 'Add New Partner')}
+                {editingType === 'settings' && 'Site Settings'}
+                {editingType === 'timeline' && (editingItem ? 'Edit Timeline Item' : 'Add New Timeline Item')}
+              </DialogTitle>
+            </DialogHeader>
+            <ErrorBoundary>
+              {renderForm()}
+            </ErrorBoundary>
+          </DialogContent>
+        </Dialog>
 
         {/* User Management Dialog */}
         {mounted && showUserManagement && (
