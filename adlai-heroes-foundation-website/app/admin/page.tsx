@@ -251,13 +251,13 @@ function AdminDashboardContent() {
       case 'blog':
         return <BlogPostForm post={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'board':
-        return <BoardMemberForm member={editingItem} existingMembers={boardMembers} onSave={handleSave} onCancel={handleCancel} />
+        return <BoardMemberForm member={editingItem} existingMembers={boardMembers} onSave={handleSave} onCancel={handleCancel} open={dialogOpen} />
       case 'section':
         return <ContentSectionForm section={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'page':
         return <PageForm page={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'hero-slide':
-        return <HeroSlideForm slide={editingItem} existingSlides={heroSlides} onSave={handleSave} onCancel={handleCancel} />
+        return <HeroSlideForm slide={editingItem} existingSlides={heroSlides} onSave={handleSave} onCancel={handleCancel} open={dialogOpen} />
       case 'partner':
         return <PartnerForm partner={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'settings':
@@ -428,7 +428,7 @@ function AdminDashboardContent() {
 
         {/* Edit Form Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl max-h-[95vh] overflow-y-auto">
+          <DialogContent key={editingItem?.id ?? 'new'} className="max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingType === 'program' && (editingItem ? 'Edit Program' : 'Add New Program')}

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -18,39 +19,58 @@ interface HeroSlideFormProps {
   existingSlides?: HeroSlide[]
   onSave: () => void
   onCancel: () => void
+  open?: boolean
 }
 
-export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCancel }: HeroSlideFormProps) {
+const DEFAULTS = {
+  title: '',
+  subtitle: '',
+  image_url: '',
+  button_text: '',
+  button_link: '',
+  button_text_2: '',
+  button_link_2: '',
+  order_index: 0,
+  active: true
+}
+
+export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCancel, open }: HeroSlideFormProps) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    title: slide?.title || '',
-    subtitle: slide?.subtitle || '',
-    image_url: slide?.image_url || '',
-    button_text: slide?.button_text || '',
-    button_link: slide?.button_link || '',
-    button_text_2: slide?.button_text_2 || '',
-    button_link_2: slide?.button_link_2 || '',
-    order_index: slide?.order_index || 0,
-    active: slide?.active ?? true
+  const initialised = useRef(false)
+  
+  const { control, handleSubmit, reset } = useForm({ 
+    defaultValues: DEFAULTS 
   })
 
-  // Reset form data when slide prop changes
+  // Reset form only once per dialog open or when slide ID changes
   useEffect(() => {
-    setFormData({
-      title: slide?.title || '',
-      subtitle: slide?.subtitle || '',
-      image_url: slide?.image_url || '',
-      button_text: slide?.button_text || '',
-      button_link: slide?.button_link || '',
-      button_text_2: slide?.button_text_2 || '',
-      button_link_2: slide?.button_link_2 || '',
-      order_index: slide?.order_index || 0,
-      active: slide?.active ?? true
-    })
-  }, [slide])
+    if (!open) { 
+      initialised.current = false
+      return
+    }
+    if (initialised.current) return
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    if (slide) {
+      reset({
+        title: slide.title || '',
+        subtitle: slide.subtitle || '',
+        image_url: slide.image_url || '',
+        button_text: slide.button_text || '',
+        button_link: slide.button_link || '',
+        button_text_2: slide.button_text_2 || '',
+        button_link_2: slide.button_link_2 || '',
+        order_index: slide.order_index || 0,
+        active: slide.active ?? true
+      })
+    } else {
+      reset(DEFAULTS)
+    }
+
+    initialised.current = true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, slide?.id, reset])
+
+  const onSubmit = async (formData: typeof DEFAULTS) => {
     setLoading(true)
 
     try {
@@ -78,7 +98,6 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
     } catch (error) {
       console.error('💥 Hero slide submission error:', error)
       
-      // Enhanced error logging
       if (error instanceof Error) {
         console.error('Error details:', {
           message: error.message,
@@ -87,7 +106,6 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
         })
       }
       
-      // Show user-friendly error message
       let errorMessage = 'An unexpected error occurred. Please try again.'
       if (error instanceof Error) {
         if (error.message.includes('Failed to create hero slide')) {
@@ -114,36 +132,53 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
         <CardTitle>{slide ? 'Edit Hero Slide' : 'Add New Hero Slide'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="e.g., Empowering Futures, One Child at a Time"
-              required
+            <Controller
+              name="title"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  id="title"
+                  placeholder="e.g., Empowering Futures, One Child at a Time"
+                  required
+                  {...field}
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="subtitle">Subtitle</Label>
-            <Textarea
-              id="subtitle"
-              value={formData.subtitle}
-              onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-              placeholder="Brief description or call to action"
-              rows={3}
+            <Controller
+              name="subtitle"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  id="subtitle"
+                  placeholder="Brief description or call to action"
+                  rows={3}
+                  {...field}
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="image_url">Background Image *</Label>
-            <ImageUpload
-              currentImageUrl={formData.image_url}
-              onImageChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
-              label="Background Image"
-              folder="hero-slides/"
+            <Controller
+              name="image_url"
+              control={control}
+              render={({ field }) => (
+                <ImageUpload
+                  currentImageUrl={field.value}
+                  onImageChange={field.onChange}
+                  label="Background Image"
+                  folder="hero-slides/"
+                />
+              )}
             />
           </div>
 
@@ -154,23 +189,35 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="button_text">Button 1 Text *</Label>
-                <Input
-                  id="button_text"
-                  value={formData.button_text}
-                  onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
-                  placeholder="e.g., Donate Now"
-                  required
+                <Controller
+                  name="button_text"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Input
+                      id="button_text"
+                      placeholder="e.g., Donate Now"
+                      required
+                      {...field}
+                    />
+                  )}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="button_link">Button 1 Link *</Label>
-                <Input
-                  id="button_link"
-                  value={formData.button_link}
-                  onChange={(e) => setFormData(prev => ({ ...prev, button_link: e.target.value }))}
-                  placeholder="e.g., /donate"
-                  required
+                <Controller
+                  name="button_link"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Input
+                      id="button_link"
+                      placeholder="e.g., /donate"
+                      required
+                      {...field}
+                    />
+                  )}
                 />
               </div>
             </div>
@@ -179,44 +226,66 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="button_text_2">Button 2 Text (Optional)</Label>
-                <Input
-                  id="button_text_2"
-                  value={formData.button_text_2}
-                  onChange={(e) => setFormData(prev => ({ ...prev, button_text_2: e.target.value }))}
-                  placeholder="e.g., Learn More"
+                <Controller
+                  name="button_text_2"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      id="button_text_2"
+                      placeholder="e.g., Learn More"
+                      {...field}
+                    />
+                  )}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="button_link_2">Button 2 Link (Optional)</Label>
-                <Input
-                  id="button_link_2"
-                  value={formData.button_link_2}
-                  onChange={(e) => setFormData(prev => ({ ...prev, button_link_2: e.target.value }))}
-                  placeholder="e.g., /about"
+                <Controller
+                  name="button_link_2"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      id="button_link_2"
+                      placeholder="e.g., /about"
+                      {...field}
+                    />
+                  )}
                 />
               </div>
             </div>
           </div>
 
-          <OrderInput
-            value={formData.order_index}
-            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
-            existingItems={existingSlides.map(s => ({
-              id: s.id,
-              title: s.title,
-              order_index: s.order_index
-            }))}
-            currentItemId={slide?.id}
-            label="Display Order"
-            className="space-y-2"
+          <Controller
+            name="order_index"
+            control={control}
+            render={({ field }) => (
+              <OrderInput
+                value={field.value}
+                onChange={field.onChange}
+                existingItems={existingSlides.map(s => ({
+                  id: s.id,
+                  title: s.title,
+                  order_index: s.order_index
+                }))}
+                currentItemId={slide?.id}
+                label="Display Order"
+                className="space-y-2"
+              />
+            )}
           />
 
           <div className="flex items-center space-x-2">
-            <Switch
-              id="active"
-              checked={formData.active}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, active: checked }))}
+            <Controller
+              name="active"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="active"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
             />
             <Label htmlFor="active">Active (visible on website)</Label>
           </div>

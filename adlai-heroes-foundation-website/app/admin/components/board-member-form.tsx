@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -18,31 +19,50 @@ interface BoardMemberFormProps {
   existingMembers?: BoardMember[]
   onSave: () => void
   onCancel: () => void
+  open?: boolean
 }
 
-export default function BoardMemberForm({ member, existingMembers = [], onSave, onCancel }: BoardMemberFormProps) {
+const DEFAULTS = {
+  name: '',
+  position: '',
+  bio: '',
+  image: '',
+  order_index: 0
+}
+
+export default function BoardMemberForm({ member, existingMembers = [], onSave, onCancel, open }: BoardMemberFormProps) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    name: member?.name || '',
-    position: member?.position || '',
-    bio: member?.bio || '',
-    image: member?.image || '',
-    order_index: member?.order_index || 0
+  const initialised = useRef(false)
+  
+  const { control, handleSubmit, reset } = useForm({ 
+    defaultValues: DEFAULTS 
   })
 
-  // Reset form data when member prop changes
+  // Reset form only once per dialog open or when member ID changes
   useEffect(() => {
-    setFormData({
-      name: member?.name || '',
-      position: member?.position || '',
-      bio: member?.bio || '',
-      image: member?.image || '',
-      order_index: member?.order_index || 0
-    })
-  }, [member])
+    if (!open) { 
+      initialised.current = false
+      return
+    }
+    if (initialised.current) return
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    if (member) {
+      reset({
+        name: member.name || '',
+        position: member.position || '',
+        bio: member.bio || '',
+        image: member.image || '',
+        order_index: member.order_index || 0
+      })
+    } else {
+      reset(DEFAULTS)
+    }
+
+    initialised.current = true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, member?.id, reset])
+
+  const onSubmit = async (formData: typeof DEFAULTS) => {
     setLoading(true)
 
     try {
@@ -71,7 +91,6 @@ export default function BoardMemberForm({ member, existingMembers = [], onSave, 
         duration: 6000
       })
       
-      // Show detailed error for debugging
       if (error instanceof Error && error.message) {
         console.error('Detailed error:', error.message)
         if (error.message.includes('fetch')) {
@@ -92,54 +111,83 @@ export default function BoardMemberForm({ member, existingMembers = [], onSave, 
         <CardTitle>{member ? 'Edit Board Member' : 'Add New Board Member'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Full Name *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Enter full name"
-              required
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  id="name"
+                  placeholder="Enter full name"
+                  required
+                  {...field}
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="position">Position/Title</Label>
-            <Input
-              id="position"
-              value={formData.position}
-              onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
-              placeholder="e.g., Executive Director, Board Chair"
+            <Controller
+              name="position"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  id="position"
+                  placeholder="e.g., Executive Director, Board Chair"
+                  {...field}
+                />
+              )}
             />
           </div>
 
-          <WYSIWYGEditor
-            label="Biography"
-            value={formData.bio}
-            onChange={(value) => setFormData(prev => ({ ...prev, bio: value }))}
-            placeholder="Write a brief biography and background..."
-            minHeight="250px"
+          <Controller
+            name="bio"
+            control={control}
+            render={({ field }) => (
+              <WYSIWYGEditor
+                label="Biography"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Write a brief biography and background..."
+                minHeight="250px"
+              />
+            )}
           />
 
-          <ImageUpload
-            currentImageUrl={formData.image}
-            onImageChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
-            label="Profile Photo"
-            folder="team/"
+          <Controller
+            name="image"
+            control={control}
+            render={({ field }) => (
+              <ImageUpload
+                currentImageUrl={field.value}
+                onImageChange={field.onChange}
+                label="Profile Photo"
+                folder="team/"
+              />
+            )}
           />
 
-          <OrderInput
-            value={formData.order_index}
-            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
-            existingItems={existingMembers.map(m => ({
-              id: m.id,
-              title: `${m.name} (${m.position})`,
-              order_index: m.order_index
-            }))}
-            label="Display Order"
-            currentItemId={member?.id}
-            className="space-y-2"
+          <Controller
+            name="order_index"
+            control={control}
+            render={({ field }) => (
+              <OrderInput
+                value={field.value}
+                onChange={field.onChange}
+                existingItems={existingMembers.map(m => ({
+                  id: m.id,
+                  title: `${m.name} (${m.position})`,
+                  order_index: m.order_index
+                }))}
+                label="Display Order"
+                currentItemId={member?.id}
+                className="space-y-2"
+              />
+            )}
           />
 
           <div className="flex gap-4 pt-4">
