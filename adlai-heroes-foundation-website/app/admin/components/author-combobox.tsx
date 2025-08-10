@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Check, ChevronsUpDown, Plus } from 'lucide-react'
+import { Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -28,6 +28,7 @@ import { Label } from '@/components/ui/label'
 import { adminApi } from '@/lib/admin-api'
 import type { Author } from '@/lib/supabase'
 import { toast } from 'sonner'
+import { isSuperAdmin } from '@/lib/admin-utils'
 
 interface AuthorComboboxProps {
   value: string
@@ -41,8 +42,10 @@ export default function AuthorCombobox({ value, onChange, placeholder = "Select 
   const [authors, setAuthors] = useState<Author[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
+  const [deleting, setDeleting] = useState<number | null>(null)
   const [newAuthorName, setNewAuthorName] = useState('')
   const [newAuthorEmail, setNewAuthorEmail] = useState('')
+  const [isUserSuperAdmin] = useState(isSuperAdmin())
 
   useEffect(() => {
     loadAuthors()
@@ -86,6 +89,41 @@ export default function AuthorCombobox({ value, onChange, placeholder = "Select 
       toast.error('Failed to create author')
     } finally {
       setCreating(false)
+    }
+  }
+
+  const handleDeleteAuthor = async (authorId: number, authorName: string) => {
+    if (!isUserSuperAdmin) {
+      toast.error('Delete author requires super admin privileges')
+      return
+    }
+
+    // Prevent deleting "Adlai Heroes Team"
+    if (authorName === 'Adlai Heroes Team') {
+      toast.error('Cannot delete the default Adlai Heroes Team author')
+      return
+    }
+
+    if (!confirm(`Are you sure you want to delete "${authorName}"? This action cannot be undone.`)) {
+      return
+    }
+
+    try {
+      setDeleting(authorId)
+      await adminApi.deleteAuthor(authorId)
+      setAuthors(prev => prev.filter(author => author.id !== authorId))
+      
+      // If deleted author was selected, reset to default
+      if (value === authorName) {
+        onChange('Adlai Heroes Team')
+      }
+      
+      toast.success('Author deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting author:', error)
+      toast.error('Failed to delete author')
+    } finally {
+      setDeleting(null)
     }
   }
 
@@ -176,23 +214,49 @@ export default function AuthorCombobox({ value, onChange, placeholder = "Select 
               {authors.map((author) => (
                 <CommandItem
                   key={author.id}
-                  onSelect={() => {
-                    onChange(author.name)
-                    setOpen(false)
-                  }}
+                  className="flex items-center justify-between"
                 >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === author.name ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium">{author.name}</div>
-                    {author.email && (
-                      <div className="text-xs text-gray-500">{author.email}</div>
-                    )}
+                  <div 
+                    className="flex items-center flex-1 cursor-pointer"
+                    onClick={() => {
+                      onChange(author.name)
+                      setOpen(false)
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === author.name ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">{author.name}</div>
+                      {/* Show only team name, no individual emails/images for Adlai Heroes Team */}
+                      {author.name !== 'Adlai Heroes Team' && author.email && (
+                        <div className="text-xs text-gray-500">{author.email}</div>
+                      )}
+                    </div>
                   </div>
+                  
+                  {/* Delete button - only for super admin and not for Adlai Heroes Team */}
+                  {isUserSuperAdmin && author.name !== 'Adlai Heroes Team' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteAuthor(author.id, author.name)
+                      }}
+                      disabled={deleting === author.id}
+                    >
+                      {deleting === author.id ? (
+                        <div className="h-3 w-3 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
+                      ) : (
+                        <Trash2 className="h-3 w-3" />
+                      )}
+                    </Button>
+                  )}
                 </CommandItem>
               ))}
               

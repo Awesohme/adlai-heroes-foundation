@@ -31,7 +31,7 @@ export default function BlogPostForm({ post, onSave, onCancel }: BlogPostFormPro
     content: post?.content || '',
     featured_image: post?.featured_image || '',
     gallery_images: post?.gallery_images || [],
-    author: post?.author || '',
+    author: post?.author || 'Adlai Heroes Team',
     published: post?.published || false,
     meta_title: post?.meta_title || '',
     meta_description: post?.meta_description || '',

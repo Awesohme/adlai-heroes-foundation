@@ -244,7 +244,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         <CardHeader className="p-0 mb-6">
           <CardTitle className="text-4xl md:text-5xl font-bold text-gradient-primary mb-2">{post.title}</CardTitle>
           <p className="text-gray-600 text-sm md:text-base">
-            By {post.author} | {new Date(post.created_at).toLocaleDateString('en-US', { 
+            By {post.author || 'Adlai Heroes Team'} | {new Date(post.created_at).toLocaleDateString('en-US', { 
               year: 'numeric', 
               month: 'long', 
               day: 'numeric' 
