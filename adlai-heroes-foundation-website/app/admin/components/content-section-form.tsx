@@ -12,9 +12,11 @@ import { type ContentSection } from "@/lib/supabase"
 import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
+import OrderInput from "./order-input"
 
 interface ContentSectionFormProps {
   section?: ContentSection
+  existingSections?: ContentSection[]
   onSave: () => void
   onCancel: () => void
 }
@@ -29,7 +31,7 @@ const pageOptions = [
   { value: 'global', label: 'Global (All Pages)' }
 ]
 
-export default function ContentSectionForm({ section, onSave, onCancel }: ContentSectionFormProps) {
+export default function ContentSectionForm({ section, existingSections = [], onSave, onCancel }: ContentSectionFormProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     section_key: section?.section_key || '',
@@ -196,18 +198,18 @@ export default function ContentSectionForm({ section, onSave, onCancel }: Conten
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="order_index">Display Order</Label>
-              <Input
-                id="order_index"
-                type="number"
-                value={formData.order_index}
-                onChange={(e) => setFormData(prev => ({ ...prev, order_index: parseInt(e.target.value) || 0 }))}
-                placeholder="0"
-                min="0"
-              />
-              <p className="text-sm text-gray-500">Lower numbers appear first</p>
-            </div>
+            <OrderInput
+              value={formData.order_index}
+              onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
+              existingItems={existingSections.map(s => ({
+                id: s.id,
+                title: `${s.title} (${s.page_key})`,
+                order_index: s.order_index
+              }))}
+              label="Display Order"
+              currentItemId={section?.id}
+              className="space-y-2"
+            />
 
             <div className="flex items-center space-x-2 pt-6">
               <Switch

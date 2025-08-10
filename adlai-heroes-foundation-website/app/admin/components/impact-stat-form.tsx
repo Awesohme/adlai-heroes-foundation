@@ -11,9 +11,11 @@ import { supabaseApi, type ImpactStat } from "@/lib/supabase"
 import { adminApi } from "@/lib/admin-api"
 import { TrendingUpIcon, UsersIcon, HeartIcon, BookOpenIcon, HomeIcon, StarIcon, TargetIcon, AwardIcon } from "lucide-react"
 import { toast } from "sonner"
+import OrderInput from "./order-input"
 
 interface ImpactStatFormProps {
   stat?: ImpactStat
+  existingStats?: ImpactStat[]
   onSave: () => void
   onCancel: () => void
 }
@@ -29,7 +31,7 @@ const iconOptions = [
   { value: 'award', label: 'Award', icon: AwardIcon }
 ]
 
-export default function ImpactStatForm({ stat, onSave, onCancel }: ImpactStatFormProps) {
+export default function ImpactStatForm({ stat, existingStats = [], onSave, onCancel }: ImpactStatFormProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: stat?.title || '',
@@ -137,18 +139,18 @@ export default function ImpactStatForm({ stat, onSave, onCancel }: ImpactStatFor
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="order_index">Display Order</Label>
-            <Input
-              id="order_index"
-              type="number"
-              value={formData.order_index}
-              onChange={(e) => setFormData(prev => ({ ...prev, order_index: parseInt(e.target.value) || 0 }))}
-              placeholder="0"
-              min="0"
-            />
-            <p className="text-sm text-gray-500">Lower numbers appear first</p>
-          </div>
+          <OrderInput
+            value={formData.order_index}
+            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
+            existingItems={existingStats.map(s => ({
+              id: s.id,
+              title: s.title,
+              order_index: s.order_index
+            }))}
+            label="Display Order"
+            currentItemId={stat?.id}
+            className="space-y-2"
+          />
 
           <div className="flex gap-4 pt-4">
             <Button type="submit" disabled={loading} className="flex-1">

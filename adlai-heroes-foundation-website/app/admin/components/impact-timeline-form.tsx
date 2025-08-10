@@ -9,14 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import { type ImpactTimeline } from '@/lib/supabase'
 import { toast } from 'sonner'
+import OrderInput from './order-input'
 
 interface ImpactTimelineFormProps {
   timeline?: ImpactTimeline
+  existingItems?: ImpactTimeline[]
   onSubmit: (data: Omit<ImpactTimeline, 'id' | 'created_at' | 'updated_at'>) => Promise<void>
   onCancel?: () => void
 }
 
-export function ImpactTimelineForm({ timeline, onSubmit, onCancel }: ImpactTimelineFormProps) {
+export function ImpactTimelineForm({ timeline, existingItems = [], onSubmit, onCancel }: ImpactTimelineFormProps) {
   const [formData, setFormData] = useState({
     year: timeline?.year || new Date().getFullYear(),
     title: timeline?.title || '',
@@ -105,18 +107,18 @@ export function ImpactTimelineForm({ timeline, onSubmit, onCancel }: ImpactTimel
             />
           </div>
 
-          {/* Order Index */}
-          <div className="space-y-2">
-            <Label htmlFor="order_index">Display Order</Label>
-            <Input
-              id="order_index"
-              type="number"
-              min="0"
-              value={formData.order_index}
-              onChange={(e) => setFormData({ ...formData, order_index: parseInt(e.target.value) || 0 })}
-              placeholder="Order for display (0 = first)"
-            />
-          </div>
+          <OrderInput
+            value={formData.order_index}
+            onChange={(value) => setFormData({ ...formData, order_index: value })}
+            existingItems={existingItems.map(item => ({
+              id: item.id,
+              title: `${item.year} - ${item.title}`,
+              order_index: item.order_index
+            }))}
+            label="Display Order"
+            currentItemId={timeline?.id}
+            className="space-y-2"
+          />
 
           {/* Active Toggle */}
           <div className="flex items-center space-x-2">

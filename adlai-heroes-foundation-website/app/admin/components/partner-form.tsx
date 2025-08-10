@@ -10,14 +10,16 @@ import { type Partner } from "@/lib/supabase"
 import { adminApi } from "@/lib/admin-api"
 import { toast } from "sonner"
 import ImageUpload from "./image-upload"
+import OrderInput from "./order-input"
 
 interface PartnerFormProps {
   partner?: Partner
+  existingPartners?: Partner[]
   onSave: () => void
   onCancel: () => void
 }
 
-export default function PartnerForm({ partner, onSave, onCancel }: PartnerFormProps) {
+export default function PartnerForm({ partner, existingPartners = [], onSave, onCancel }: PartnerFormProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: partner?.name || '',
@@ -99,18 +101,18 @@ export default function PartnerForm({ partner, onSave, onCancel }: PartnerFormPr
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="order_index">Display Order</Label>
-            <Input
-              id="order_index"
-              type="number"
-              value={formData.order_index}
-              onChange={(e) => setFormData(prev => ({ ...prev, order_index: parseInt(e.target.value) || 0 }))}
-              placeholder="0"
-              min="0"
-            />
-            <p className="text-sm text-gray-500">Lower numbers appear first</p>
-          </div>
+          <OrderInput
+            value={formData.order_index}
+            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
+            existingItems={existingPartners.map(p => ({
+              id: p.id,
+              title: p.name,
+              order_index: p.order_index
+            }))}
+            label="Display Order"
+            currentItemId={partner?.id}
+            className="space-y-2"
+          />
 
           <div className="flex items-center space-x-2">
             <Switch

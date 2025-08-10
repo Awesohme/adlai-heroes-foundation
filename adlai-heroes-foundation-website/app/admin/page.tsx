@@ -247,23 +247,23 @@ function AdminDashboardContent() {
       case 'testimonial':
         return <TestimonialForm testimonial={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'stat':
-        return <ImpactStatForm stat={editingItem} onSave={handleSave} onCancel={handleCancel} />
+        return <ImpactStatForm stat={editingItem} existingStats={stats} onSave={handleSave} onCancel={handleCancel} />
       case 'blog':
         return <BlogPostForm post={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'board':
         return <BoardMemberForm member={editingItem} existingMembers={boardMembers} onSave={handleSave} onCancel={handleCancel} open={dialogOpen} />
       case 'section':
-        return <ContentSectionForm section={editingItem} onSave={handleSave} onCancel={handleCancel} />
+        return <ContentSectionForm section={editingItem} existingSections={contentSections} onSave={handleSave} onCancel={handleCancel} />
       case 'page':
         return <PageForm page={editingItem} onSave={handleSave} onCancel={handleCancel} />
       case 'hero-slide':
         return <HeroSlideForm slide={editingItem} existingSlides={heroSlides} onSave={handleSave} onCancel={handleCancel} open={dialogOpen} />
       case 'partner':
-        return <PartnerForm partner={editingItem} onSave={handleSave} onCancel={handleCancel} />
+        return <PartnerForm partner={editingItem} existingPartners={partners} onSave={handleSave} onCancel={handleCancel} />
       case 'settings':
         return <SiteSettingsForm onSave={handleSave} onCancel={handleCancel} />
       case 'timeline':
-        return <ImpactTimelineForm timeline={editingItem} onSubmit={async (data) => {
+        return <ImpactTimelineForm timeline={editingItem} existingItems={timeline} onSubmit={async (data) => {
           try {
             if (editingItem) {
               await adminApi.updateImpactTimeline(editingItem.id, data)
