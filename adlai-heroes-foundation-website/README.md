@@ -402,20 +402,33 @@ This project is proprietary to Adlai Heroes Foundation.
 
 ## 📋 Project Status & Changelog
 
-### Version 3.2.0 (August 10, 2025) - Current
-**Status**: Production Ready with Header Background Images & Admin Dashboard Fixes
+### Version 3.3.0 (August 10, 2025) - Current
+**Status**: Production Ready with Mobile Responsiveness & UX Enhancements
 **Major Features Completed**:
-- ✅ **Header Background Images**: Subtle background images on all page headers (About, Impact, Programs, Volunteer, Contact, Donate)
-- ✅ **Image-Gradient Blending**: Perfect opacity balance to show images while maintaining readability
-- ✅ **Admin Dashboard Stability**: Fixed React hydration errors in Board Members and Hero Slides management
-- ✅ **Dynamic Content Integration**: All donate buttons pull from site settings dynamically
-- ✅ **Enhanced Button UX**: Black text colors with proper hover states across all pages
-- ✅ **Animated Cards**: Mission/vision/story cards with gradient backgrounds and interactive effects
-- ✅ **Fancy Donate Page**: Complete redesign with stunning gradients and glass morphism
-- ✅ **Left-Aligned Bank Details**: Improved donation page UX with better text alignment
-- ✅ **Jiggle Animations**: 12-degree rotation effects on ALL buttons site-wide for engaging UX
+- ✅ **Mobile Menu Auto-Close**: Mobile navigation now closes automatically when links are clicked
+- ✅ **Contact Page Copy Buttons**: One-click copy functionality for phone, email, and address
+- ✅ **Responsive Contact Details**: Fixed email overflow on mobile with proper text wrapping
+- ✅ **Volunteer Button Responsiveness**: Mobile-optimized volunteer button with adaptive text sizing
+- ✅ **Optional Hero Slide Buttons**: Hero slide buttons are now completely optional instead of required
+- ✅ **React Hook Form Migration**: Fixed React error #185 by migrating impact stat forms to react-hook-form
+- ✅ **OrderInput Component Integration**: Beautiful position-relative dropdown ordering system across all admin forms
+- ✅ **WYSIWYG Content Rendering**: Fixed markdown rendering on public site (bold text now displays properly)
+- ✅ **Board Member Bio Display**: Added "View Bio" button with modal popup for board member biographies
+- ✅ **Enhanced Mobile UX**: Comprehensive mobile responsiveness improvements across all pages
 
-### Technical Improvements (Version 3.2.0)
+### Technical Improvements (Version 3.3.0)
+- **Mobile Navigation State Management**: Added controlled state management to Sheet component in header for auto-close functionality
+- **Copy to Clipboard API**: Implemented native clipboard API with visual feedback using CheckIcon/CopyIcon states
+- **Responsive Text Layout**: Added `truncate`, `flex-1`, `min-w-0`, and `break-words` classes for mobile overflow prevention
+- **React Hook Form Migration**: Converted form components from useState to useForm with Controller wrappers
+- **Reset-on-Open Pattern**: Implemented proper form initialization with useRef flags to prevent infinite render loops
+- **Form State Management**: Added `open` prop tracking with `initialised.current` flags for clean modal behavior
+- **Responsive Button Design**: Implemented adaptive padding, text sizing, and conditional content for mobile optimization
+- **Optional Form Validation**: Removed required validation rules and HTML attributes from hero slide button fields
+- **Markdown Rendering Fix**: Created `renderMarkdown` utility to properly display WYSIWYG content on public pages
+- **Modal Bio Display**: Added Dialog components with markdown rendering for board member biography viewing
+
+### Previous Technical Improvements (Version 3.2.0)
 - **Header Image Integration**: Background images with perfect opacity balancing (20%-30% image opacity, 40%-50% overlay opacity)
 - **React Hydration Fixes**: Resolved React error #185 in admin dashboard with proper component mounting
 - **Admin Form Stability**: Fixed "Add Member" and "Add Hero Slide" functionality with error boundaries
@@ -447,5 +460,5 @@ This project is proprietary to Adlai Heroes Foundation.
 ---
 
 **Last Updated**: August 10, 2025
-**Current Version**: 3.2.0
-**Status**: Production Ready - Header Background Images & Admin Dashboard Stability Complete
+**Current Version**: 3.3.0
+**Status**: Production Ready - Mobile Responsiveness & UX Enhancements Complete

@@ -13,6 +13,7 @@ import type { SiteSettings } from "@/lib/supabase"
 export function Header() {
   const [settings, setSettings] = useState<{ [key: string]: string }>({})
   const [loading, setLoading] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     loadSettings()
@@ -171,7 +172,7 @@ export function Header() {
             )}
           </nav>
           
-          <Sheet>
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button
                 className="md:hidden bg-transparent"
@@ -185,38 +186,38 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right">
               <div className="grid gap-4 p-4">
-                <Link className="font-medium hover:text-primary transition-colors" href="/">
+                <Link className="font-medium hover:text-primary transition-colors" href="/" onClick={() => setMobileMenuOpen(false)}>
                   Home
                 </Link>
                 <div className="space-y-2">
                   <div className="font-medium text-gray-900">About</div>
                   <div className="pl-4 space-y-2">
-                    <Link className="block text-sm hover:text-primary transition-colors" href="/about">
+                    <Link className="block text-sm hover:text-primary transition-colors" href="/about" onClick={() => setMobileMenuOpen(false)}>
                       About Adlai
                     </Link>
-                    <Link className="block text-sm hover:text-primary transition-colors" href="/impact">
+                    <Link className="block text-sm hover:text-primary transition-colors" href="/impact" onClick={() => setMobileMenuOpen(false)}>
                       Impact
                     </Link>
-                    <Link className="block text-sm hover:text-primary transition-colors" href="/board">
+                    <Link className="block text-sm hover:text-primary transition-colors" href="/board" onClick={() => setMobileMenuOpen(false)}>
                       Board
                     </Link>
                   </div>
                 </div>
-                <Link className="font-medium hover:text-primary transition-colors" href="/programs">
+                <Link className="font-medium hover:text-primary transition-colors" href="/programs" onClick={() => setMobileMenuOpen(false)}>
                   Programs
                 </Link>
-                <Link className="font-medium hover:text-primary transition-colors" href="/blog">
+                <Link className="font-medium hover:text-primary transition-colors" href="/blog" onClick={() => setMobileMenuOpen(false)}>
                   Blog
                 </Link>
-                <Link className="font-medium hover:text-primary transition-colors" href="/volunteer">
+                <Link className="font-medium hover:text-primary transition-colors" href="/volunteer" onClick={() => setMobileMenuOpen(false)}>
                   Volunteer
                 </Link>
-                <Link className="font-medium hover:text-primary transition-colors" href="/contact">
+                <Link className="font-medium hover:text-primary transition-colors" href="/contact" onClick={() => setMobileMenuOpen(false)}>
                   Contact Us
                 </Link>
                 {shouldShowDonateButton && (
                   <Button asChild className="bg-adlaiPink text-white hover:bg-adlaiPink/90 shadow-lg hover:shadow-xl transform hover:scale-105 hover:rotate-12 transition-all duration-300">
-                    <Link href="/donate">Donate</Link>
+                    <Link href="/donate" onClick={() => setMobileMenuOpen(false)}>Donate</Link>
                   </Button>
                 )}
               </div>

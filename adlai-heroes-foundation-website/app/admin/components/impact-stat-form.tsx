@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -18,6 +19,15 @@ interface ImpactStatFormProps {
   existingStats?: ImpactStat[]
   onSave: () => void
   onCancel: () => void
+  open?: boolean
+}
+
+type FormData = {
+  title: string
+  value: string
+  description: string
+  icon: string
+  order_index: number
 }
 
 const iconOptions = [
@@ -31,18 +41,28 @@ const iconOptions = [
   { value: 'award', label: 'Award', icon: AwardIcon }
 ]
 
-export default function ImpactStatForm({ stat, existingStats = [], onSave, onCancel }: ImpactStatFormProps) {
+export default function ImpactStatForm({ stat, existingStats = [], onSave, onCancel, open = true }: ImpactStatFormProps) {
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    title: stat?.title || '',
-    value: stat?.value || '',
-    description: stat?.description || '',
-    icon: stat?.icon || 'users',
-    order_index: stat?.order_index || 0
-  })
+  const initialised = useRef(false)
+  
+  const DEFAULTS: FormData = {
+    title: '',
+    value: '',
+    description: '',
+    icon: 'users',
+    order_index: 0
+  }
+  
+  const { control, handleSubmit, reset } = useForm<FormData>({ defaultValues: DEFAULTS })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  useEffect(() => {
+    if (!open) { initialised.current = false; return; }
+    if (initialised.current) return;
+    if (stat) reset(stat); else reset(DEFAULTS);
+    initialised.current = true;
+  }, [open, stat?.id, reset])
+
+  const onSubmit = async (formData: FormData) => {
     setLoading(true)
 
     try {
@@ -80,76 +100,100 @@ export default function ImpactStatForm({ stat, existingStats = [], onSave, onCan
         <CardTitle>{stat ? 'Edit Impact Statistic' : 'Add New Impact Statistic'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="e.g., Children Helped"
-              required
+            <Controller
+              name="title"
+              control={control}
+              rules={{ required: "Title is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="title"
+                  placeholder="e.g., Children Helped"
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="value">Value *</Label>
-            <Input
-              id="value"
-              value={formData.value}
-              onChange={(e) => setFormData(prev => ({ ...prev, value: e.target.value }))}
-              placeholder="e.g., 1,000+ or 50"
-              required
+            <Controller
+              name="value"
+              control={control}
+              rules={{ required: "Value is required" }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="value"
+                  placeholder="e.g., 1,000+ or 50"
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Brief description of this statistic"
-              rows={3}
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  id="description"
+                  placeholder="Brief description of this statistic"
+                  rows={3}
+                />
+              )}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="icon">Icon</Label>
-            <Select 
-              value={formData.icon} 
-              onValueChange={(value) => setFormData(prev => ({ ...prev, icon: value }))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select an icon" />
-              </SelectTrigger>
-              <SelectContent>
-                {iconOptions.map((option) => {
-                  const IconComponent = option.icon
-                  return (
-                    <SelectItem key={option.value} value={option.value}>
-                      <div className="flex items-center gap-2">
-                        <IconComponent className="h-4 w-4" />
-                        {option.label}
-                      </div>
-                    </SelectItem>
-                  )
-                })}
-              </SelectContent>
-            </Select>
+            <Controller
+              name="icon"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select an icon" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {iconOptions.map((option) => {
+                      const IconComponent = option.icon
+                      return (
+                        <SelectItem key={option.value} value={option.value}>
+                          <div className="flex items-center gap-2">
+                            <IconComponent className="h-4 w-4" />
+                            {option.label}
+                          </div>
+                        </SelectItem>
+                      )
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
 
-          <OrderInput
-            value={formData.order_index}
-            onChange={(value) => setFormData(prev => ({ ...prev, order_index: value }))}
-            existingItems={existingStats.map(s => ({
-              id: s.id,
-              title: s.title,
-              order_index: s.order_index
-            }))}
-            label="Display Order"
-            currentItemId={stat?.id}
-            className="space-y-2"
+          <Controller
+            name="order_index"
+            control={control}
+            render={({ field }) => (
+              <OrderInput
+                value={field.value}
+                onChange={field.onChange}
+                existingItems={existingStats.map(s => ({
+                  id: s.id,
+                  title: s.title,
+                  order_index: s.order_index
+                }))}
+                label="Display Order"
+                currentItemId={stat?.id}
+                className="space-y-2"
+              />
+            )}
           />
 
           <div className="flex gap-4 pt-4">

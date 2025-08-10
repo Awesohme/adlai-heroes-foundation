@@ -151,9 +151,9 @@ export default function VolunteerPage() {
             Fill out our volunteer application form to get started. We look forward to welcoming you to our family!
           </p>
           {settings.volunteer_button_url && (
-            <Button asChild className="bg-white text-gray-900 hover:bg-gray-100 shadow-xl hover:shadow-2xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-10 py-4 text-xl font-semibold rounded-full">
-              <Link href={settings.volunteer_button_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3">
-                <span>🚀</span> Apply to Volunteer <span>→</span>
+            <Button asChild className="bg-white text-gray-900 hover:bg-gray-100 shadow-xl hover:shadow-2xl transform hover:scale-105 hover:rotate-12 transition-all duration-300 px-6 md:px-10 py-3 md:py-4 text-base md:text-xl font-semibold rounded-full">
+              <Link href={settings.volunteer_button_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 md:gap-3">
+                <span>🚀</span> <span className="hidden xs:inline">Apply to</span> Volunteer <span>→</span>
               </Link>
             </Button>
           )}

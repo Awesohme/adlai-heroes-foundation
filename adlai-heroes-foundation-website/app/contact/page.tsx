@@ -1,7 +1,7 @@
 'use client'
 
 import Image from "next/image"
-import { PhoneIcon, MailIcon, MapPinIcon, FacebookIcon, InstagramIcon, LinkedinIcon } from "lucide-react"
+import { PhoneIcon, MailIcon, MapPinIcon, FacebookIcon, InstagramIcon, LinkedinIcon, CopyIcon, CheckIcon } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
@@ -12,6 +12,7 @@ import type { SiteSettings } from "@/lib/supabase"
 export default function ContactPage() {
   const [settings, setSettings] = useState<{ [key: string]: string }>({})
   const [loading, setLoading] = useState(true)
+  const [copiedItem, setCopiedItem] = useState<string | null>(null)
 
   useEffect(() => {
     loadSettings()
@@ -29,6 +30,16 @@ export default function ContactPage() {
       console.error('Error loading site settings:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedItem(type)
+      setTimeout(() => setCopiedItem(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
     }
   }
 
@@ -75,14 +86,28 @@ export default function ContactPage() {
                 <div className="p-3 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors">
                   <PhoneIcon className="h-6 w-6 text-green-600" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-600 font-medium">Phone</p>
-                  <Link 
-                    href={`tel:${settings.contact_phone || '+2347083060892'}`}
-                    className="text-lg text-gray-800 hover:text-blue-600 transition-colors"
-                  >
-                    {settings.contact_phone || '+234 708 306 0892'}
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link 
+                      href={`tel:${settings.contact_phone || '+2347083060892'}`}
+                      className="text-lg text-gray-800 hover:text-blue-600 transition-colors truncate flex-1"
+                    >
+                      {settings.contact_phone || '+234 708 306 0892'}
+                    </Link>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(settings.contact_phone || '+234 708 306 0892', 'phone')}
+                      className="h-8 w-8 p-0 hover:bg-green-100"
+                    >
+                      {copiedItem === 'phone' ? (
+                        <CheckIcon className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <CopyIcon className="h-4 w-4 text-gray-500" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
               
@@ -90,24 +115,52 @@ export default function ContactPage() {
                 <div className="p-3 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors">
                   <MailIcon className="h-6 w-6 text-blue-600" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-600 font-medium">Email</p>
-                  <Link 
-                    href={`mailto:${settings.contact_email || 'admin@adlaiheroesfoundation.com.ng'}`}
-                    className="text-lg text-gray-800 hover:text-blue-600 transition-colors"
-                  >
-                    {settings.contact_email || 'admin@adlaiheroesfoundation.com.ng'}
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link 
+                      href={`mailto:${settings.contact_email || 'admin@adlaiheroesfoundation.com.ng'}`}
+                      className="text-lg text-gray-800 hover:text-blue-600 transition-colors truncate flex-1"
+                    >
+                      {settings.contact_email || 'admin@adlaiheroesfoundation.com.ng'}
+                    </Link>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(settings.contact_email || 'admin@adlaiheroesfoundation.com.ng', 'email')}
+                      className="h-8 w-8 p-0 hover:bg-blue-100"
+                    >
+                      {copiedItem === 'email' ? (
+                        <CheckIcon className="h-4 w-4 text-blue-600" />
+                      ) : (
+                        <CopyIcon className="h-4 w-4 text-gray-500" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
               
               <div className="group flex items-start gap-4 p-4 rounded-lg hover:bg-white/50 transition-all duration-300 hover:shadow-md">
-                <div className="p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors">
+                <div className="p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors mt-1">
                   <MapPinIcon className="h-6 w-6 text-purple-600" />
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">Address</p>
-                  <p className="text-lg text-gray-800 leading-relaxed">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="text-sm text-gray-600 font-medium">Address</p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(settings.contact_address || 'Flat 1a, No. 28, Alhaji Isiakanda street, Ilasamaja, Lagos State', 'address')}
+                      className="h-6 w-6 p-0 hover:bg-purple-100"
+                    >
+                      {copiedItem === 'address' ? (
+                        <CheckIcon className="h-3 w-3 text-purple-600" />
+                      ) : (
+                        <CopyIcon className="h-3 w-3 text-gray-500" />
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-lg text-gray-800 leading-relaxed break-words">
                     {settings.contact_address || 'Flat 1a, No. 28, Alhaji Isiakanda street, Ilasamaja, Lagos State'}
                   </p>
                 </div>

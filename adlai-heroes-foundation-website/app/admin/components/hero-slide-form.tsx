@@ -183,21 +183,19 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Call-to-Action Buttons (1-2 buttons)</h3>
+            <h3 className="text-lg font-medium">Call-to-Action Buttons (Optional)</h3>
             
-            {/* First Button (Required) */}
+            {/* First Button (Optional) */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="button_text">Button 1 Text *</Label>
+                <Label htmlFor="button_text">Button 1 Text</Label>
                 <Controller
                   name="button_text"
                   control={control}
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <Input
                       id="button_text"
                       placeholder="e.g., Donate Now"
-                      required
                       {...field}
                     />
                   )}
@@ -205,16 +203,14 @@ export default function HeroSlideForm({ slide, existingSlides = [], onSave, onCa
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="button_link">Button 1 Link *</Label>
+                <Label htmlFor="button_link">Button 1 Link</Label>
                 <Controller
                   name="button_link"
                   control={control}
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <Input
                       id="button_link"
                       placeholder="e.g., /donate"
-                      required
                       {...field}
                     />
                   )}
